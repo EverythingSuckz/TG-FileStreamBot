@@ -1,0 +1,4 @@
+pyrogram
+tgcrypto
+aiohttp
+python-dotenv

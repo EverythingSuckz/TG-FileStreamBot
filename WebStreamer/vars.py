@@ -7,19 +7,18 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Var(object):
-    ENV = bool(getenv('ENV', False))
     API_ID = int(getenv('API_ID'))
     API_HASH = str(getenv('API_HASH'))
     BOT_TOKEN = str(getenv('BOT_TOKEN'))
-    SLEEP_THRESHOLD = int(getenv('SLEEP_THRESHOLD', '300'))
+    SLEEP_THRESHOLD = int(getenv('SLEEP_THRESHOLD', '60'))
     WORKERS = int(getenv('WORKERS', '3'))
-    BIN_CHANNEL = int(getenv('BIN_CHANNEL', None))
-    FQDN = str(getenv('FQDN', 'localhost'))
+    BIN_CHANNEL = int(getenv('BIN_CHANNEL', None))     
     PORT = int(getenv('PORT', 8080))
-    BIND_ADRESS = str(getenv('BIND_ADRESS', '0.0.0.0'))
-    CACHE_DIR = str(getenv('CACHE_DIR', 'WebStreamer/bot/cache'))
-    OWNER_ID = int(getenv('OWNER_ID'))
+    BIND_ADRESS = str(getenv('WEB_SERVER_BIND_ADDRESS', '0.0.0.0'))
+    OWNER_ID = int(getenv('OWNER_ID', None)) #TODO
     if 'DYNO' in environ:
         ON_HEROKU = True
+        APP_NAME = str(getenv('APP_NAME'))
     else:
         ON_HEROKU = False
+    FQDN = str(getenv('FQDN', BIND_ADRESS)) if not ON_HEROKU else APP_NAME+'.herokuapp.com'

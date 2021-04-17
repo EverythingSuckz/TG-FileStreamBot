@@ -1,0 +1,68 @@
+{
+    "name": "TG-FlieStreamBot",
+    "description": "A Pyrogram Telegram bot to Stream Telegram files to web.",
+    "keywords": [
+      "telegram",
+      "stream",
+      "web",
+      "pyrogram",
+      "aiohttp",
+      "python",
+      "plugin",
+      "modular",
+      "media"
+    ],
+    "repository": "https://github.com/EverythingSuckz/TG-FlieStreamBot",
+    "success_url": "https://telegram.dog/WhyThisUsername",
+    "website": "stream.wrench.gq",
+    "env": {
+      "ENV": {
+        "description": "Set this to True if you don't want to crash the bot",
+        "value": "True"
+      },
+      "APP_NAME": {
+        "description": "Copy-Paste the app name that you just typed above."
+      },
+      "API_ID": {
+        "description": "Get this value from https://my.telegram.org"
+      },
+      "API_HASH": {
+        "description": "Get this value from https://my.telegram.org"
+      },
+      "BOT_TOKEN": {
+        "description": "Get this value from @BotFather"
+      },
+      "BIN_CHANNEL": {
+        "description": "The BIN Channel ID. Read the readme for more info about this var"
+      },
+      "SLEEP_THRESHOLD": {
+        "description": "Floodwait Sleep timer. Read the readme for more info about this var",
+        "required": false
+      },
+      "WORKERS": {
+        "description": "No. of workers that is to be assigned. Read the readme for more info about this var",
+        "required": false
+      },
+      "PORT": {
+        "description": "Port that you want your webapp to be listened to. Read the readme for more info about this var",
+        "required": false
+      },
+      "BIND_ADRESS": {
+        "description": "Read the readme for more info about this var",
+        "required": false
+      },
+      "FQDN": {
+        "description": "Read the readme for more info about this var",
+        "required": false
+      }
+    },
+    "buildpacks": [{
+      "url": "heroku/python"
+    }],
+    "formation": {
+      "worker": {
+        "quantity": 1,
+        "size": "free"
+      }
+    }
+  }
