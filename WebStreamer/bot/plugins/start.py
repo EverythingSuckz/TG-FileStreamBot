@@ -14,7 +14,7 @@ async def start(b, m):
                           [
                               InlineKeyboardButton(
                                   f'{emoji.STAR} Source {emoji.STAR}',
-                                  url='https://github.com/EverythingSuckz/TG-FlieStreamBot'
+                                  url='https://github.com/EverythingSuckz/TG-FileStreamBot'
                               )
                           ]
                       ]

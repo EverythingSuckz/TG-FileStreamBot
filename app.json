@@ -1,5 +1,5 @@
 {
-    "name": "TG-FlieStreamBot",
+    "name": "TG-FileStreamBot",
     "description": "A Pyrogram Telegram bot to Stream Telegram files to web.",
     "keywords": [
       "telegram",
@@ -12,8 +12,9 @@
       "modular",
       "media"
     ],
-    "repository": "https://github.com/EverythingSuckz/TG-FlieStreamBot",
-    "success_url": "https://telegram.dog/WhyThisUsername",
+    "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot",
+    "success_url": "/",
+    "logo": "https://telegra.ph/file/9d63060a06c6fc6def1da.png",
     "website": "stream.wrench.gq",
     "env": {
       "ENV": {
@@ -60,7 +61,7 @@
       "url": "heroku/python"
     }],
     "formation": {
-      "worker": {
+      "web": {
         "quantity": 1,
         "size": "free"
       }

@@ -1,7 +1,7 @@
 <h1 align="center">Telegram File Stream Bot</h3>
 <p align="center">
   <a href="https://github.com/EverythingSuckz/TG-FileStreamBot">
-    <img src="https://socialify.git.ci/EverythingSuckz/TG-FlieStreamBot/image?description=1&font=Source%20Code%20Pro&forks=1&issues=1&logo=https%3A%2F%2Fwww.flaticon.com%2Fpremium-icon%2Ficons%2Fsvg%2F2321%2F2321089.svg&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark" alt="Cover Image" height=400>
+    <img src="https://socialify.git.ci/EverythingSuckz/TG-FileStreamBot/image?description=1&font=Source%20Code%20Pro&forks=1&issues=1&logo=https%3A%2F%2Fwww.flaticon.com%2Fpremium-icon%2Ficons%2Fsvg%2F2321%2F2321089.svg&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark" alt="Cover Image" height=400>
   </a>
   <p align="center">
     A Telegram bot to stream files to web
@@ -74,8 +74,8 @@ then goto the <a href="#mandatory-vars">variables tab</a> for more info on setti
 ### Host it on VPS or Locally
 
 ```sh
-git clone https://github.com/EverythingSuckz/TG-FlieStreamBot
-cd TG-FlieStreamBot
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot
+cd TG-FileStreamBot
 virtualenv -p /usr/bin/python3 venv
 . ./venv/bin/activate
 pip install -r requirements.txt

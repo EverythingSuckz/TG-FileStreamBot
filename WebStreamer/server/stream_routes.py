@@ -13,12 +13,12 @@ from ..utils.custom_dl import TGCustomYield, chunk_size, offset_fix
 routes = web.RouteTableDef()
 
 
-@routes.get("/")
+@routes.get("/", allow_head=True)
 async def root_route_handler(request):
     bot_details = await StreamBot.get_me()
     return web.json_response({"status": "running",
                               "server_permission": "Open",
-                              "bot_associated_w": bot_details.username})
+                              "telegram_bot": '@'+bot_details.username})
 
 
 @routes.get("/{message_id}")
