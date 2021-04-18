@@ -1,12 +1,12 @@
 <h1 align="center">Telegram File Stream Bot</h3>
 <p align="center">
   <a href="https://github.com/EverythingSuckz/TG-FileStreamBot">
-    <img src="https://socialify.git.ci/EverythingSuckz/TG-FileStreamBot/image?description=1&font=Source%20Code%20Pro&forks=1&issues=1&logo=https%3A%2F%2Fwww.flaticon.com%2Fpremium-icon%2Ficons%2Fsvg%2F2321%2F2321089.svg&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark" alt="Cover Image" width="650">
+    <img src="https://socialify.git.ci/EverythingSuckz/TG-FileStreamBot/image?description=1&font=Source%20Code%20Pro&forks=1&issues=1&logo=https%3A%2F%2Fwww.flaticon.com%2Fpremium-icon%2Ficons%2Fsvg%2F2321%2F2321089.svg&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark" alt="Cover Image" height=400>
   </a>
   <p align="center">
     A Telegram bot to stream files to web
     <br />
-    <a href="https://telegram.dog/TG_FileStreamBot"><strong>BOT Demo »</strong></a>
+    <a href="https://telegram.dog/TG_FileStreamBot"><strong>Telegram Bot »</strong></a>
     <br />
     <a href="https://github.com/EverythingSuckz/TG-FileStreamBot/issues">Report a Bug</a>
     |
@@ -120,6 +120,8 @@ FQDN=yourserverip
 `PORT` : The port that you want your webapp to be listened to. Defaults to `8080`
 
 `WEB_SERVER_BIND_ADDRESS` : Your server bind adress. Defauls to `0.0.0.0`
+
+`NO_PORT` : If you don't want your port to be displayed. You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
 
 `FQDN` :  A Fully Qualified Domain Name if present. Defaults to `WEB_SERVER_BIND_ADDRESS`
 
