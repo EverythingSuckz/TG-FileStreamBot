@@ -1,74 +1,74 @@
 {
-      "name": "TG-FileStreamBot",
-      "description": "A Pyrogram Telegram bot to Stream Telegram files to web.",
-      "keywords": [
-          "telegram",
-          "stream",
-          "web",
-          "pyrogram",
-          "aiohttp",
-          "python",
-          "plugin",
-          "modular",
-          "media"
-        ],
-      "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot",
-      "success_url": "/",
-      "logo": "https://telegra.ph/file/9d63060a06c6fc6def1da.png",
-      "website": "stream.wrench.gq",
-      "env": {
-          "ENV": {
-              "description": "Set this to True if you don't want to crash the bot",
-              "value": "True"
-          },
-          "APP_NAME": {
-              "description": "Copy-Paste the app name that you just typed above."
-          },
-          "API_ID": {
-              "description": "Get this value from https://my.telegram.org"
-          },
-          "API_HASH": {
-              "description": "Get this value from https://my.telegram.org"
-          },
-          "BOT_TOKEN": {
-              "description": "Get this value from @BotFather"
-          },
-          "BIN_CHANNEL": {
-              "description": "The BIN Channel ID. Read the readme for more info about this var"
-          },
-          "SLEEP_THRESHOLD": {
-              "description": "Floodwait Sleep timer. Read the readme for more info about this var",
-              "required": false
-          },
-          "WORKERS": {
-              "description": "No. of workers that is to be assigned. Read the readme for more info about this var",
-              "required": false
-          },
-          "PORT": {
-              "description": "Port that you want your webapp to be listened to. Read the readme for more info about this var",
-              "required": false
-          },
-          "NO_PORT": {
-              "description": "If you don't want your port to be displayed. Read the readme for more info about this var",
-              "value": "False",
-              "required": false
-          },
-          "BIND_ADRESS": {
-              "description": "Read the readme for more info about this var",
-              "required": false
-          },
-          "FQDN": {
-              "description": "Read the readme for more info about this var",
-              "required": false
-          }
+  "name": "TG-FileStreamBot",
+  "description": "A Pyrogram Telegram bot to Stream Telegram files to web.",
+  "keywords": [
+      "telegram",
+      "stream",
+      "web",
+      "pyrogram",
+      "aiohttp",
+      "python",
+      "plugin",
+      "modular",
+      "media"
+    ],
+  "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot",
+  "success_url": "/",
+  "logo": "https://telegra.ph/file/9d63060a06c6fc6def1da.png",
+  "website": "stream.wrench.gq",
+  "env": {
+      "ENV": {
+          "description": "Set this to True if you don't want to crash the bot",
+          "value": "True"
       },
-      "buildpacks": [{
-          "url": "heroku/python"
-        }],
-      "formation": {
-          "web": {
-              "quantity": 1,
-              "size": "free"
-          }
+      "APP_NAME": {
+          "description": "Copy-Paste the app name that you just typed above."
+      },
+      "API_ID": {
+          "description": "Get this value from https://my.telegram.org"
+      },
+      "API_HASH": {
+          "description": "Get this value from https://my.telegram.org"
+      },
+      "BOT_TOKEN": {
+          "description": "Get this value from @BotFather"
+      },
+      "BIN_CHANNEL": {
+          "description": "The BIN Channel ID. Read the readme for more info about this var"
+      },
+      "SLEEP_THRESHOLD": {
+          "description": "Floodwait Sleep timer. Read the readme for more info about this var",
+          "required": false
+      },
+      "WORKERS": {
+          "description": "No. of workers that is to be assigned. Read the readme for more info about this var",
+          "required": false
+      },
+      "PORT": {
+          "description": "Port that you want your webapp to be listened to. Read the readme for more info about this var",
+          "required": false
+      },
+      "NO_PORT": {
+          "description": "If you don't want your port to be displayed. Read the readme for more info about this var",
+          "value": "False",
+          "required": false
+      },
+      "BIND_ADRESS": {
+          "description": "Read the readme for more info about this var",
+          "required": false
+      },
+      "FQDN": {
+          "description": "Read the readme for more info about this var",
+          "required": false
+      }
+  },
+  "buildpacks": [{
+      "url": "heroku/python"
+    }],
+  "formation": {
+      "web": {
+          "quantity": 1,
+          "size": "free"
       }
   }
+}
