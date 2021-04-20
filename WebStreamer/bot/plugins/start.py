@@ -125,7 +125,9 @@ async def start(b, m):
 
         msg_text = "Bruh! 😁\nYour Link Generated! 🤓\n\n📂 **File Name:** `{}`\n**File Size:** `{}`\n\n📥 **Download Link:** `{}`"
         await m.reply_text(
-            text=msg_text.format(file_name, file_size, stream_link)
+            text=msg_text.format(file_name, file_size, stream_link),
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Download Now", url=stream_link)]])
         )
 
 
