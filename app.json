@@ -1,5 +1,5 @@
 {
-  "name": "TG-FileStreamBot",
+  "name": "Pyro-FileStreamBot",
   "description": "A Pyrogram Telegram bot to Stream Telegram files to web.",
   "keywords": [
       "telegram",
@@ -12,7 +12,7 @@
       "modular",
       "media"
     ],
-  "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot",
+  "repository": "https://github.com/AbirHasan2005/Pyro-FileStreamBot",
   "success_url": "/",
   "logo": "https://telegra.ph/file/9d63060a06c6fc6def1da.png",
   "website": "stream.wrench.gq",
@@ -35,6 +35,20 @@
       },
       "BIN_CHANNEL": {
           "description": "The BIN Channel ID. Read the readme for more info about this var"
+      },
+      "DATABASE_URL": {
+          "description": "MongoDB URI for saving User IDs when they first Start the Bot. We will use that for Broadcasting to them. I will try to add more features related with Database. If you need help to get the URI you can ask in Support Group: https://t.me/linux_repo"
+      },
+      "OWNER_ID": {
+          "description": "Your Telegram User ID"
+      },
+      "BANNED_CHANNELS": {
+          "description": "Put IDs of Banned Channels where bot will not work. You can add multiple IDs & separate with Space.",
+          "required": false
+      },
+      "UPDATES_CHANNEL": {
+          "description": "Put a Public Channel Username, so every user have to Join that channel to use the bot. Must add bot to channel as Admin to work properly.",
+          "required": false
       },
       "SLEEP_THRESHOLD": {
           "description": "Floodwait Sleep timer. Read the readme for more info about this var",
@@ -60,7 +74,12 @@
       "FQDN": {
           "description": "Read the readme for more info about this var",
           "required": false
-      }
+      },
+      "SESSION_NAME": {
+          "description": "Any Session Name for Bot",
+          "required": false
+      },
+
   },
   "buildpacks": [{
       "url": "heroku/python"
