@@ -1,5 +1,5 @@
 # This file is a part of TG-FileStreamBot
-# Coding : Jyothis Jayanth [@EverythingSuckz]
+# Coding: @EverythingSuckz & @AbirHasan2005
 
 import os
 import sys
