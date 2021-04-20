@@ -78,8 +78,7 @@
       "SESSION_NAME": {
           "description": "Any Session Name for Bot",
           "required": false
-      },
-
+      }
   },
   "buildpacks": [{
       "url": "heroku/python"
