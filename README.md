@@ -38,8 +38,7 @@
       <li><a href="#optional-vars">Optional Vars</a></li>
     </ul>
     <li><a href="#how-to-use-the-bot">How to use the bot</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#contact-me">Contact me</a></li>
+    <li><a href="#channel-support">About Channel Support</a></li>
     <li><a href="#credits">Credits</a></li>
   </ol>
 </details>
