@@ -38,7 +38,8 @@
       <li><a href="#optional-vars">Optional Vars</a></li>
     </ul>
     <li><a href="#how-to-use-the-bot">How to use the bot</a></li>
-    <li><a href="#channel-support">About Channel Support</a></li>
+    <li><a href="#special-features">Special Features</a></li>
+    <li><a href="#demo-bot>Demo Bot</a></li>
     <li><a href="#credits">Credits</a></li>
   </ol>
 </details>
@@ -146,7 +147,13 @@ To get an instant stream link, just forward any media to the bot and boom, its f
 
 [![Heroku Awake](https://github.com/AbirHasan2005/Pyro-FileStreamBot/actions/workflows/Alive.yml/badge.svg?event=status)](https://github.com/AbirHasan2005/Pyro-FileStreamBot/actions/workflows/Alive.yml)
 
-### Channel Support
+## Special Features:
+- Added Mongo Database Support!
+- Added Broadcast Feature!
+- Added Both Channel & Private Chat Support!
+- Made Better Bin Channel Logging!
+
+### Channel Support:
 Bot also Supported with Channels. Just add bot Channel as Admin. If any new file comes in Channel it will edit it with **Get Download Link** Button.
 
 ## Credits
