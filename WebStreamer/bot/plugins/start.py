@@ -20,7 +20,7 @@ async def start(b, m):
         )
     usr_cmd = m.text.split("_")[-1]
     if usr_cmd == "/start":
-        if Var.UPDATES_CHANNEL is not None:
+        if Var.UPDATES_CHANNEL != "None":
             try:
                 user = await b.get_chat_member(Var.UPDATES_CHANNEL, m.chat.id)
                 if user.status == "kicked":
@@ -63,7 +63,7 @@ async def start(b, m):
             disable_web_page_preview=True
         )
     else:
-        if Var.UPDATES_CHANNEL is not None:
+        if Var.UPDATES_CHANNEL != "None":
             try:
                 user = await b.get_chat_member(Var.UPDATES_CHANNEL, m.chat.id)
                 if user.status == "kicked":
@@ -139,7 +139,7 @@ async def help_handler(bot, message):
             Var.BIN_CHANNEL,
             f"#NEW_USER: \n\nNew User [{message.from_user.first_name}](tg://user?id={message.from_user.id}) Started !!"
         )
-    if Var.UPDATES_CHANNEL is not None:
+    if Var.UPDATES_CHANNEL != "None":
         try:
             user = await bot.get_chat_member(Var.UPDATES_CHANNEL, message.chat.id)
             if user.status == "kicked":
