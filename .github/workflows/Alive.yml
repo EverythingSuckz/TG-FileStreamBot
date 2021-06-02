@@ -2,7 +2,7 @@ name: Heroku Awake
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "*/15 * * * *"
 
 jobs:
   build:
@@ -11,5 +11,5 @@ jobs:
     steps:
       - uses: mikeesto/heroku-awake@1.0.0
         with:
-          URL: "https://ahfile2link.herokuapp.com" 
+          URL: "https://dmca-ka-baap.herokuapp.com" 
 
