@@ -15,11 +15,13 @@ class Var(object):
     BIN_CHANNEL = int(getenv('BIN_CHANNEL', None))     
     PORT = int(getenv('PORT', 8080))
     BIND_ADRESS = str(getenv('WEB_SERVER_BIND_ADDRESS', '0.0.0.0'))
-    OWNER_ID = int(getenv('OWNER_ID')) #TODO
+    # OWNER_ID = int(getenv('OWNER_ID')) #TODO
     NO_PORT = bool(getenv('NO_PORT', False))
     if 'DYNO' in environ:
         ON_HEROKU = True
         APP_NAME = str(getenv('APP_NAME'))
     else:
         ON_HEROKU = False
-    FQDN = str(getenv('FQDN', BIND_ADRESS)) if not ON_HEROKU else APP_NAME+'.herokuapp.com'
+    FQDN = str(getenv('FQDN', BIND_ADRESS)) if not ON_HEROKU or getenv('FQDN') else APP_NAME+'.herokuapp.com'
+    URL = "https://{}/".format(FQDN) if ON_HEROKU or NO_PORT else \
+        "http://{}:{}/".format(FQDN, PORT)

@@ -1,6 +1,6 @@
 # Taken from megadlbot_oss <https://github.com/eyaadh/megadlbot_oss/blob/master/mega/webserver/routes.py>
 # Thanks to Eyaadh <https://github.com/eyaadh>
-
+import time
 import math
 import logging
 import secrets
@@ -8,17 +8,17 @@ import mimetypes
 from ..vars import Var
 from aiohttp import web
 from ..bot import StreamBot
+from WebStreamer import StartTime
 from ..utils.custom_dl import TGCustomYield, chunk_size, offset_fix
-
+from ..utils.time_format import get_readable_time
 routes = web.RouteTableDef()
 
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
-    bot_details = await StreamBot.get_me()
     return web.json_response({"status": "running",
-                              "server_permission": "Open",
-                              "telegram_bot": '@'+bot_details.username})
+                              "uptime": get_readable_time(time.time() - StartTime),
+                              "telegram_bot": '@'+(await StreamBot.get_me()).username})
 
 
 @routes.get("/{message_id}")
