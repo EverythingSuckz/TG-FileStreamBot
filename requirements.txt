@@ -2,4 +2,5 @@ aiohttp
 apscheduler
 pyrogram
 python-dotenv
+requests
 tgcrypto
