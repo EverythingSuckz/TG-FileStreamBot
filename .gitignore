@@ -115,3 +115,5 @@ dmypy.json
 
 #session files
 *.session
+WebStreamer/template/new.html
+WebStreamer/template/beta.html
