@@ -9,21 +9,27 @@
     <link rel="stylesheet" type='text/css' href="https://drive.google.com/uc?export=view&id=1pVLG4gZy7jdow3sO-wFS06aP_A9QX0O6">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Delius">
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css" />
-    <!-- <link rel="stylesheet" href="style.css"> -->
+    <!-- <link rel="stylesheet" href="./style.css"> -->
 
 </head>
 
-<body>
+<body class='cyber'>
     <header>
         <div class="toogle"></div>
-        <div id="file-name">
+        <div id="file-name" class="cyber">
             %s
         </div>
     </header>
 
     <div class="container">
-        <tag src="%s" class="player"></tag>
+        <a href=%s>
+            <button class="cybr-btn">
+                Download
+                <span aria-hidden>_</span>
+                <span aria-hidden class="cybr-btn__glitch">_404 Error</span>
+                <span aria-hidden class="cybr-btn__tag">_%s</span>
+            </button>
+        </a>
     </div>
     
     <footer>
@@ -60,11 +66,13 @@
         });
 
         const body = document.querySelector('body');
+        const title = document.querySelector('#file-name');
         const footer = document.querySelector('footer');
         const toogle = document.querySelector('.toogle');
         toogle.onclick = () => {
             body.classList.toggle('dark')
             footer.classList.toggle('dark')
+            title.classList.toggle('dark')
         }
     </script>
 </body>
