@@ -1,0 +1,11 @@
+---
+application:
+  name: "filestreambot"
+  project: "filestream"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-filestreambot"
+  routes:
+  - application_name: "filestreambot"
+    paths:
+    - "/*"
