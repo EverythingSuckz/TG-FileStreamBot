@@ -14,5 +14,5 @@ async def media_receive_handler(_, m: Message):
     await m.reply_text(
         text="`{}`".format(stream_link),
         quote=True,
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Open', url=stream_link)]])
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('دانلود کنید', url=stream_link)]])
     )
