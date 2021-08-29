@@ -108,7 +108,7 @@ FQDN=yourserverip
 
 `BOT_TOKEN` : Get the bot token from [@BotFather](https://telegram.dog/BotFather)
 
-`BIN_CHANNEL` : Create a new channel (private/public), add [@missrose_bot](https://telegram.dog/MissRose_bot) as admin to the channel and type /id. Now copy paste the ID into this field.
+`BIN_CHANNEL` : Create a new channel (private/public), post something in your channel. Forward that post to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply** `\id`. Now copy paste the forwarded channel ID in this field. 
 
 
 ### Optional Vars
@@ -133,6 +133,11 @@ FQDN=yourserverip
 
 To get an instant stream link, just forward any media to the bot and boom, its fast af.
 
+## faQ
+
+- How long the links will remain valid or is there any expiration time for the links generated b the bot?
+> The links will will be valid as longs as your bot is alive and you haven't deleted the log channel.
+
 ## Contributing
 
 Feel free to contribute to this project if you have any further ideas
@@ -142,7 +147,7 @@ Feel free to contribute to this project if you have any further ideas
 [![Telegram Channel](https://img.shields.io/static/v1?label=Join&message=Telegram%20Channel&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/WhySooSerious)
 [![Telegram Group](https://img.shields.io/static/v1?label=Join&message=Telegram%20Group&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/WhyThisUsername)
 
-You can contact either via my [Telegram Chat](https://xn--r1a.click/WhyThisUsername) or you can PM me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)
+You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUsername) ~~or you can PM me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)~~
 
 ## Credits
 

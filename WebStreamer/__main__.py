@@ -1,20 +1,23 @@
 # This file is a part of TG-FileStreamBot
 # Coding : Jyothis Jayanth [@EverythingSuckz]
 
-import os
+
 import sys
 import glob
 import asyncio
 import logging
 import importlib
+import importlib
+from aiohttp import web
+from pathlib import Path
 from pathlib import Path
 from pyrogram import idle
-from .bot import StreamBot
-from .vars import Var
-from aiohttp import web
-from .server import web_server
-from .utils.keepalive import ping_server
+from WebStreamer.vars import Var
+from WebStreamer.bot import StreamBot
+from WebStreamer.server import web_server
+from WebStreamer.utils.keepalive import ping_server
 from apscheduler.schedulers.background import BackgroundScheduler
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,12 +25,13 @@ logging.basicConfig(
 )
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
 logging.getLogger("apscheduler").setLevel(logging.WARNING)
+logging.getLogger("aiohttp").setLevel(logging.WARNING)
 
-ppath = "WebStreamer/bot/plugins/*.py"
-files = glob.glob(ppath)
 
 loop = asyncio.get_event_loop()
 
+_path = "WebStreamer/bot/plugins/*.py"
+files = glob.glob(_path)
 
 async def start_services():
     print('\n')
@@ -38,8 +42,8 @@ async def start_services():
     print('--------------------------- Importing ---------------------------')
     for name in files:
         with open(name) as a:
-            patt = Path(a.name)
-            plugin_name = patt.stem.replace(".py", "")
+            path_ = Path(a.name)
+            plugin_name = path_.stem.replace(".py", "")
             plugins_dir = Path(f"WebStreamer/bot/plugins/{plugin_name}.py")
             import_path = ".plugins.{}".format(plugin_name)
             spec = importlib.util.spec_from_file_location(import_path, plugins_dir)
@@ -56,7 +60,7 @@ async def start_services():
     print('-------------------- Initalizing Web Server --------------------')
     app = web.AppRunner(await web_server())
     await app.setup()
-    bind_address = "0.0.0.0" if Var.ON_HEROKU else Var.FQDN
+    bind_address = "0.0.0.0" if Var.ON_HEROKU else Var.BIND_ADRESS
     await web.TCPSite(app, bind_address, Var.PORT).start()
     print('----------------------------- DONE -----------------------------')
     print('\n')
@@ -64,7 +68,7 @@ async def start_services():
     print('                        bot =>> {}'.format((await StreamBot.get_me()).first_name))
     print('                        server ip =>> {}:{}'.format(bind_address, Var.PORT))
     if Var.ON_HEROKU:
-        print('                        app runnng on =>> {}'.format(Var.FQDN))
+        print('                        app running on =>> {}'.format(Var.FQDN))
     print('---------------------------------------------------------------')
     await idle()
 
