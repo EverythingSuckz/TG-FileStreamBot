@@ -156,3 +156,4 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUser
 - Me
 - [eyaadh](https://github.com/eyaadh) for his awesome [Megatron Bot](https://github.com/eyaadh/megadlbot_oss)
 - [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library](https://github.com/pyrogram/pyrogram)
+- [TheHamkerCat](https://github.com/TheHamkerCat) for helping me with my common doubts.
