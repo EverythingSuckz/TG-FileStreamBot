@@ -98,6 +98,7 @@ BOT_TOKEN=55838383:yourtbottokenhere
 BIN_CHANNEL=-100
 PORT=8080
 FQDN=yourserverip
+HAS_SSL=False
 ```
 
 ### Mandatory Vars
@@ -121,10 +122,11 @@ FQDN=yourserverip
 
 `WEB_SERVER_BIND_ADDRESS` : Your server bind adress. Defauls to `0.0.0.0`
 
-`NO_PORT` : If you don't want your port to be displayed. You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
+`NO_PORT` : (can be either `True` or `False`) If you don't want your port to be displayed. You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
 
 `FQDN` :  A Fully Qualified Domain Name if present. Defaults to `WEB_SERVER_BIND_ADDRESS`
 
+`HAS_SSL` : (can be either `True` or `False`) If you want the generated links in https format.
 ## How to use the bot
 
 :warning: **Before using the  bot, don't forget to add the bot to the `BIN_CHANNEL` as an admin**
