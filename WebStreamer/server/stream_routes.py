@@ -9,7 +9,7 @@ import mimetypes
 from aiohttp import web
 from WebStreamer.vars import Var
 from WebStreamer.bot import StreamBot
-from WebStreamer import StartTime, __version__
+from WebStreamer import StartTime, __version__, bot_info
 from WebStreamer.utils.time_format import get_readable_time
 from WebStreamer.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
 
@@ -19,7 +19,7 @@ routes = web.RouteTableDef()
 async def root_route_handler(request):
     return web.json_response({"server_status": "running",
                               "uptime": get_readable_time(time.time() - StartTime),
-                              "telegram_bot": '@'+(await StreamBot.get_me()).username,
+                              "telegram_bot": '@'+ bot_info.username,
                               "version": __version__})
 
 

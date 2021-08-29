@@ -12,6 +12,7 @@ from aiohttp import web
 from pathlib import Path
 from pathlib import Path
 from pyrogram import idle
+from WebStreamer import bot_info
 from WebStreamer.vars import Var
 from WebStreamer.bot import StreamBot
 from WebStreamer.server import web_server
@@ -34,9 +35,6 @@ _path = "WebStreamer/bot/plugins/*.py"
 files = glob.glob(_path)
 
 async def start_services():
-    print('\n')
-    print('------------------- Initalizing Telegram Bot -------------------')
-    await StreamBot.start()
     print('----------------------------- DONE -----------------------------')
     print('\n')
     print('--------------------------- Importing ---------------------------')
@@ -65,8 +63,10 @@ async def start_services():
     print('----------------------------- DONE -----------------------------')
     print('\n')
     print('----------------------- Service Started -----------------------')
-    print('                        bot =>> {}'.format((await StreamBot.get_me()).first_name))
-    print('                        server ip =>> {}:{}'.format(bind_address, Var.PORT))
+    print('                        bot =>> {}'.format(bot_info.first_name))
+    if bot_info.dc_id:
+        print('                        DC ID =>> {}'.format(str(bot_info.dc_id)))
+    print('                        server ip =>> {}'.format(bind_address, Var.PORT))
     if Var.ON_HEROKU:
         print('                        app running on =>> {}'.format(Var.FQDN))
     print('---------------------------------------------------------------')
