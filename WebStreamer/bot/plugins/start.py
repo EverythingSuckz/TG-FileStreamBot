@@ -13,8 +13,8 @@ async def start(b, m):
                       [
                           [
                               InlineKeyboardButton(
-                                  f'{emoji.STAR} Source {emoji.STAR}',
-                                  url='https://github.com/EverythingSuckz/TG-FileStreamBot'
+                                  f'{emoji.STAR} Channel {emoji.STAR}',
+                                  url='https://t.me/Cinema_Great'
                               )
                           ]
                       ]
