@@ -19,7 +19,7 @@ class Var(object):
     HAS_SSL = True if HAS_SSL.lower() == 'true' else False
     # OWNER_ID = int(getenv('OWNER_ID')) #TODO
     NO_PORT = getenv('NO_PORT', False)
-    NO_PORT = True if NO_PORT.lower() == 'true' else False
+    NO_PORT = True if str(NO_PORT.lower()) == 'true' else False
     if 'DYNO' in environ:
         ON_HEROKU = True
         APP_NAME = str(getenv('APP_NAME'))
