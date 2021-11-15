@@ -16,7 +16,7 @@ class Var(object):
     PORT = int(getenv('PORT', 8080))
     BIND_ADRESS = str(getenv('WEB_SERVER_BIND_ADDRESS', '0.0.0.0'))
     HAS_SSL = getenv('HAS_SSL', False)
-    HAS_SSL = True if HAS_SSL.lower() == 'true' else False
+    HAS_SSL = True if str(HAS_SSL.lower()) == 'true' else False
     # OWNER_ID = int(getenv('OWNER_ID')) #TODO
     NO_PORT = getenv('NO_PORT', False)
     NO_PORT = True if str(NO_PORT.lower()) == 'true' else False
