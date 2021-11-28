@@ -5,7 +5,6 @@ from pyrogram import filters
 from WebStreamer.vars import Var
 from urllib.parse import quote_plus
 from WebStreamer.bot import StreamBot
-from pyrogram.types.messages_and_media import message
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 def detect_type(m: Message):
@@ -26,9 +25,11 @@ async def media_receive_handler(_, m: Message):
     if file:
         file_name = file.file_name
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
-    stream_link = Var.URL + str(log_msg.message_id) + '/' +quote_plus(file_name) if file_name else ''
+    stream_link = f"{Var.URL}{log_msg.message_id}"
+    if file_name:
+        stream_link += f'/{quote_plus(file_name)}'
     await m.reply_text(
-        text="`{}`".format(stream_link),
-        quote=True,
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton('Open', url=stream_link)]])
+        text = "<code>{}</code>".format(stream_link),
+        quote = True,
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton('Open', url=stream_link)]])
     )

@@ -14,10 +14,9 @@ class Var(object):
     WORKERS = int(getenv('WORKERS', '3'))
     BIN_CHANNEL = int(getenv('BIN_CHANNEL', None))     
     PORT = int(getenv('PORT', 8080))
-    BIND_ADRESS = str(getenv('WEB_SERVER_BIND_ADDRESS', '0.0.0.0'))
+    BIND_ADDRESS = str(getenv('WEB_SERVER_BIND_ADDRESS', '0.0.0.0'))
     HAS_SSL = getenv('HAS_SSL', False)
     HAS_SSL = True if str(HAS_SSL).lower() == 'true' else False
-    # OWNER_ID = int(getenv('OWNER_ID')) #TODO
     NO_PORT = getenv('NO_PORT', False)
     NO_PORT = True if str(NO_PORT).lower() == 'true' else False
     if 'DYNO' in environ:
@@ -25,7 +24,7 @@ class Var(object):
         APP_NAME = str(getenv('APP_NAME'))
     else:
         ON_HEROKU = False
-    FQDN = str(getenv('FQDN', BIND_ADRESS)) if not ON_HEROKU or getenv('FQDN') else APP_NAME+'.herokuapp.com'
+    FQDN = str(getenv('FQDN', BIND_ADDRESS)) if not ON_HEROKU or getenv('FQDN') else APP_NAME + '.herokuapp.com'
     if ON_HEROKU:
         URL = f"https://{FQDN}/"     
     else:

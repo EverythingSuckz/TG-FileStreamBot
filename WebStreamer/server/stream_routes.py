@@ -1,5 +1,6 @@
 # Taken from megadlbot_oss <https://github.com/eyaadh/megadlbot_oss/blob/master/mega/webserver/routes.py>
 # Thanks to Eyaadh <https://github.com/eyaadh>
+
 import re
 import time
 import math
@@ -60,10 +61,20 @@ async def media_streamer(request, message_id: int):
     body = TGCustomYield().yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
                                       new_chunk_size)
 
-    file_name = file_properties.file_name if file_properties.file_name \
-        else f"{secrets.token_hex(2)}.jpeg"
-    mime_type = file_properties.mime_type if file_properties.mime_type \
-        else f"{mimetypes.guess_type(file_name)}"
+    mime_type = file_properties.mime_type
+    file_name = file_properties.file_name
+    if mime_type:
+        if not file_name:
+            try:
+                file_name = f"{secrets.token_hex(2)}.{mime_type.split('/')[1]}"
+            except (IndexError or AttributeError):
+                file_name = f"{secrets.token_hex(2)}.unknown"
+    else:
+        if file_name:
+            mime_type = mimetypes.guess_type(file_properties.file_name)
+        else:
+            mime_type = "application/octet-stream"
+            file_name =  f"{secrets.token_hex(2)}.unknown"
 
     return_resp = web.Response(
         status=206 if range_header else 200,

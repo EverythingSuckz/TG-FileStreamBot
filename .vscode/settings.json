@@ -1,3 +1,6 @@
 {
-    "VSCord.enabled": true
+    "VSCord.enabled": true,
+    "cSpell.words": [
+        "DYNO"
+    ]
 }

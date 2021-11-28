@@ -53,7 +53,7 @@
           "value": "False",
           "required": false
       },
-      "BIND_ADRESS": {
+      "BIND_ADDRESS": {
           "description": "Read the readme for more info about this var",
           "required": false
       },
