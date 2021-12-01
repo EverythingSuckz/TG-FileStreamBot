@@ -15,6 +15,7 @@ class Var(object):
     BIN_CHANNEL = int(getenv('BIN_CHANNEL', None))     
     PORT = int(getenv('PORT', 8080))
     BIND_ADDRESS = str(getenv('WEB_SERVER_BIND_ADDRESS', '0.0.0.0'))
+    PING_INTERVAL = int(getenv('PING_INTERVAL', '1200')) # 20 minutes
     HAS_SSL = getenv('HAS_SSL', False)
     HAS_SSL = True if str(HAS_SSL).lower() == 'true' else False
     NO_PORT = getenv('NO_PORT', False)

@@ -41,7 +41,7 @@
           "required": false
       },
       "WORKERS": {
-          "description": "No. of workers that is to be assigned. Read the readme for more info about this var",
+          "description": "Number of workers that is to be assigned. Read the readme for more info about this var",
           "required": false
       },
       "PORT": {
@@ -55,6 +55,10 @@
       },
       "BIND_ADDRESS": {
           "description": "Read the readme for more info about this var",
+          "required": false
+      },
+      "PING_INTERVAL": {
+          "description": "The time in ms you want the servers to be pinged each time to avoid sleeping.",
           "required": false
       },
       "FQDN": {

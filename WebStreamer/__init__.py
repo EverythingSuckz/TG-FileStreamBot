@@ -3,6 +3,7 @@
 
 
 import time
+from .vars import Var
 from WebStreamer.bot import StreamBot
 
 print('\n')

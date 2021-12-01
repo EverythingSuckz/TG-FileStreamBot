@@ -1,5 +1,4 @@
 aiohttp
-apscheduler
 pyrogram
 python-dotenv
 tgcrypto

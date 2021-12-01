@@ -127,6 +127,8 @@ HAS_SSL=False
 `FQDN` :  A Fully Qualified Domain Name if present. Defaults to `WEB_SERVER_BIND_ADDRESS`
 
 `HAS_SSL` : (can be either `True` or `False`) If you want the generated links in https format.
+
+`PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (Only for Heroku). Defaults to `1200` or 20 minutes.
 ## How to use the bot
 
 :warning: **Before using the  bot, don't forget to add the bot to the `BIN_CHANNEL` as an admin**

@@ -30,8 +30,7 @@ async def stream_handler(request):
         message_id = request.match_info['message_id']
         message_id = int(re.search(r'(\d+)(?:\/\S+)?', message_id).group(1))
         return await media_streamer(request, message_id)
-    except ValueError as e:
-        logging.error(e)
+    except ValueError:
         raise web.HTTPNotFound
     except AttributeError:
         pass
