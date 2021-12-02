@@ -1,6 +1,7 @@
 # This file is a part of TG-FileStreamBot
 # Coding : Jyothis Jayanth [@EverythingSuckz]
 
+import logging
 from pyrogram import filters
 from WebStreamer.vars import Var
 from urllib.parse import quote_plus
@@ -28,6 +29,7 @@ async def media_receive_handler(_, m: Message):
     stream_link = f"{Var.URL}{log_msg.message_id}"
     if file_name:
         stream_link += f'/{quote_plus(file_name)}'
+    logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     await m.reply_text(
         text = "<code>{}</code>".format(stream_link),
         quote = True,
