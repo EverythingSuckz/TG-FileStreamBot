@@ -13,6 +13,7 @@ from .bot import StreamBot
 from .vars import Var
 from aiohttp import web
 from .server import web_server
+from .utils.keepalive import ping_server
 
 ppath = "WebStreamer/bot/plugins/*.py"
 files = glob.glob(ppath)
@@ -51,6 +52,10 @@ async def start_services():
     print('                        server ip =>> {}:{}'.format(bind_address, Var.PORT))
     if Var.ON_HEROKU:
         print('                        app runnng on =>> {}'.format(Var.FQDN))
+    if Var.ON_HEROKU:
+        print('------------------ Starting Keep Alive Service ------------------')
+        print('\n')
+        await asyncio.create_task(ping_server())
     print('---------------------------------------------------------------')
     await idle()
 

@@ -7,7 +7,24 @@ from WebStreamer.utils.database import Database
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import UserNotParticipant
+
 db = Database(Var.DATABASE_URL, Var.SESSION_NAME)
+
+
+async def get_media_file_size(m):
+    media = m.video or m.audio or m.document
+    if media and media.file_size:
+        return media.file_size
+    else:
+        return None
+
+
+async def get_media_file_name(m):
+    media = m.video or m.document or m.audio
+    if media and media.file_name:
+        return media.file_name
+    else:
+        return None
 
 
 @StreamBot.on_message(filters.command('start') & filters.private & ~filters.edited)
@@ -26,7 +43,7 @@ async def start(b, m):
                 if user.status == "kicked":
                     await b.send_message(
                         chat_id=m.chat.id,
-                        text="Sorry Sir, You are Banned to use me. Contact my [Support Group](https://t.me/linux_repo).",
+                        text="Sorry Sir, You are Banned to use me. Contact my [Support Group](https://t.me/JoinOT).",
                         parse_mode="markdown",
                         disable_web_page_preview=True
                     )
@@ -48,7 +65,7 @@ async def start(b, m):
             except Exception:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="Something went Wrong. Contact my [Support Group](https://t.me/linux_repo).",
+                    text="Something went Wrong. Contact my [Support Group](https://t.me/JoinOT).",
                     parse_mode="markdown",
                     disable_web_page_preview=True)
                 return
@@ -56,7 +73,7 @@ async def start(b, m):
             text='🙋 Hey Bruh!!\nI am Instant Telegram File to Link Generator Bot.\n\nSend me any file & see the magic!',
             reply_markup=InlineKeyboardMarkup(
                 [
-                    [InlineKeyboardButton('Bots Channel', url='https://t.me/Discovery_Updates'), InlineKeyboardButton('Support Group', url='https://t.me/linux_repo')],
+                    [InlineKeyboardButton('Bots Channel', url='https://t.me/Discovery_Updates'), InlineKeyboardButton('Support Group', url='https://t.me/JoinOT')],
                     [InlineKeyboardButton('Developer', url='https://t.me/AbirHasan2005')]
                 ]
             ),
@@ -69,7 +86,7 @@ async def start(b, m):
                 if user.status == "kicked":
                     await b.send_message(
                         chat_id=m.chat.id,
-                        text="Sorry Sir, You are Banned to use me. Contact my [Support Group](https://t.me/linux_repo).",
+                        text="Sorry Sir, You are Banned to use me. Contact my [Support Group](https://t.me/JoinOT).",
                         parse_mode="markdown",
                         disable_web_page_preview=True
                     )
@@ -85,7 +102,7 @@ async def start(b, m):
                             ],
                             [
                                 InlineKeyboardButton("🔄 Refresh / Try Again",
-                                                     url=f"https://t.me/AH_File2Link_Bot?start=AbirHasan2005_{usr_cmd}")
+                                                     url=f"https://t.me/{(await b.get_me()).username}?start=AbirHasan2005_{usr_cmd}")
                             ]
                         ]
                     ),
@@ -95,33 +112,21 @@ async def start(b, m):
             except Exception:
                 await b.send_message(
                     chat_id=m.chat.id,
-                    text="Something went Wrong. Contact my [Support Group](https://t.me/linux_repo).",
+                    text="Something went Wrong. Contact my [Support Group](https://t.me/JoinOT).",
                     parse_mode="markdown",
                     disable_web_page_preview=True)
                 return
 
         get_msg = await b.get_messages(chat_id=Var.BIN_CHANNEL, message_ids=int(usr_cmd))
 
-        file_size = None
-        if get_msg.video:
-            file_size = f"{humanbytes(get_msg.video.file_size)}"
-        elif get_msg.document:
-            file_size = f"{humanbytes(get_msg.document.file_size)}"
-        elif get_msg.audio:
-            file_size = f"{humanbytes(get_msg.audio.file_size)}"
+        file_name = get_media_file_name(m)
+        file_size = humanbytes(get_media_file_size(m))
 
-        file_name = None
-        if get_msg.video:
-            file_name = f"{get_msg.video.file_name}"
-        elif get_msg.document:
-            file_name = f"{get_msg.document.file_name}"
-        elif get_msg.audio:
-            file_name = f"{get_msg.audio.file_name}"
-
-        stream_link = "https://{}/{}".format(Var.FQDN, get_msg.message_id) if Var.ON_HEROKU or Var.NO_PORT else \
-            "http://{}:{}/{}".format(Var.FQDN,
+        stream_link = "https://{}/{}/{}".format(Var.FQDN, get_msg.message_id, file_name) if Var.ON_HEROKU or Var.NO_PORT else \
+            "http://{}:{}/{}/{}".format(Var.FQDN,
                                      Var.PORT,
-                                     get_msg.message_id)
+                                     get_msg.message_id,
+                                     file_name)
 
         msg_text = "Bruh! 😁\nYour Link Generated! 🤓\n\n📂 **File Name:** `{}`\n**File Size:** `{}`\n\n📥 **Download Link:** `{}`"
         await m.reply_text(
@@ -145,7 +150,7 @@ async def help_handler(bot, message):
             if user.status == "kicked":
                 await bot.send_message(
                     chat_id=message.chat.id,
-                    text="Sorry Sir, You are Banned to use me. Contact my [Support Group](https://t.me/linux_repo).",
+                    text="Sorry Sir, You are Banned to use me. Contact my [Support Group](https://t.me/JoinOT).",
                     parse_mode="markdown",
                     disable_web_page_preview=True
                 )
@@ -167,7 +172,7 @@ async def help_handler(bot, message):
         except Exception:
             await bot.send_message(
                 chat_id=message.chat.id,
-                text="Something went Wrong. Contact my [Support Group](https://t.me/linux_repo).",
+                text="Something went Wrong. Contact my [Support Group](https://t.me/JoinOT).",
                 parse_mode="markdown",
                 disable_web_page_preview=True)
             return
@@ -177,7 +182,7 @@ async def help_handler(bot, message):
         disable_web_page_preview=True,
         reply_markup=InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("Support Group", url="https://t.me/linux_repo"), InlineKeyboardButton("Bots Channel", url="https://t.me/Discovery_Updates")],
+                [InlineKeyboardButton("Support Group", url="https://t.me/JoinOT"), InlineKeyboardButton("Bots Channel", url="https://t.me/Discovery_Updates")],
                 [InlineKeyboardButton("Developer", url="https://t.me/AbirHasan2005")]
             ]
         )

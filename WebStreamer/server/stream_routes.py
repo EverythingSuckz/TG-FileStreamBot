@@ -22,6 +22,8 @@ async def root_route_handler(request):
 
 
 @routes.get("/{message_id}")
+@routes.get("/{message_id}/")
+@routes.get(r"/{message_id:\d+}/{name}")
 async def stream_handler(request):
     try:
         message_id = int(request.match_info['message_id'])
