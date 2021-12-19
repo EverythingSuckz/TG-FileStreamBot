@@ -11,7 +11,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 db = Database(Var.DATABASE_URL, Var.SESSION_NAME)
 
 
-async def get_media_file_size(m):
+def get_media_file_size(m):
     media = m.video or m.audio or m.document
     if media and media.file_size:
         return media.file_size
@@ -19,7 +19,7 @@ async def get_media_file_size(m):
         return None
 
 
-async def get_media_file_name(m):
+def get_media_file_name(m):
     media = m.video or m.document or m.audio
     if media and media.file_name:
         return media.file_name
