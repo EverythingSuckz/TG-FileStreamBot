@@ -119,8 +119,8 @@ async def start(b, m):
 
         get_msg = await b.get_messages(chat_id=Var.BIN_CHANNEL, message_ids=int(usr_cmd))
 
-        file_name = get_media_file_name(m)
-        file_size = humanbytes(get_media_file_size(m))
+        file_name = get_media_file_name(get_msg)
+        file_size = humanbytes(get_media_file_size(get_msg))
 
         stream_link = "https://{}/{}/{}".format(Var.FQDN, get_msg.message_id, file_name) if Var.ON_HEROKU or Var.NO_PORT else \
             "http://{}:{}/{}/{}".format(Var.FQDN,
