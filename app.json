@@ -44,10 +44,6 @@
           "description": "Number of workers that is to be assigned. Read the readme for more info about this var",
           "required": false
       },
-      "PORT": {
-          "description": "Port that you want your webapp to be listened to. Read the readme for more info about this var",
-          "required": false
-      },
       "NO_PORT": {
           "description": "If you don't want your port to be displayed. Read the readme for more info about this var",
           "value": "False",
