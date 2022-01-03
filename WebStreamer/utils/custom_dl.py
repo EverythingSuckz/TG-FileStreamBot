@@ -4,11 +4,13 @@
 import math
 from typing import Union
 from pyrogram.types import Message
-from WebStreamer.bot import StreamBot
+from WebStreamer.bot import *
 from pyrogram import Client, utils, raw
 from pyrogram.session import Session, Auth
 from pyrogram.errors import AuthBytesInvalid
 from pyrogram.file_id import FileId, FileType, ThumbnailSource
+from asyncio import QueueEmpty
+from random import choice as rchoice
 
 
 async def chunk_size(length):
@@ -21,14 +23,15 @@ async def offset_fix(offset, chunksize):
 
 
 class TGCustomYield:
-    def __init__(self):
+    def __init__(self, client: Client):
         """ A custom method to stream files from telegram.
         functions:
             generate_file_properties: returns the properties for a media on a specific message contained in FileId class.
             generate_media_session: returns the media session for the DC that contains the media file on the message.
             yield_file: yield a file from telegram servers for streaming.
         """
-        self.main_bot = StreamBot
+        self.main_bot = client
+
 
     @staticmethod
     async def generate_file_properties(msg: Message):
@@ -151,7 +154,23 @@ class TGCustomYield:
 
     async def yield_file(self, media_msg: Message, offset: int, first_part_cut: int,
                          last_part_cut: int, part_count: int, chunk_size: int) -> Union[str, None]: #pylint: disable=unsubscriptable-object
-        client = self.main_bot
+        try:
+            StreamQu.get_nowait()
+            self.main_bot = StreamBot
+        except QueueEmpty:
+            try:
+                MultiQu1.get_nowait()
+                self.main_bot = MultiCli1
+            except QueueEmpty:
+                try:
+                    MultiQu2.get_nowait()
+                    self.main_bot = MultiCli2
+                except QueueEmpty:
+                    try:
+                        MultiQu3.get_nowait()
+                        self.main_bot = MultiCli3
+                    except QueueEmpty:
+                        self.main_bot = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3])
         data = await self.generate_file_properties(media_msg)
         media_session = await self.generate_media_session(client, media_msg)
 

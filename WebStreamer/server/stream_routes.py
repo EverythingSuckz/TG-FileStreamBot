@@ -9,10 +9,12 @@ import secrets
 import mimetypes
 from aiohttp import web
 from WebStreamer.vars import Var
-from WebStreamer.bot import StreamBot
+from WebStreamer.bot.clients import *
 from WebStreamer import StartTime, __version__, bot_info
 from WebStreamer.utils.time_format import get_readable_time
 from WebStreamer.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
+from asyncio import QueueEmpty
+from random import choice as rchoice
 
 routes = web.RouteTableDef()
 
@@ -38,8 +40,26 @@ async def stream_handler(request):
 
 async def media_streamer(request, message_id: int):
     range_header = request.headers.get('Range', 0)
-    media_msg = await StreamBot.get_messages(Var.BIN_CHANNEL, message_id)
-    file_properties = await TGCustomYield().generate_file_properties(media_msg)
+    try:
+        StreamQu.get_nowait()
+        clien = StreamBot
+    except QueueEmpty:
+        try:
+            MultiQu1.get_nowait()
+            clien = MultiCli1
+        except QueueEmpty:
+            try:
+                MultiQu2.get_nowait()
+                clien = MultiCli2
+            except QueueEmpty:
+                try:
+                    MultiQu3.get_nowait()
+                    clien = MultiCli3
+                except QueueEmpty:
+                    clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3])
+    tg_connect = TGCustomYield(clien)
+    media_msg = await clien.get_messages(Var.BIN_CHANNEL, message_id)
+    file_properties = await tg_connect.generate_file_properties(media_msg)
     file_size = file_properties.file_size
 
     if range_header:
@@ -57,7 +77,7 @@ async def media_streamer(request, message_id: int):
     first_part_cut = from_bytes - offset
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
-    body = TGCustomYield().yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
+    body = tg_connect.yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
                                       new_chunk_size)
 
     mime_type = file_properties.mime_type
