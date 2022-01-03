@@ -56,7 +56,11 @@ async def media_streamer(request, message_id: int):
                     MultiQu3.get_nowait()
                     clien = MultiCli3
                 except QueueEmpty:
-                    clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3])
+                    try:
+                        MultiQu4.get_nowait()
+                        clien = MultiCli4
+                    except QueueEmpty:
+                        clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
     tg_connect = TGCustomYield(clien)
     media_msg = await clien.get_messages(Var.BIN_CHANNEL, message_id)
     file_properties = await tg_connect.generate_file_properties(media_msg)

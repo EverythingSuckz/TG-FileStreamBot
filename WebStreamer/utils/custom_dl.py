@@ -154,23 +154,7 @@ class TGCustomYield:
 
     async def yield_file(self, media_msg: Message, offset: int, first_part_cut: int,
                          last_part_cut: int, part_count: int, chunk_size: int) -> Union[str, None]: #pylint: disable=unsubscriptable-object
-        try:
-            StreamQu.get_nowait()
-            self.main_bot = StreamBot
-        except QueueEmpty:
-            try:
-                MultiQu1.get_nowait()
-                self.main_bot = MultiCli1
-            except QueueEmpty:
-                try:
-                    MultiQu2.get_nowait()
-                    self.main_bot = MultiCli2
-                except QueueEmpty:
-                    try:
-                        MultiQu3.get_nowait()
-                        self.main_bot = MultiCli3
-                    except QueueEmpty:
-                        self.main_bot = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3])
+        client = self.main_bot
         data = await self.generate_file_properties(media_msg)
         media_session = await self.generate_media_session(client, media_msg)
 

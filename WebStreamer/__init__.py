@@ -10,7 +10,7 @@ print('\n')
 print('------------------- Initalizing Telegram Bot -------------------')
 
 StreamBot.start()
-for x in [MultiCli1, MultiCli2, MultiCli3]:
+for x in [MultiCli1, MultiCli2, MultiCli3, MultiCli4]:
     if x:
         x.start()
 bot_info = StreamBot.get_me()
