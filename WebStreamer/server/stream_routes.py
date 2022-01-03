@@ -40,27 +40,47 @@ async def stream_handler(request):
 
 async def media_streamer(request, message_id: int):
     range_header = request.headers.get('Range', 0)
+    multi = False
+    clien = None
+    if Var.MULTI_CLIENT:
+        multi = True
     try:
         StreamQu.get_nowait()
         clien = StreamBot
     except QueueEmpty:
-        try:
-            MultiQu1.get_nowait()
-            clien = MultiCli1
-        except QueueEmpty:
+        if multi:
             try:
-                MultiQu2.get_nowait()
-                clien = MultiCli2
+                if MultiQu1:
+                    MultiQu1.get_nowait()
+                    clien = MultiCli1
             except QueueEmpty:
                 try:
-                    MultiQu3.get_nowait()
-                    clien = MultiCli3
+                    if MultiQu2:
+                        MultiQu2.get_nowait()
+                        clien = MultiCli2
                 except QueueEmpty:
                     try:
-                        MultiQu4.get_nowait()
-                        clien = MultiCli4
+                        if MultiQu3:
+                            MultiQu3.get_nowait()
+                            clien = MultiCli3
                     except QueueEmpty:
-                        clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
+                        try:
+                            if MultiQu4:
+                                MultiQu4.get_nowait()
+                                clien = MultiCli4
+                        except QueueEmpty:
+                            clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
+                            tries = 0
+                            while client == None:
+                                if tries < 6:
+                                    clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
+                                    tries += 1
+                                else:
+                                    raise Exception("all clients are none")
+        else:
+            clien = StreamBot
+        if clien == None:
+            clien = StreamBot
     tg_connect = TGCustomYield(clien)
     media_msg = await clien.get_messages(Var.BIN_CHANNEL, message_id)
     file_properties = await tg_connect.generate_file_properties(media_msg)
