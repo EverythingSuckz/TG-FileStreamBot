@@ -25,7 +25,7 @@ MultiCli2 = None
 MultiCli3 = None
 MultiCli4 = None
 if Var.MULTI_CLIENT:
-    if Var.MULTI_TOK1:
+    if str(Var.MULTI_TOK1).lower() != "none":
         MultiCli1 = Client(
             session_name= ':memory:',
             api_id=Var.API_ID,
@@ -37,7 +37,7 @@ if Var.MULTI_CLIENT:
         MultiQu1 = Queue()
         for x in range(4):
             MultiQu1.put_nowait(x)
-    if MultiCli1 and Var.MULTI_TOK2:
+    if MultiCli1 and str(Var.MULTI_TOK2).lower() != "none":
         MultiCli2 = Client(
             session_name= ':memory:',
             api_id=Var.API_ID,
@@ -49,7 +49,7 @@ if Var.MULTI_CLIENT:
         MultiQu2 = Queue()
         for x in range(4):
             MultiQu2.put_nowait(x)
-    if MultiCli2 and Var.MULTI_TOK3:
+    if MultiCli2 and str(Var.MULTI_TOK3).lower() != "none":
         MultiCli3 = Client(
             session_name= ':memory:',
             api_id=Var.API_ID,
@@ -61,7 +61,7 @@ if Var.MULTI_CLIENT:
         MultiQu3 = Queue()
         for x in range(4):
             MultiQu3.put_nowait(x)
-    if MultiCli3 and Var.MULTI_TOK4:
+    if MultiCli3 and str(Var.MULTI_TOK4).lower() != "none":
         MultiCli4 = Client(
             session_name= ':memory:',
             api_id=Var.API_ID,

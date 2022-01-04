@@ -11,7 +11,7 @@ print('------------------- Initalizing Telegram Bot -------------------')
 
 StreamBot.start()
 for x in [MultiCli1, MultiCli2, MultiCli3, MultiCli4]:
-    if x:
+    if x and str(x.bot_token).lower() != "none":
         x.start()
 bot_info = StreamBot.get_me()
 __version__ = 1.06

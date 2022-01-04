@@ -42,41 +42,61 @@ async def media_streamer(request, message_id: int):
     range_header = request.headers.get('Range', 0)
     multi = False
     clien = None
+    mq = None
     if Var.MULTI_CLIENT:
         multi = True
     try:
-        StreamQu.get_nowait()
+        qi = StreamQu.get_nowait()
         clien = StreamBot
     except QueueEmpty:
         if multi:
             try:
                 if MultiQu1:
-                    MultiQu1.get_nowait()
+                    qi = MultiQu1.get_nowait()
                     clien = MultiCli1
+                    mq = MultiQu1
             except QueueEmpty:
                 try:
                     if MultiQu2:
-                        MultiQu2.get_nowait()
+                        qi = MultiQu2.get_nowait()
                         clien = MultiCli2
+                        mq = MultiQu2
                 except QueueEmpty:
                     try:
                         if MultiQu3:
-                            MultiQu3.get_nowait()
+                            qi = MultiQu3.get_nowait()
                             clien = MultiCli3
+                            mq = MultiQu3
                     except QueueEmpty:
                         try:
                             if MultiQu4:
-                                MultiQu4.get_nowait()
+                                qi = MultiQu4.get_nowait()
                                 clien = MultiCli4
+                                mq = MultiQu4
                         except QueueEmpty:
                             clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
                             tries = 0
-                            while client == None:
+                            while clien == None:
                                 if tries < 6:
                                     clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
                                     tries += 1
                                 else:
                                     raise Exception("all clients are none")
+                            if clien == StreamBot:
+                                mq = StreamQu
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli1:
+                                mq = MultiQu1
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli2:
+                                mq = MultiQu2
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli3:
+                                mq = MultiQu3
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli4:
+                                mq = MultiQu4
+                                qi = rchoice([6, 7, 8, 9])
         else:
             clien = StreamBot
         if clien == None:
@@ -132,5 +152,5 @@ async def media_streamer(request, message_id: int):
 
     if return_resp.status == 200:
         return_resp.headers.add("Content-Length", str(file_size))
-
+    mq.put_nowait(qi)
     return return_resp
