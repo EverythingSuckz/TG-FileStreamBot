@@ -126,11 +126,12 @@ async def media_streamer(request, message_id: int):
 
     mime_type = file_properties.mime_type
     file_name = file_properties.file_name
+    dispo = "attachment"
     if mime_type:
         if not file_name:
             try:
                 file_name = f"{secrets.token_hex(2)}.{mime_type.split('/')[1]}"
-            except (IndexError or AttributeError):
+            except (IndexError, AttributeError):
                 file_name = f"{secrets.token_hex(2)}.unknown"
     else:
         if file_name:
@@ -138,19 +139,21 @@ async def media_streamer(request, message_id: int):
         else:
             mime_type = "application/octet-stream"
             file_name =  f"{secrets.token_hex(2)}.unknown"
-
+    if "video/" in mime_type:
+        dispo = "inline"
     return_resp = web.Response(
         status=206 if range_header else 200,
         body=body,
         headers={
             "Content-Type": mime_type,
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
-            "Content-Disposition": f'attachment; filename="{file_name}"',
+            "Content-Length": str(until_bytes - from_bytes),
+            "Content-Disposition": f'{dispo}; filename="{file_name}"',
             "Accept-Ranges": "bytes",
         }
     )
 
-    if return_resp.status == 200:
-        return_resp.headers.add("Content-Length", str(file_size))
+#    if return_resp.status == 200:
+#        return_resp.headers.add("Content-Length", str(file_size))
     mq.put_nowait(qi)
     return return_resp
