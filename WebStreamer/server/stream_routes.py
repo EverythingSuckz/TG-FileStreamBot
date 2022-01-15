@@ -45,11 +45,11 @@ async def media_streamer(request, message_id: int):
     mq = None
     if Var.MULTI_CLIENT:
         multi = True
-    try:
-        qi = StreamQu.get_nowait()
-        clien = StreamBot
-    except QueueEmpty:
-        if multi:
+    if multi:
+        try:
+            qi = StreamQu.get_nowait()
+            clien = StreamBot
+        except QueueEmpty:
             try:
                 if MultiQu1:
                     qi = MultiQu1.get_nowait()
@@ -97,10 +97,10 @@ async def media_streamer(request, message_id: int):
                             elif clien == MultiCli4:
                                 mq = MultiQu4
                                 qi = rchoice([6, 7, 8, 9])
-        else:
-            clien = StreamBot
-        if clien == None:
-            clien = StreamBot
+    else:
+        clien = StreamBot
+    if clien == None:
+        clien = StreamBot
     tg_connect = TGCustomYield(clien)
     media_msg = await clien.get_messages(Var.BIN_CHANNEL, message_id)
     file_properties = await tg_connect.generate_file_properties(media_msg)
@@ -115,7 +115,6 @@ async def media_streamer(request, message_id: int):
         until_bytes = request.http_range.stop or file_size - 1
 
     req_length = until_bytes - from_bytes
-
     new_chunk_size = await chunk_size(req_length)
     offset = await offset_fix(from_bytes, new_chunk_size)
     first_part_cut = from_bytes - offset
@@ -139,7 +138,7 @@ async def media_streamer(request, message_id: int):
         else:
             mime_type = "application/octet-stream"
             file_name =  f"{secrets.token_hex(2)}.unknown"
-    if "video/" in mime_type:
+    if "video/" in mime_type or "audio/" in mime_type:
         dispo = "inline"
     return_resp = web.Response(
         status=206 if range_header else 200,
@@ -147,13 +146,13 @@ async def media_streamer(request, message_id: int):
         headers={
             "Content-Type": mime_type,
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
-            "Content-Length": str(until_bytes - from_bytes),
             "Content-Disposition": f'{dispo}; filename="{file_name}"',
             "Accept-Ranges": "bytes",
         }
     )
 
-#    if return_resp.status == 200:
-#        return_resp.headers.add("Content-Length", str(file_size))
-    mq.put_nowait(qi)
+    if return_resp.status == 200:
+        return_resp.headers.add("Content-Length", str(file_size))
+    if multi:
+        mq.put_nowait(qi)
     return return_resp
