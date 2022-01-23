@@ -9,10 +9,12 @@ import secrets
 import mimetypes
 from aiohttp import web
 from WebStreamer.vars import Var
-from WebStreamer.bot import StreamBot
+from WebStreamer.bot.clients import *
 from WebStreamer import StartTime, __version__, bot_info
 from WebStreamer.utils.time_format import get_readable_time
 from WebStreamer.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
+from asyncio import QueueEmpty
+from random import choice as rchoice
 
 routes = web.RouteTableDef()
 
@@ -38,8 +40,70 @@ async def stream_handler(request):
 
 async def media_streamer(request, message_id: int):
     range_header = request.headers.get('Range', 0)
-    media_msg = await StreamBot.get_messages(Var.BIN_CHANNEL, message_id)
-    file_properties = await TGCustomYield().generate_file_properties(media_msg)
+    multi = False
+    clien = None
+    mq = None
+    if Var.MULTI_CLIENT:
+        multi = True
+    if multi:
+        try:
+            qi = StreamQu.get_nowait()
+            clien = StreamBot
+        except QueueEmpty:
+            try:
+                if MultiQu1:
+                    qi = MultiQu1.get_nowait()
+                    clien = MultiCli1
+                    mq = MultiQu1
+            except QueueEmpty:
+                try:
+                    if MultiQu2:
+                        qi = MultiQu2.get_nowait()
+                        clien = MultiCli2
+                        mq = MultiQu2
+                except QueueEmpty:
+                    try:
+                        if MultiQu3:
+                            qi = MultiQu3.get_nowait()
+                            clien = MultiCli3
+                            mq = MultiQu3
+                    except QueueEmpty:
+                        try:
+                            if MultiQu4:
+                                qi = MultiQu4.get_nowait()
+                                clien = MultiCli4
+                                mq = MultiQu4
+                        except QueueEmpty:
+                            clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
+                            tries = 0
+                            while clien == None:
+                                if tries < 6:
+                                    clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
+                                    tries += 1
+                                else:
+                                    raise Exception("all clients are none")
+                            if clien == StreamBot:
+                                mq = StreamQu
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli1:
+                                mq = MultiQu1
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli2:
+                                mq = MultiQu2
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli3:
+                                mq = MultiQu3
+                                qi = rchoice([6, 7, 8, 9])
+                            elif clien == MultiCli4:
+                                mq = MultiQu4
+                                qi = rchoice([6, 7, 8, 9])
+    else:
+        clien = StreamBot
+    if clien == None:
+        clien = StreamBot
+    tg_connect = TGCustomYield(clien)
+    media_msg = await clien.get_messages(Var.BIN_CHANNEL, message_id)
+    file_properties = await tg_connect.generate_file_properties(media_msg)
     file_size = file_properties.file_size
 
     if range_header:
@@ -51,22 +115,22 @@ async def media_streamer(request, message_id: int):
         until_bytes = request.http_range.stop or file_size - 1
 
     req_length = until_bytes - from_bytes
-
     new_chunk_size = await chunk_size(req_length)
     offset = await offset_fix(from_bytes, new_chunk_size)
     first_part_cut = from_bytes - offset
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
-    body = TGCustomYield().yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
+    body = tg_connect.yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
                                       new_chunk_size)
 
     mime_type = file_properties.mime_type
     file_name = file_properties.file_name
+    dispo = "attachment"
     if mime_type:
         if not file_name:
             try:
                 file_name = f"{secrets.token_hex(2)}.{mime_type.split('/')[1]}"
-            except (IndexError or AttributeError):
+            except (IndexError, AttributeError):
                 file_name = f"{secrets.token_hex(2)}.unknown"
     else:
         if file_name:
@@ -74,19 +138,21 @@ async def media_streamer(request, message_id: int):
         else:
             mime_type = "application/octet-stream"
             file_name =  f"{secrets.token_hex(2)}.unknown"
-
+    if "video/" in mime_type or "audio/" in mime_type:
+        dispo = "inline"
     return_resp = web.Response(
         status=206 if range_header else 200,
         body=body,
         headers={
             "Content-Type": mime_type,
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
-            "Content-Disposition": f'attachment; filename="{file_name}"',
+            "Content-Disposition": f'{dispo}; filename="{file_name}"',
             "Accept-Ranges": "bytes",
         }
     )
 
     if return_resp.status == 200:
         return_resp.headers.add("Content-Length", str(file_size))
-
+    if multi:
+        mq.put_nowait(qi)
     return return_resp

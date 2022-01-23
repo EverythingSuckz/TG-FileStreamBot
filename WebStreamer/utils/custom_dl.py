@@ -4,11 +4,13 @@
 import math
 from typing import Union
 from pyrogram.types import Message
-from WebStreamer.bot import StreamBot
+from WebStreamer.bot import *
 from pyrogram import Client, utils, raw
 from pyrogram.session import Session, Auth
 from pyrogram.errors import AuthBytesInvalid
 from pyrogram.file_id import FileId, FileType, ThumbnailSource
+from asyncio import QueueEmpty
+from random import choice as rchoice
 
 
 async def chunk_size(length):
@@ -21,14 +23,15 @@ async def offset_fix(offset, chunksize):
 
 
 class TGCustomYield:
-    def __init__(self):
+    def __init__(self, client: Client):
         """ A custom method to stream files from telegram.
         functions:
             generate_file_properties: returns the properties for a media on a specific message contained in FileId class.
             generate_media_session: returns the media session for the DC that contains the media file on the message.
             yield_file: yield a file from telegram servers for streaming.
         """
-        self.main_bot = StreamBot
+        self.main_bot = client
+
 
     @staticmethod
     async def generate_file_properties(msg: Message):

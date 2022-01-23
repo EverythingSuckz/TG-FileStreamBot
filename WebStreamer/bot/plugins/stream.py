@@ -19,7 +19,7 @@ def detect_type(m: Message):
         return
     
 
-@StreamBot.on_message(filters.private & (filters.document | filters.video | filters.audio), group=4)
+@StreamBot.on_message(filters.private & (filters.document | filters.video | filters.audio | filters.animation), group=4)
 async def media_receive_handler(_, m: Message):
     file = detect_type(m)
     file_name = ''
