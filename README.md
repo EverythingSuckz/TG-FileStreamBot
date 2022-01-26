@@ -95,6 +95,10 @@ An example of `.env` file:
 API_ID=452525
 API_HASH=esx576f8738x883f3sfzx83
 BOT_TOKEN=55838383:yourtbottokenhere
+MULTI_CLIENT=True
+MULTI_TOK1=55838383:yourfirstmulticlientbottokenhere
+MULTI_TOK2=55838383:yoursecondmulticlientbottokenhere
+MULTI_TOK3=55838383:yourthirdmulticlientbottokenhere
 BIN_CHANNEL=-100
 PORT=8080
 FQDN=yourserverip
@@ -111,7 +115,17 @@ HAS_SSL=False
 
 `BIN_CHANNEL` : Create a new channel (private/public), post something in your channel. Forward that post to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply** `\id`. Now copy paste the forwarded channel ID in this field. 
 
+### For MultiClient (Still in development)
 
+`MULTI_CLIENT`: Set this variable to `True` if you want to enable multi-client support.
+
+`MULTI_TOK1`: Add your first bot token here.
+
+`MULTI_TOK2`: Add your second bot token here.
+
+`MULTI_TOK3`: Add your third bot token here.
+
+`MULTI_TOK4`: Add your fourth bot token here.
 ### Optional Vars
 
 `SLEEP_THRESHOLD` : Set a sleep threshold for flood wait exceptions happening globally in this telegram bot instance, below which any request that raises a flood wait will be automatically invoked again after sleeping for the required amount of time. Flood wait exceptions requiring higher waiting times will be raised. Defaults to 60 seconds.
@@ -131,7 +145,7 @@ HAS_SSL=False
 `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (Only for Heroku). Defaults to `1200` or 20 minutes.
 ## How to use the bot
 
-:warning: **Before using the  bot, don't forget to add the bot to the `BIN_CHANNEL` as an admin**
+:warning: **Before using the  bot, don't forget to add all the bots (multi-client ones too) to the `BIN_CHANNEL` as an admin**
  
 `/start` : To check if the bot is alive or not.
 
@@ -156,6 +170,7 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUser
 ## Credits
 
 - Me
-- [eyaadh](https://github.com/eyaadh) for his awesome [Megatron Bot](https://github.com/eyaadh/megadlbot_oss)
-- [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library](https://github.com/pyrogram/pyrogram)
+- [eyaadh](https://github.com/eyaadh) for his awesome [Megatron Bot](https://github.com/eyaadh/megadlbot_oss).
+- [BlackStone](https://github.com/eyMarv) for adding multi-client support.
+- [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library].(https://github.com/pyrogram/pyrogram)
 - [TheHamkerCat](https://github.com/TheHamkerCat) for helping me with my common doubts.
