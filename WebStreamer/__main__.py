@@ -15,6 +15,7 @@ from WebStreamer import bot_info
 from WebStreamer.vars import Var
 from WebStreamer.server import web_server
 from WebStreamer.utils.keepalive import ping_server
+from WebStreamer.bot.clients import initialize_clients
 
 
 logging.basicConfig(
@@ -33,6 +34,9 @@ files = glob.glob(_path)
 async def start_services():
     print('----------------------------- DONE -----------------------------')
     print('\n')
+    print('----------------------------- INITIALIZING CLIENTS -----------------------------')
+    await initialize_clients()
+    print('----------------------------- DONE -----------------------------')
     print('--------------------------- Importing ---------------------------')
     for name in files:
         with open(name) as a:

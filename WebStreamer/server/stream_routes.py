@@ -104,5 +104,4 @@ async def media_streamer(request: web.Request, message_id: int):
     if return_resp.status == 200:
         return_resp.headers.add("Content-Length", str(file_size))
     work_loads[_index] -= 1
-    logging.info(f"{work_loads}")
     return return_resp

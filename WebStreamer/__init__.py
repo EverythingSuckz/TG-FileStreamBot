@@ -4,7 +4,7 @@
 
 import time
 from .vars import Var
-from WebStreamer.bot.clients import *
+from WebStreamer.bot.clients import StreamBot
 
 print('\n')
 print('------------------- Initializing Telegram Bot -------------------')
