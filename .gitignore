@@ -116,3 +116,4 @@ dmypy.json
 #session files
 *.session
 .env
+test.py

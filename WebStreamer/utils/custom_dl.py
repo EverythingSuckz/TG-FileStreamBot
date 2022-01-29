@@ -4,13 +4,10 @@
 import math
 from typing import Union
 from pyrogram.types import Message
-from WebStreamer.bot import *
 from pyrogram import Client, utils, raw
 from pyrogram.session import Session, Auth
 from pyrogram.errors import AuthBytesInvalid
 from pyrogram.file_id import FileId, FileType, ThumbnailSource
-from asyncio import QueueEmpty
-from random import choice as rchoice
 
 
 async def chunk_size(length):

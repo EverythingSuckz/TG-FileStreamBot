@@ -1,10 +1,10 @@
 # This file is a part of TG-FileStreamBot
 # Coding : Jyothis Jayanth [@EverythingSuckz]
 
-from pyrogram import filters, emoji
+from pyrogram import filters
+from pyrogram.types import Message
 from WebStreamer.bot import StreamBot
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 
 @StreamBot.on_message(filters.command(['start', 'help']))
 async def start(_, m: Message):
-    await m.reply(f'Hi {m.from_user.mention(style="md")}, Send me a file to get an instant stream link.')
+    await m.reply(f'Hi {m.from_user.mention(style="md")}, Send me a file to get an instant stream link.\nNote that this bot is still in beta and may not work as expected.\n')

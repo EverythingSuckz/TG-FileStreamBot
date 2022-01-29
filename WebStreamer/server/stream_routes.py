@@ -9,12 +9,12 @@ import secrets
 import mimetypes
 from aiohttp import web
 from WebStreamer.vars import Var
-from WebStreamer.bot.clients import *
+from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer import StartTime, __version__, bot_info
+from WebStreamer.bot.clients import multi_clients, work_loads
 from WebStreamer.utils.time_format import get_readable_time
 from WebStreamer.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
-from asyncio import QueueEmpty
-from random import choice as rchoice
+
 
 routes = web.RouteTableDef()
 
@@ -23,11 +23,13 @@ async def root_route_handler(request):
     return web.json_response({"server_status": "running",
                               "uptime": get_readable_time(time.time() - StartTime),
                               "telegram_bot": '@'+ bot_info.username,
+                              "connected_bots": len(multi_clients),
+                              "loads": work_loads,
                               "version": __version__})
 
 
 @routes.get(r"/{message_id:\S+}")
-async def stream_handler(request):
+async def stream_handler(request: web.Request):
     try:
         message_id = request.match_info['message_id']
         message_id = int(re.search(r'(\d+)(?:\/\S+)?', message_id).group(1))
@@ -38,71 +40,19 @@ async def stream_handler(request):
         pass
 
 
-async def media_streamer(request, message_id: int):
+
+    
+
+async def media_streamer(request: web.Request, message_id: int):
     range_header = request.headers.get('Range', 0)
-    multi = False
-    clien = None
-    mq = None
-    if Var.MULTI_CLIENT:
-        multi = True
-    if multi:
-        try:
-            qi = StreamQu.get_nowait()
-            clien = StreamBot
-        except QueueEmpty:
-            try:
-                if MultiQu1:
-                    qi = MultiQu1.get_nowait()
-                    clien = MultiCli1
-                    mq = MultiQu1
-            except QueueEmpty:
-                try:
-                    if MultiQu2:
-                        qi = MultiQu2.get_nowait()
-                        clien = MultiCli2
-                        mq = MultiQu2
-                except QueueEmpty:
-                    try:
-                        if MultiQu3:
-                            qi = MultiQu3.get_nowait()
-                            clien = MultiCli3
-                            mq = MultiQu3
-                    except QueueEmpty:
-                        try:
-                            if MultiQu4:
-                                qi = MultiQu4.get_nowait()
-                                clien = MultiCli4
-                                mq = MultiQu4
-                        except QueueEmpty:
-                            clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
-                            tries = 0
-                            while clien == None:
-                                if tries < 6:
-                                    clien = rchoice([StreamBot, MultiCli1, MultiCli2, MultiCli3, MultiCli4])
-                                    tries += 1
-                                else:
-                                    raise Exception("all clients are none")
-                            if clien == StreamBot:
-                                mq = StreamQu
-                                qi = rchoice([6, 7, 8, 9])
-                            elif clien == MultiCli1:
-                                mq = MultiQu1
-                                qi = rchoice([6, 7, 8, 9])
-                            elif clien == MultiCli2:
-                                mq = MultiQu2
-                                qi = rchoice([6, 7, 8, 9])
-                            elif clien == MultiCli3:
-                                mq = MultiQu3
-                                qi = rchoice([6, 7, 8, 9])
-                            elif clien == MultiCli4:
-                                mq = MultiQu4
-                                qi = rchoice([6, 7, 8, 9])
-    else:
-        clien = StreamBot
-    if clien == None:
-        clien = StreamBot
-    tg_connect = TGCustomYield(clien)
-    media_msg = await clien.get_messages(Var.BIN_CHANNEL, message_id)
+    _index = min(work_loads, key=work_loads.get)
+    faster_client = multi_clients[_index]
+    work_loads[_index] += 1
+
+    logging.info(f"Client {_index} is now serving {request.remote}")
+
+    tg_connect = TGCustomYield(faster_client)
+    media_msg = await faster_client.get_messages(Var.BIN_CHANNEL, message_id)
     file_properties = await tg_connect.generate_file_properties(media_msg)
     file_size = file_properties.file_size
 
@@ -153,6 +103,6 @@ async def media_streamer(request, message_id: int):
 
     if return_resp.status == 200:
         return_resp.headers.add("Content-Length", str(file_size))
-    if multi:
-        mq.put_nowait(qi)
+    work_loads[_index] -= 1
+    logging.info(f"{work_loads}")
     return return_resp
