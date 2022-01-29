@@ -96,9 +96,9 @@ API_ID=452525
 API_HASH=esx576f8738x883f3sfzx83
 BOT_TOKEN=55838383:yourtbottokenhere
 MULTI_CLIENT=True
-MULTI_TOK1=55838383:yourfirstmulticlientbottokenhere
-MULTI_TOK2=55838383:yoursecondmulticlientbottokenhere
-MULTI_TOK3=55838383:yourthirdmulticlientbottokenhere
+MULTI_TOKEN1=55838383:yourfirstmulticlientbottokenhere
+MULTI_TOKEN2=55838383:yoursecondmulticlientbottokenhere
+MULTI_TOKEN3=55838383:yourthirdmulticlientbottokenhere
 BIN_CHANNEL=-100
 PORT=8080
 FQDN=yourserverip
@@ -115,17 +115,17 @@ HAS_SSL=False
 
 `BIN_CHANNEL` : Create a new channel (private/public), post something in your channel. Forward that post to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply** `\id`. Now copy paste the forwarded channel ID in this field. 
 
-### For MultiClient (Still in development)
+### For MultiClient (Still under development)
 
 `MULTI_CLIENT`: Set this variable to `True` if you want to enable multi-client support.
 
-`MULTI_TOK1`: Add your first bot token here.
+`MULTI_TOKEN1`: Add your first bot token here.
 
-`MULTI_TOK2`: Add your second bot token here.
+`MULTI_TOKEN2`: Add your second bot token here.
 
-`MULTI_TOK3`: Add your third bot token here.
+you may also add as many as bots you want. (max limit is not tested yet)
+`MULTI_TOKEN3`, `MULTI_TOKEN4`, etc.
 
-`MULTI_TOK4`: Add your fourth bot token here.
 ### Optional Vars
 
 `SLEEP_THRESHOLD` : Set a sleep threshold for flood wait exceptions happening globally in this telegram bot instance, below which any request that raises a flood wait will be automatically invoked again after sleeping for the required amount of time. Flood wait exceptions requiring higher waiting times will be raised. Defaults to 60 seconds.
@@ -134,7 +134,7 @@ HAS_SSL=False
 
 `PORT` : The port that you want your webapp to be listened to. Defaults to `8080`
 
-`WEB_SERVER_BIND_ADDRESS` : Your server bind adress. Defauls to `0.0.0.0`
+`WEB_SERVER_BIND_ADDRESS` : Your server bind address. Defauls to `0.0.0.0`
 
 `NO_PORT` : (can be either `True` or `False`) If you don't want your port to be displayed. You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
 
