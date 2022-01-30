@@ -65,9 +65,9 @@ Either you could locally host or deploy on [Heroku](https://heroku.com)
 
 ### Deploy on Heroku
 
-Press the below button to Fast deply to Heroky
+Press the below button to fast deploy to Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+- [![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://github.com/eyMarv/ultraMarv-roku)
 
 then goto the <a href="#mandatory-vars">variables tab</a> for more info on setting up environmental variables.
 
