@@ -95,6 +95,10 @@ An example of `.env` file:
 API_ID=452525
 API_HASH=esx576f8738x883f3sfzx83
 BOT_TOKEN=55838383:yourtbottokenhere
+MULTI_CLIENT=True
+MULTI_TOKEN1=55838383:yourfirstmulticlientbottokenhere
+MULTI_TOKEN2=55838383:yoursecondmulticlientbottokenhere
+MULTI_TOKEN3=55838383:yourthirdmulticlientbottokenhere
 BIN_CHANNEL=-100
 PORT=8080
 FQDN=yourserverip
@@ -111,6 +115,14 @@ HAS_SSL=False
 
 `BIN_CHANNEL` : Create a new channel (private/public), post something in your channel. Forward that post to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply** `\id`. Now copy paste the forwarded channel ID in this field. 
 
+### For MultiClient (Still under development)
+
+`MULTI_TOKEN1`: Add your first bot token here.
+
+`MULTI_TOKEN2`: Add your second bot token here.
+
+you may also add as many as bots you want. (max limit is not tested yet)
+`MULTI_TOKEN3`, `MULTI_TOKEN4`, etc.
 
 ### Optional Vars
 
@@ -120,7 +132,7 @@ HAS_SSL=False
 
 `PORT` : The port that you want your webapp to be listened to. Defaults to `8080`
 
-`WEB_SERVER_BIND_ADDRESS` : Your server bind adress. Defauls to `0.0.0.0`
+`WEB_SERVER_BIND_ADDRESS` : Your server bind address. Defauls to `0.0.0.0`
 
 `NO_PORT` : (can be either `True` or `False`) If you don't want your port to be displayed. You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
 
@@ -131,7 +143,7 @@ HAS_SSL=False
 `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (Only for Heroku). Defaults to `1200` or 20 minutes.
 ## How to use the bot
 
-:warning: **Before using the  bot, don't forget to add the bot to the `BIN_CHANNEL` as an admin**
+:warning: **Before using the  bot, don't forget to add all the bots (multi-client ones too) to the `BIN_CHANNEL` as an admin**
  
 `/start` : To check if the bot is alive or not.
 
@@ -156,6 +168,7 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUser
 ## Credits
 
 - Me
-- [eyaadh](https://github.com/eyaadh) for his awesome [Megatron Bot](https://github.com/eyaadh/megadlbot_oss)
-- [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library](https://github.com/pyrogram/pyrogram)
+- [eyaadh](https://github.com/eyaadh) for his awesome [Megatron Bot](https://github.com/eyaadh/megadlbot_oss).
+- [BlackStone](https://github.com/eyMarv) for adding multi-client support.
+- [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library].(https://github.com/pyrogram/pyrogram)
 - [TheHamkerCat](https://github.com/TheHamkerCat) for helping me with my common doubts.
