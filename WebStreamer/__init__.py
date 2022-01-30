@@ -6,10 +6,10 @@ import time
 from .vars import Var
 from WebStreamer.bot.clients import StreamBot
 
-print('\n')
-print('------------------- Initializing Telegram Bot -------------------')
+print("\n")
+print("------------------- Initializing Telegram Bot -------------------")
 
 StreamBot.start()
 bot_info = StreamBot.get_me()
-__version__ = 1.06
+__version__ = 1.08
 StartTime = time.time()

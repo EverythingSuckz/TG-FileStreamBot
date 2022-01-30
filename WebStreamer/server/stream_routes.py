@@ -13,38 +13,42 @@ from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer import StartTime, __version__, bot_info
 from WebStreamer.bot.clients import multi_clients, work_loads
 from WebStreamer.utils.time_format import get_readable_time
+from WebStreamer.utils.file_id import get_unique_id
 from WebStreamer.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
 
 
 routes = web.RouteTableDef()
 
+
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
-    return web.json_response({"server_status": "running",
-                              "uptime": get_readable_time(time.time() - StartTime),
-                              "telegram_bot": '@'+ bot_info.username,
-                              "connected_bots": len(multi_clients),
-                              "loads": work_loads,
-                              "version": __version__})
+    return web.json_response(
+        {
+            "server_status": "running",
+            "uptime": get_readable_time(time.time() - StartTime),
+            "telegram_bot": "@" + bot_info.username,
+            "connected_bots": len(multi_clients),
+            "loads": work_loads,
+            "version": __version__,
+        }
+    )
 
 
-@routes.get(r"/{message_id:\S+}")
+@routes.get(r"/{message_id:\S+}-{secure_hash:\w+}")
 async def stream_handler(request: web.Request):
     try:
-        message_id = request.match_info['message_id']
-        message_id = int(re.search(r'(\d+)(?:\/\S+)?', message_id).group(1))
-        return await media_streamer(request, message_id)
+        message_id = request.match_info["message_id"]
+        message_id = int(re.search(r"(\d+)(?:\/\S+)?", message_id).group(1))
+        secure_hash = request.match_info["secure_hash"]
+        return await media_streamer(request, message_id, secure_hash)
     except ValueError:
         raise web.HTTPNotFound
     except AttributeError:
         pass
 
 
-
-    
-
-async def media_streamer(request: web.Request, message_id: int):
-    range_header = request.headers.get('Range', 0)
+async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
+    range_header = request.headers.get("Range", 0)
     _index = min(work_loads, key=work_loads.get)
     faster_client = multi_clients[_index]
     work_loads[_index] += 1
@@ -53,11 +57,14 @@ async def media_streamer(request: web.Request, message_id: int):
 
     tg_connect = TGCustomYield(faster_client)
     media_msg = await faster_client.get_messages(Var.BIN_CHANNEL, message_id)
+    if get_unique_id(media_msg) != secure_hash:
+        work_loads[_index] -= 1
+        raise web.HTTPForbidden
     file_properties = await tg_connect.generate_file_properties(media_msg)
     file_size = file_properties.file_size
 
     if range_header:
-        from_bytes, until_bytes = range_header.replace('bytes=', '').split('-')
+        from_bytes, until_bytes = range_header.replace("bytes=", "").split("-")
         from_bytes = int(from_bytes)
         until_bytes = int(until_bytes) if until_bytes else file_size - 1
     else:
@@ -70,8 +77,9 @@ async def media_streamer(request: web.Request, message_id: int):
     first_part_cut = from_bytes - offset
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
-    body = tg_connect.yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
-                                      new_chunk_size)
+    body = tg_connect.yield_file(
+        media_msg, offset, first_part_cut, last_part_cut, part_count, new_chunk_size
+    )
 
     mime_type = file_properties.mime_type
     file_name = file_properties.file_name
@@ -87,7 +95,7 @@ async def media_streamer(request: web.Request, message_id: int):
             mime_type = mimetypes.guess_type(file_properties.file_name)
         else:
             mime_type = "application/octet-stream"
-            file_name =  f"{secrets.token_hex(2)}.unknown"
+            file_name = f"{secrets.token_hex(2)}.unknown"
     if "video/" in mime_type or "audio/" in mime_type:
         dispo = "inline"
     return_resp = web.Response(
@@ -98,7 +106,7 @@ async def media_streamer(request: web.Request, message_id: int):
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
             "Content-Disposition": f'{dispo}; filename="{file_name}"',
             "Accept-Ranges": "bytes",
-        }
+        },
     )
 
     if return_resp.status == 200:
