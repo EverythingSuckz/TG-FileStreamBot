@@ -25,15 +25,13 @@ loop = asyncio.get_event_loop()
 async def start_services():
     print("----------------------------- DONE -----------------------------")
     print("\n")
-    print(
-        "----------------------------- Initializing Clients -----------------------------"
-    )
+    print("--------------------- Initializing Clients ---------------------")
     await initialize_clients()
     print("----------------------------- DONE -----------------------------")
     if Var.ON_HEROKU:
         print("------------------ Starting Keep Alive Service ------------------")
         print("\n")
-        await asyncio.create_task(ping_server())
+        asyncio.create_task(ping_server())
     print("-------------------- Initalizing Web Server --------------------")
     app = web.AppRunner(await web_server())
     await app.setup()
