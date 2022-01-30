@@ -34,7 +34,7 @@ async def root_route_handler(request):
     )
 
 
-@routes.get(r"/{path:\S+}" , allow_head=True)
+@routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
@@ -56,7 +56,7 @@ async def stream_handler(request: web.Request):
 
 async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
     range_header = request.headers.get("Range", 0)
-    
+
     _index = min(work_loads, key=work_loads.get)
     faster_client = multi_clients[_index]
     work_loads[_index] += 1
@@ -119,6 +119,6 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
 
     if return_resp.status == 200:
         return_resp.headers.add("Content-Length", str(file_size))
-    
+
     work_loads[_index] -= 1
     return return_resp

@@ -23,7 +23,14 @@ def detect_type(m: Message):
 
 @StreamBot.on_message(
     filters.private
-    & (filters.document | filters.video | filters.audio | filters.animation),
+    & (
+        filters.document
+        | filters.video
+        | filters.audio
+        | filters.animation
+        | filters.voice
+        | filters.video_note
+    ),
     group=4,
 )
 async def media_receive_handler(_, m: Message):
@@ -36,8 +43,12 @@ async def media_receive_handler(_, m: Message):
     short_link = f"{Var.URL}{get_unique_id(log_msg)}{log_msg.message_id}"
     logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     await m.reply_text(
-        text="<code>{}</code> (<a href='{}'>shortned</a>)".format(stream_link, short_link),
+        text="<code>{}</code> (<a href='{}'>shortned</a>)".format(
+            stream_link, short_link
+        ),
         quote=True,
         parse_mode="html",
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open", url=stream_link)]]),
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Open", url=stream_link)]]
+        ),
     )

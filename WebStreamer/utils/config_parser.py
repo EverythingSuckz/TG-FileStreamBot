@@ -1,4 +1,4 @@
-import os
+from os import environ
 from typing import Dict, Optional
 
 
@@ -12,7 +12,7 @@ class TokenParser:
             (c + 1, t)
             for c, (_, t) in enumerate(
                 filter(
-                    lambda n: n[0].startswith("MULTI_TOKEN"), sorted(os.environ.items())
+                    lambda n: n[0].startswith("MULTI_TOKEN"), sorted(environ.items())
                 )
             )
         )
