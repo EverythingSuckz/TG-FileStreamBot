@@ -24,7 +24,7 @@ loop = asyncio.get_event_loop()
 
 async def start_services():
     print("----------------------------- DONE -----------------------------")
-    print("\n")
+    print()
     print(
         "----------------------------- Initializing Clients -----------------------------"
     )
@@ -32,7 +32,7 @@ async def start_services():
     print("----------------------------- DONE -----------------------------")
     if Var.ON_HEROKU:
         print("------------------ Starting Keep Alive Service ------------------")
-        print("\n")
+        print()
         await asyncio.create_task(ping_server())
     print("-------------------- Initalizing Web Server --------------------")
     app = web.AppRunner(await web_server())
@@ -40,7 +40,7 @@ async def start_services():
     bind_address = "0.0.0.0" if Var.ON_HEROKU else Var.BIND_ADDRESS
     await web.TCPSite(app, bind_address, Var.PORT).start()
     print("----------------------------- DONE -----------------------------")
-    print("\n")
+    print()
     print("----------------------- Service Started -----------------------")
     print("                        bot =>> {}".format(bot_info.first_name))
     if bot_info.dc_id:

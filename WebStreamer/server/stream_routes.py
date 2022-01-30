@@ -56,11 +56,12 @@ async def stream_handler(request: web.Request):
 
 async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
     range_header = request.headers.get("Range", 0)
+    
     _index = min(work_loads, key=work_loads.get)
     faster_client = multi_clients[_index]
     work_loads[_index] += 1
-
-    logging.info(f"Client {_index} is now serving {request.remote}")
+    if Var.MULTI_CLIENT:
+        logging.info(f"Client {_index} is now serving {request.remote}")
 
     tg_connect = TGCustomYield(faster_client)
     media_msg = await faster_client.get_messages(Var.BIN_CHANNEL, message_id)
@@ -118,5 +119,6 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
 
     if return_resp.status == 200:
         return_resp.headers.add("Content-Length", str(file_size))
+    
     work_loads[_index] -= 1
     return return_resp

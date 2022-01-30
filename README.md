@@ -117,8 +117,6 @@ HAS_SSL=False
 
 ### For MultiClient (Still under development)
 
-`MULTI_CLIENT`: Set this variable to `True` if you want to enable multi-client support.
-
 `MULTI_TOKEN1`: Add your first bot token here.
 
 `MULTI_TOKEN2`: Add your second bot token here.
