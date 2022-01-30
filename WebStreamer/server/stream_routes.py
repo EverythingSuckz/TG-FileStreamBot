@@ -9,13 +9,13 @@ import secrets
 import mimetypes
 from aiohttp import web
 from WebStreamer.vars import Var
+from aiohttp.http_exceptions import BadStatusLine
+from WebStreamer.utils.file_id import get_unique_id
 from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer import StartTime, __version__, bot_info
-from WebStreamer.bot.clients import multi_clients, work_loads
 from WebStreamer.utils.time_format import get_readable_time
-from WebStreamer.utils.file_id import get_unique_id
+from WebStreamer.bot.clients import multi_clients, work_loads
 from WebStreamer.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
-
 
 routes = web.RouteTableDef()
 
@@ -34,16 +34,23 @@ async def root_route_handler(request):
     )
 
 
-@routes.get(r"/{message_id:\S+}-{secure_hash:\w+}")
+@routes.get(r"/{path:\S+}" , allow_head=True)
 async def stream_handler(request: web.Request):
     try:
-        message_id = request.match_info["message_id"]
-        message_id = int(re.search(r"(\d+)(?:\/\S+)?", message_id).group(1))
-        secure_hash = request.match_info["secure_hash"]
+        path = request.match_info["path"]
+        match = re.search(r"^(\w{6})(\d+)$", path)
+        if match:
+            secure_hash = match.group(1)
+            message_id = int(match.group(2))
+        else:
+            message_id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
+            secure_hash = request.rel_url.query.get("hash")
         return await media_streamer(request, message_id, secure_hash)
     except ValueError:
         raise web.HTTPNotFound
     except AttributeError:
+        pass
+    except BadStatusLine:
         pass
 
 
@@ -83,7 +90,7 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
 
     mime_type = file_properties.mime_type
     file_name = file_properties.file_name
-    dispo = "attachment"
+    disposition = "attachment"
     if mime_type:
         if not file_name:
             try:
@@ -97,14 +104,14 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
             mime_type = "application/octet-stream"
             file_name = f"{secrets.token_hex(2)}.unknown"
     if "video/" in mime_type or "audio/" in mime_type:
-        dispo = "inline"
+        disposition = "inline"
     return_resp = web.Response(
         status=206 if range_header else 200,
         body=body,
         headers={
             "Content-Type": mime_type,
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
-            "Content-Disposition": f'{dispo}; filename="{file_name}"',
+            "Content-Disposition": f'{disposition}; filename="{file_name}"',
             "Accept-Ranges": "bytes",
         },
     )

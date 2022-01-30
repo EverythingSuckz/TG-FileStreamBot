@@ -32,12 +32,12 @@ async def media_receive_handler(_, m: Message):
     if file:
         file_name = file.file_name
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
-    stream_link = f"{Var.URL}{log_msg.message_id}-{get_unique_id(log_msg)}"
+    stream_link = f"{Var.URL}{log_msg.message_id}/{quote_plus(file_name)}?hash={get_unique_id(log_msg)}"
+    short_link = f"{Var.URL}{get_unique_id(log_msg)}{log_msg.message_id}"
     logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     await m.reply_text(
-        text="<code>{}</code>".format(stream_link),
+        text="<code>{}</code> (<a href='{}'>shortned</a>)".format(stream_link, short_link),
         quote=True,
-        reply_markup=InlineKeyboardMarkup(
-            [[InlineKeyboardButton("Open", url=stream_link)]]
-        ),
+        parse_mode="html",
+        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Open", url=stream_link)]]),
     )
