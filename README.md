@@ -115,7 +115,7 @@ HAS_SSL=False
 
 `BIN_CHANNEL` : Create a new channel (private/public), post something in your channel. Forward that post to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply** `\id`. Now copy paste the forwarded channel ID in this field. 
 
-### For MultiClient (Still under development)
+### For MultiClient
 
 `MULTI_TOKEN1`: Add your first bot token here.
 
