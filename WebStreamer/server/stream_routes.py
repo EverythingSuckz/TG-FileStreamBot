@@ -15,7 +15,7 @@ from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer import StartTime, __version__, bot_info
 from WebStreamer.utils.time_format import get_readable_time
 from WebStreamer.bot.clients import multi_clients, work_loads
-from WebStreamer.utils.custom_dl import TGCustomYield, chunk_size, offset_fix
+from WebStreamer.utils.custom_dl import ByteStreamer, chunk_size, offset_fix
 
 routes = web.RouteTableDef()
 
@@ -38,7 +38,7 @@ async def root_route_handler(request):
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
-        match = re.search(r"^(\w{6})(\d+)$", path)
+        match = re.search(r"^([a-zA-Z0-9_-]{6})(\d+)$", path)
         if match:
             secure_hash = match.group(1)
             message_id = int(match.group(2))
@@ -54,6 +54,8 @@ async def stream_handler(request: web.Request):
         pass
 
 
+class_cache = {}
+
 async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
     range_header = request.headers.get("Range", 0)
 
@@ -63,12 +65,23 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
     if Var.MULTI_CLIENT:
         logging.info(f"Client {_index} is now serving {request.remote}")
 
-    tg_connect = TGCustomYield(faster_client)
-    media_msg = await faster_client.get_messages(Var.BIN_CHANNEL, message_id)
+
+    if faster_client in class_cache:
+        tg_connect = class_cache[faster_client]
+        logging.debug(f"Using cached ByteStreamer object for client {_index}")
+    else:
+        logging.debug(f"Creating new ByteStreamer object for client {_index}")
+        tg_connect = ByteStreamer(faster_client)
+        class_cache[faster_client] = tg_connect
+    
+    media_msg = await tg_connect.get_media_msg(message_id)
+    
     if get_unique_id(media_msg) != secure_hash:
         work_loads[_index] -= 1
         raise web.HTTPForbidden
-    file_properties = await tg_connect.generate_file_properties(media_msg)
+    
+    
+    file_properties = await tg_connect.get_file_properties(media_msg)
     file_size = file_properties.file_size
 
     if range_header:

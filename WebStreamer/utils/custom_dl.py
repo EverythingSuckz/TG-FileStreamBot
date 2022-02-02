@@ -2,7 +2,10 @@
 # Thanks to Eyaadh <https://github.com/eyaadh>
 
 import math
-from typing import Union
+import asyncio
+import logging
+from typing import Dict, Union
+from WebStreamer.vars import Var
 from pyrogram.types import Message
 from pyrogram import Client, utils, raw
 from pyrogram.session import Session, Auth
@@ -19,19 +22,46 @@ async def offset_fix(offset, chunksize):
     return offset
 
 
-class TGCustomYield:
+class ByteStreamer:
     def __init__(self, client: Client):
-        """A custom method to stream files from telegram.
+        """A custom class that holds the cache of a specific client and class functions.
+        attributes:
+            client: the client that the cache is for.
+            cached_messages: a dict of cached messages.
+            cached_file_properties: a dict of cached file properties.
+        
         functions:
             generate_file_properties: returns the properties for a media on a specific message contained in FileId class.
             generate_media_session: returns the media session for the DC that contains the media file on the message.
             yield_file: yield a file from telegram servers for streaming.
         """
-        self.main_bot = client
+        self.clean_timer = 30 * 60
+        self.client: Client = client
+        self.cached_file_properties: Dict[int, FileId] = {}
+        self.cached_messages: Dict[int, Message] = {}
+        asyncio.create_task(self.clean_cache())
+
+    async def get_file_properties(self, media_msg: Message) -> FileId:
+        """Returns the properties of a media on a specific message contained in FileId class.
+        if the properties are not cached, then it'll return the cached results.
+        or it'll generate the properties from the Message obj and cache them.
+        """        
+        if media_msg.message_id not in self.cached_file_properties:
+            self.cached_file_properties[media_msg.message_id] = await self._generate_file_properties(media_msg)
+            logging.debug(f"Cached file properties for message with ID {media_msg.message_id}")
+        return self.cached_file_properties[media_msg.message_id]
+
+    async def get_media_msg(self, message_id: int) -> FileId:
+        """Returns the Message object of a file specified, if existing.
+        """        
+        if message_id not in self.cached_messages:
+            self.cached_messages[message_id] = await self.client.get_messages(Var.BIN_CHANNEL, message_id)
+            logging.debug(f"Cached media message with ID {message_id}")
+        return self.cached_messages[message_id]
 
     @staticmethod
-    async def generate_file_properties(msg: Message):
-        error_message = "This message doesn't contain any downloadable media"
+    async def _generate_file_properties(msg: Message) -> FileId:
+        logging.debug(f"generating properties for message with ID {msg.message_id}")
         available_media = (
             "audio",
             "document",
@@ -50,7 +80,7 @@ class TGCustomYield:
                 if media is not None:
                     break
             else:
-                raise ValueError(error_message)
+                raise ValueError("This message doesn't contain any downloadable media")
         else:
             media = msg
 
@@ -68,8 +98,8 @@ class TGCustomYield:
 
         return file_id_obj
 
-    async def generate_media_session(self, client: Client, msg: Message):
-        data = await self.generate_file_properties(msg)
+    async def generate_media_session(self, client: Client, msg: Message) -> Session:
+        data = await self.get_file_properties(msg)
 
         media_session = client.media_sessions.get(data.dc_id, None)
 
@@ -97,10 +127,12 @@ class TGCustomYield:
                                 id=exported_auth.id, bytes=exported_auth.bytes
                             )
                         )
-                    except AuthBytesInvalid:
-                        continue
-                    else:
                         break
+                    except AuthBytesInvalid:
+                        logging.debug(
+                            f"Invalid authorization bytes for DC {data.dc_id}"
+                        )
+                        continue
                 else:
                     await media_session.stop()
                     raise AuthBytesInvalid
@@ -113,13 +145,17 @@ class TGCustomYield:
                     is_media=True,
                 )
                 await media_session.start()
-
+            logging.debug(f"Created media session for DC {data.dc_id}")
             client.media_sessions[data.dc_id] = media_session
-
+        else:
+            logging.debug(f"Using cached media session for DC {data.dc_id}")
         return media_session
 
+
     @staticmethod
-    async def get_location(file_id: FileId):
+    async def get_location(file_id: FileId) -> Union[raw.types.InputPhotoFileLocation,
+                                                     raw.types.InputDocumentFileLocation,
+                                                     raw.types.InputPeerPhotoFileLocation,]:
         file_type = file_id.file_type
 
         if file_type == FileType.CHAT_PHOTO:
@@ -156,7 +192,6 @@ class TGCustomYield:
                 file_reference=file_id.file_reference,
                 thumb_size=file_id.thumbnail_size,
             )
-
         return location
 
     async def yield_file(
@@ -167,9 +202,9 @@ class TGCustomYield:
         last_part_cut: int,
         part_count: int,
         chunk_size: int,
-    ) -> Union[str, None]:  # pylint: disable=unsubscriptable-object
-        client = self.main_bot
-        data = await self.generate_file_properties(media_msg)
+    ) -> Union[str, None]:
+        client = self.client
+        data = await self.get_file_properties(media_msg)
         media_session = await self.generate_media_session(client, media_msg)
 
         current_part = 1
@@ -203,40 +238,12 @@ class TGCustomYield:
                     )
 
                     current_part += 1
-        except (TimeoutError or AttributeError):
-            ...
-
-    async def download_as_bytesio(self, media_msg: Message):
-        client = self.main_bot
-        data = await self.generate_file_properties(media_msg)
-        media_session = await self.generate_media_session(client, media_msg)
-
-        location = await self.get_location(data)
-
-        limit = 1024 * 1024
-        offset = 0
-
-        r = await media_session.send(
-            raw.functions.upload.GetFile(location=location, offset=offset, limit=limit)
-        )
-
-        if isinstance(r, raw.types.upload.File):
-            m_file = []
-            # m_file.name = file_name
-            while True:
-                chunk = r.bytes
-
-                if not chunk:
-                    break
-
-                m_file.append(chunk)
-
-                offset += limit
-
-                r = await media_session.send(
-                    raw.functions.upload.GetFile(
-                        location=location, offset=offset, limit=limit
-                    )
-                )
-
-            return m_file
+        except (TimeoutError, AttributeError):
+            pass
+        
+    async def clean_cache(self) -> None:
+        while True:
+            await asyncio.sleep(self.clean_timer)
+            self.cached_messages.clear()
+            self.cached_file_properties.clear()
+            logging.debug("Cleaned the cache")
