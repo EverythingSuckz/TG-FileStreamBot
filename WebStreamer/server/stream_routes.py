@@ -121,7 +121,9 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
         status=206 if range_header else 200,
         body=body,
         headers={
-            "Content-Type": mime_type,
+            "Content-Type": f"{mime_type}",
+            "Content-Length": f"{file_size}",
+            "Range": f"bytes={from_bytes}-{until_bytes}",
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
             "Content-Disposition": f'{disposition}; filename="{file_name}"',
             "Accept-Ranges": "bytes",
