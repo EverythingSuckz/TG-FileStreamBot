@@ -8,7 +8,7 @@ from pyrogram import idle
 from WebStreamer import bot_info
 from WebStreamer.vars import Var
 from WebStreamer.server import web_server
-from WebStreamer.utils.keepalive import ping_server
+from WebStreamer import utils
 from WebStreamer.bot.clients import initialize_clients
 
 
@@ -33,7 +33,7 @@ async def start_services():
     if Var.ON_HEROKU:
         print("------------------ Starting Keep Alive Service ------------------")
         print()
-        asyncio.create_task(ping_server())
+        asyncio.create_task(utils.ping_server())
     print("-------------------- Initalizing Web Server --------------------")
     app = web.AppRunner(await web_server())
     await app.setup()

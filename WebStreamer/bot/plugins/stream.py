@@ -6,7 +6,7 @@ from pyrogram import filters
 from WebStreamer.vars import Var
 from urllib.parse import quote_plus
 from WebStreamer.bot import StreamBot
-from WebStreamer.utils.file_id import get_unique_id
+from WebStreamer.utils import get_unique_id
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 

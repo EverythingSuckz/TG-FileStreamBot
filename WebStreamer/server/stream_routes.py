@@ -8,14 +8,12 @@ import logging
 import secrets
 import mimetypes
 from aiohttp import web
+from WebStreamer import utils
 from WebStreamer.vars import Var
 from aiohttp.http_exceptions import BadStatusLine
-from WebStreamer.utils.file_id import get_unique_id
 from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer import StartTime, __version__, bot_info
-from WebStreamer.utils.time_format import get_readable_time
 from WebStreamer.bot.clients import multi_clients, work_loads
-from WebStreamer.utils.custom_dl import ByteStreamer, chunk_size, offset_fix
 
 routes = web.RouteTableDef()
 
@@ -25,7 +23,7 @@ async def root_route_handler(request):
     return web.json_response(
         {
             "server_status": "running",
-            "uptime": get_readable_time(time.time() - StartTime),
+            "uptime": utils.get_readable_time(time.time() - StartTime),
             "telegram_bot": "@" + bot_info.username,
             "connected_bots": len(multi_clients),
             "loads": work_loads,
@@ -71,12 +69,12 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
         logging.debug(f"Using cached ByteStreamer object for client {_index}")
     else:
         logging.debug(f"Creating new ByteStreamer object for client {_index}")
-        tg_connect = ByteStreamer(faster_client)
+        tg_connect = utils.ByteStreamer(faster_client)
         class_cache[faster_client] = tg_connect
     
     media_msg = await tg_connect.get_media_msg(message_id)
     
-    if get_unique_id(media_msg) != secure_hash:
+    if utils.get_unique_id(media_msg) != secure_hash:
         work_loads[_index] -= 1
         raise web.HTTPForbidden
     
@@ -93,8 +91,8 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
         until_bytes = request.http_range.stop or file_size - 1
 
     req_length = until_bytes - from_bytes
-    new_chunk_size = await chunk_size(req_length)
-    offset = await offset_fix(from_bytes, new_chunk_size)
+    new_chunk_size = await utils.chunk_size(req_length)
+    offset = await utils.offset_fix(from_bytes, new_chunk_size)
     first_part_cut = from_bytes - offset
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
