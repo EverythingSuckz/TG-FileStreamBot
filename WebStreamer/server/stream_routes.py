@@ -8,25 +8,29 @@ import logging
 import secrets
 import mimetypes
 from aiohttp import web
-from WebStreamer import utils
-from WebStreamer.vars import Var
+from pyrogram import Client
 from aiohttp.http_exceptions import BadStatusLine
 from WebStreamer.bot import multi_clients, work_loads
-from WebStreamer import StartTime, __version__, bot_info
-from WebStreamer.bot.clients import multi_clients, work_loads
+from WebStreamer.server.exceptions import FIleNotFound, InvalidHash
+from WebStreamer import Var, utils, StartTime, __version__, bot_info
+
 
 routes = web.RouteTableDef()
 
-
 @routes.get("/", allow_head=True)
-async def root_route_handler(request):
+async def root_route_handler(_):
     return web.json_response(
         {
             "server_status": "running",
             "uptime": utils.get_readable_time(time.time() - StartTime),
             "telegram_bot": "@" + bot_info.username,
             "connected_bots": len(multi_clients),
-            "loads": work_loads,
+            "loads": dict(
+                ("bot" + str(c + 1), l)
+                for c, (_, l) in enumerate(
+                    sorted(work_loads.items(), key=lambda x: x[1], reverse=True)
+                )
+            ),
             "version": __version__,
         }
     )
@@ -34,6 +38,9 @@ async def root_route_handler(request):
 
 @routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
+    index = min(work_loads, key=work_loads.get)
+    faster_client = multi_clients[index]
+    work_loads[index] += 1
     try:
         path = request.match_info["path"]
         match = re.search(r"^([a-zA-Z0-9_-]{6})(\d+)$", path)
@@ -43,44 +50,42 @@ async def stream_handler(request: web.Request):
         else:
             message_id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
             secure_hash = request.rel_url.query.get("hash")
-        return await media_streamer(request, message_id, secure_hash)
-    except ValueError:
-        raise web.HTTPNotFound
-    except AttributeError:
+        return await media_streamer(request, faster_client, index, message_id, secure_hash)
+    except InvalidHash as e:
+        raise web.HTTPForbidden(text=e.message)
+    except FIleNotFound as e:
+        raise web.HTTPNotFound(text=e.message)
+    except (AttributeError, BadStatusLine, ConnectionResetError):
         pass
-    except BadStatusLine:
-        pass
-
+    except Exception as e:
+        logging.critical(e.with_traceback())
+        raise web.HTTPInternalServerError(text=str(e))
+    finally:
+        work_loads[index] -= 1
 
 class_cache = {}
 
-async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
+async def media_streamer(request: web.Request, client: Client, index:str, message_id: int, secure_hash: str):
     range_header = request.headers.get("Range", 0)
-
-    _index = min(work_loads, key=work_loads.get)
-    faster_client = multi_clients[_index]
-    work_loads[_index] += 1
     if Var.MULTI_CLIENT:
-        logging.info(f"Client {_index} is now serving {request.remote}")
+        logging.info(f"Client {index} is now serving {request.remote}")
 
-
-    if faster_client in class_cache:
-        tg_connect = class_cache[faster_client]
-        logging.debug(f"Using cached ByteStreamer object for client {_index}")
+    if client in class_cache:
+        tg_connect = class_cache[client]
+        logging.debug(f"Using cached ByteStreamer object for client {index}")
     else:
-        logging.debug(f"Creating new ByteStreamer object for client {_index}")
-        tg_connect = utils.ByteStreamer(faster_client)
-        class_cache[faster_client] = tg_connect
+        logging.debug(f"Creating new ByteStreamer object for client {index}")
+        tg_connect = utils.ByteStreamer(client)
+        class_cache[client] = tg_connect
+    logging.debug("before calling get_file_properties")
+    file_id, file_unique_id = await tg_connect.get_file_properties(message_id)
+    logging.debug("after calling get_file_properties")
     
-    media_msg = await tg_connect.get_media_msg(message_id)
-    
-    if utils.get_unique_id(media_msg) != secure_hash:
-        work_loads[_index] -= 1
-        raise web.HTTPForbidden
-    
-    
-    file_properties = await tg_connect.get_file_properties(media_msg)
-    file_size = file_properties.file_size
+    if file_unique_id.encode()[:6] != secure_hash:
+        logging.debug(f"Invalid hash for message with ID {message_id}")
+        raise InvalidHash
+        
+    file_size = file_id.file_size
 
     if range_header:
         from_bytes, until_bytes = range_header.replace("bytes=", "").split("-")
@@ -97,11 +102,11 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
     body = tg_connect.yield_file(
-        media_msg, offset, first_part_cut, last_part_cut, part_count, new_chunk_size
+        message_id, offset, first_part_cut, last_part_cut, part_count, new_chunk_size
     )
 
-    mime_type = file_properties.mime_type
-    file_name = file_properties.file_name
+    mime_type = file_id.mime_type
+    file_name = file_id.file_name
     disposition = "attachment"
     if mime_type:
         if not file_name:
@@ -111,7 +116,7 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
                 file_name = f"{secrets.token_hex(2)}.unknown"
     else:
         if file_name:
-            mime_type = mimetypes.guess_type(file_properties.file_name)
+            mime_type = mimetypes.guess_type(file_id.file_name)
         else:
             mime_type = "application/octet-stream"
             file_name = f"{secrets.token_hex(2)}.unknown"
@@ -122,7 +127,6 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
         body=body,
         headers={
             "Content-Type": f"{mime_type}",
-            "Content-Length": f"{file_size}",
             "Range": f"bytes={from_bytes}-{until_bytes}",
             "Content-Range": f"bytes {from_bytes}-{until_bytes}/{file_size}",
             "Content-Disposition": f'{disposition}; filename="{file_name}"',
@@ -133,5 +137,4 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
     if return_resp.status == 200:
         return_resp.headers.add("Content-Length", str(file_size))
 
-    work_loads[_index] -= 1
     return return_resp

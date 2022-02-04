@@ -3,12 +3,12 @@
 
 import asyncio
 import logging
+from .vars import Var
 from aiohttp import web
 from pyrogram import idle
-from WebStreamer import bot_info
-from WebStreamer.vars import Var
-from WebStreamer.server import web_server
 from WebStreamer import utils
+from WebStreamer import bot_info
+from WebStreamer.server import web_server
 from WebStreamer.bot.clients import initialize_clients
 
 
