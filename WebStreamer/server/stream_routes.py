@@ -102,7 +102,7 @@ async def media_streamer(request: web.Request, client: Client, index:str, messag
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
     body = tg_connect.yield_file(
-        message_id, offset, first_part_cut, last_part_cut, part_count, new_chunk_size
+        file_id, offset, first_part_cut, last_part_cut, part_count, new_chunk_size
     )
 
     mime_type = file_id.mime_type

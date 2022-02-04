@@ -69,22 +69,21 @@ class ByteStreamer:
         logging.debug(f"Cached media message with ID {message_id}")
         return (self.cached_file_ids[message_id], self.cached_unique_ids[message_id])
 
-    async def generate_media_session(self, client: Client, message_id: int) -> Session:
+    async def generate_media_session(self, client: Client, file_id: FileId) -> Session:
         """
         Generates the media session for the DC that contains the media file.
         This is required for getting the bytes from Telegram servers.
         """
-        data, _ = await self.get_file_properties(message_id)
 
-        media_session = client.media_sessions.get(data.dc_id, None)
+        media_session = client.media_sessions.get(file_id.dc_id, None)
 
         if media_session is None:
-            if data.dc_id != await client.storage.dc_id():
+            if file_id.dc_id != await client.storage.dc_id():
                 media_session = Session(
                     client,
-                    data.dc_id,
+                    file_id.dc_id,
                     await Auth(
-                        client, data.dc_id, await client.storage.test_mode()
+                        client, file_id.dc_id, await client.storage.test_mode()
                     ).create(),
                     await client.storage.test_mode(),
                     is_media=True,
@@ -93,7 +92,7 @@ class ByteStreamer:
 
                 for _ in range(3):
                     exported_auth = await client.send(
-                        raw.functions.auth.ExportAuthorization(dc_id=data.dc_id)
+                        raw.functions.auth.ExportAuthorization(dc_id=file_id.dc_id)
                     )
 
                     try:
@@ -105,7 +104,7 @@ class ByteStreamer:
                         break
                     except AuthBytesInvalid:
                         logging.debug(
-                            f"Invalid authorization bytes for DC {data.dc_id}"
+                            f"Invalid authorization bytes for DC {file_id.dc_id}"
                         )
                         continue
                 else:
@@ -114,16 +113,16 @@ class ByteStreamer:
             else:
                 media_session = Session(
                     client,
-                    data.dc_id,
+                    file_id.dc_id,
                     await client.storage.auth_key(),
                     await client.storage.test_mode(),
                     is_media=True,
                 )
                 await media_session.start()
-            logging.debug(f"Created media session for DC {data.dc_id}")
-            client.media_sessions[data.dc_id] = media_session
+            logging.debug(f"Created media session for DC {file_id.dc_id}")
+            client.media_sessions[file_id.dc_id] = media_session
         else:
-            logging.debug(f"Using cached media session for DC {data.dc_id}")
+            logging.debug(f"Using cached media session for DC {file_id.dc_id}")
         return media_session
 
 
@@ -174,7 +173,7 @@ class ByteStreamer:
 
     async def yield_file(
         self,
-        message_id: int,
+        file_id: FileId,
         offset: int,
         first_part_cut: int,
         last_part_cut: int,
@@ -186,12 +185,11 @@ class ByteStreamer:
         Modded from 
         """
         client = self.client
-        data, _ = await self.get_file_properties(message_id)
-        media_session = await self.generate_media_session(client, message_id)
+        media_session = await self.generate_media_session(client, file_id)
 
         current_part = 1
 
-        location = await self.get_location(data)
+        location = await self.get_location(file_id)
 
         try:
             r = await media_session.send(
