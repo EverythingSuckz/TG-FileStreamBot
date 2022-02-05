@@ -8,7 +8,6 @@ import logging
 import secrets
 import mimetypes
 from aiohttp import web
-from pyrogram import Client
 from aiohttp.http_exceptions import BadStatusLine
 from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer.server.exceptions import FIleNotFound, InvalidHash
@@ -38,9 +37,6 @@ async def root_route_handler(_):
 
 @routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
-    index = min(work_loads, key=work_loads.get)
-    faster_client = multi_clients[index]
-    work_loads[index] += 1
     try:
         path = request.match_info["path"]
         match = re.search(r"^([a-zA-Z0-9_-]{6})(\d+)$", path)
@@ -50,7 +46,7 @@ async def stream_handler(request: web.Request):
         else:
             message_id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
             secure_hash = request.rel_url.query.get("hash")
-        return await media_streamer(request, faster_client, index, message_id, secure_hash)
+        return await media_streamer(request, message_id, secure_hash)
     except InvalidHash as e:
         raise web.HTTPForbidden(text=e.message)
     except FIleNotFound as e:
@@ -58,33 +54,35 @@ async def stream_handler(request: web.Request):
     except (AttributeError, BadStatusLine, ConnectionResetError):
         pass
     except Exception as e:
-        logging.critical(e.with_traceback())
+        logging.critical(e.with_traceback(None))
         raise web.HTTPInternalServerError(text=str(e))
-    finally:
-        work_loads[index] -= 1
 
 class_cache = {}
 
-async def media_streamer(request: web.Request, client: Client, index:str, message_id: int, secure_hash: str):
+async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
     range_header = request.headers.get("Range", 0)
+    
+    index = min(work_loads, key=work_loads.get)
+    faster_client = multi_clients[index]
+    
     if Var.MULTI_CLIENT:
         logging.info(f"Client {index} is now serving {request.remote}")
 
-    if client in class_cache:
-        tg_connect = class_cache[client]
+    if faster_client in class_cache:
+        tg_connect = class_cache[faster_client]
         logging.debug(f"Using cached ByteStreamer object for client {index}")
     else:
         logging.debug(f"Creating new ByteStreamer object for client {index}")
-        tg_connect = utils.ByteStreamer(client)
-        class_cache[client] = tg_connect
+        tg_connect = utils.ByteStreamer(faster_client)
+        class_cache[faster_client] = tg_connect
     logging.debug("before calling get_file_properties")
-    file_id, file_unique_id = await tg_connect.get_file_properties(message_id)
+    file_id = await tg_connect.get_file_properties(message_id)
     logging.debug("after calling get_file_properties")
     
-    if file_unique_id.encode()[:6] != secure_hash:
+    if file_id.unique_id[:6] != secure_hash:
         logging.debug(f"Invalid hash for message with ID {message_id}")
         raise InvalidHash
-        
+    
     file_size = file_id.file_size
 
     if range_header:
@@ -102,7 +100,7 @@ async def media_streamer(request: web.Request, client: Client, index:str, messag
     last_part_cut = (until_bytes % new_chunk_size) + 1
     part_count = math.ceil(req_length / new_chunk_size)
     body = tg_connect.yield_file(
-        file_id, offset, first_part_cut, last_part_cut, part_count, new_chunk_size
+        file_id, index, offset, first_part_cut, last_part_cut, part_count, new_chunk_size
     )
 
     mime_type = file_id.mime_type

@@ -1,8 +1,8 @@
 from pyrogram import Client
+from typing import Any, Optional
 from pyrogram.types import Message
-from typing import Any, Optional, Tuple
+from pyrogram.file_id import FileId
 from pyrogram.raw.types.messages import Messages
-from pyrogram.file_id import FileId, FileUniqueId
 from WebStreamer.server.exceptions import FIleNotFound
 
 
@@ -11,12 +11,12 @@ async def parse_file_id(message: "Message") -> Optional[FileId]:
     if media:
         return FileId.decode(media.file_id)
 
-async def parse_file_unique_id(message: "Messages") -> Optional[FileUniqueId]:
+async def parse_file_unique_id(message: "Messages") -> Optional[str]:
     media = get_media_from_message(message)
     if media:
-        return FileUniqueId.decode(media.file_unique_id)
+        return media.file_unique_id
 
-async def get_file_ids(client: Client, chat_id: int, message_id: int) -> Tuple[Optional[FileId], Optional[FileUniqueId]]:
+async def get_file_ids(client: Client, chat_id: int, message_id: int) -> Optional[FileId]:
     message = await client.get_messages(chat_id, message_id)
     if message.empty:
         raise FIleNotFound
@@ -26,7 +26,8 @@ async def get_file_ids(client: Client, chat_id: int, message_id: int) -> Tuple[O
     setattr(file_id, "file_size", getattr(media, "file_size", 0))
     setattr(file_id, "mime_type", getattr(media, "mime_type", ""))
     setattr(file_id, "file_name", getattr(media, "file_name", ""))
-    return (file_id, file_unique_id)
+    setattr(file_id, "unique_id", file_unique_id)
+    return file_id
 
 def get_media_from_message(message: "Message") -> Any:
     media_types = (

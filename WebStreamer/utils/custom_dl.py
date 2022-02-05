@@ -2,13 +2,14 @@ import math
 import asyncio
 import logging
 from WebStreamer import Var
-from typing import Dict, Tuple, Union
+from typing import Dict, Union
+from WebStreamer.bot import work_loads
 from pyrogram import Client, utils, raw
 from .file_properties import get_file_ids
 from pyrogram.session import Session, Auth
 from pyrogram.errors import AuthBytesInvalid
 from WebStreamer.server.exceptions import FIleNotFound
-from pyrogram.file_id import FileId, FileUniqueId, FileType, ThumbnailSource
+from pyrogram.file_id import FileId, FileType, ThumbnailSource
 
 
 async def chunk_size(length):
@@ -33,41 +34,38 @@ class ByteStreamer:
             generate_media_session: returns the media session for the DC that contains the media file.
             yield_file: yield a file from telegram servers for streaming.
             
-        This is a modified version of the <https://github.com/eyaadh/megadlbot_oss/blob/master/mega/telegram/utils/custom_download.py#L20>
+        This is a modified version of the <https://github.com/eyaadh/megadlbot_oss/blob/master/mega/telegram/utils/custom_download.py>
         Thanks to Eyaadh <https://github.com/eyaadh>
         """
         self.clean_timer = 30 * 60
         self.client: Client = client
         self.cached_file_ids: Dict[int, FileId] = {}
-        self.cached_unique_ids: Dict[int, FileUniqueId] = {}
         asyncio.create_task(self.clean_cache())
 
-    async def get_file_properties(self, message_id: int) -> Tuple[FileId, FileUniqueId]:
+    async def get_file_properties(self, message_id: int) -> FileId:
         """
-        Returns the properties of a media of a specific message in a tuple containing FIleId and FileUniqueId.
+        Returns the properties of a media of a specific message in a FIleId class.
         if the properties are cached, then it'll return the cached results.
         or it'll generate the properties from the Message ID and cache them.
         """
-        if ((message_id not in self.cached_file_ids) or (message_id not in self.cached_unique_ids)):
+        if message_id not in self.cached_file_ids:
             await self.generate_file_properties(message_id)
             logging.debug(f"Cached file properties for message with ID {message_id}")
-        return (self.cached_file_ids[message_id], self.cached_unique_ids[message_id])
+        return self.cached_file_ids[message_id]
     
-    async def generate_file_properties(self, message_id: int) -> Tuple[FileId, FileUniqueId]:
+    async def generate_file_properties(self, message_id: int) -> FileId:
         """
         Generates the properties of a media file on a specific message.
-        returns ths properties in a tuple containing FileId and FileUniqueId.
+        returns ths properties in a FIleId class.
         """
-        file_ids = await get_file_ids(self.client, Var.BIN_CHANNEL, message_id)
+        file_id = await get_file_ids(self.client, Var.BIN_CHANNEL, message_id)
         logging.debug(f"Generated file ID and Unique ID for message with ID {message_id}")
-        file_id, file_unique_id = file_ids
-        if not file_id or not file_unique_id:
+        if not file_id:
             logging.debug(f"Message with ID {message_id} not found")
             raise FIleNotFound
         self.cached_file_ids[message_id] = file_id
-        self.cached_unique_ids[message_id] = file_unique_id
         logging.debug(f"Cached media message with ID {message_id}")
-        return (self.cached_file_ids[message_id], self.cached_unique_ids[message_id])
+        return self.cached_file_ids[message_id]
 
     async def generate_media_session(self, client: Client, file_id: FileId) -> Session:
         """
@@ -174,6 +172,7 @@ class ByteStreamer:
     async def yield_file(
         self,
         file_id: FileId,
+        index: int,
         offset: int,
         first_part_cut: int,
         last_part_cut: int,
@@ -182,9 +181,12 @@ class ByteStreamer:
     ) -> Union[str, None]:
         """
         Custom generator that yields the bytes of the media file.
-        Modded from 
+        Modded from <https://github.com/eyaadh/megadlbot_oss/blob/master/mega/telegram/utils/custom_download.py#L20>
+        Thanks to Eyaadh <https://github.com/eyaadh>
         """
         client = self.client
+        work_loads[index] += 1
+        logging.debug(f"Starting to yielding file with client {index}.")
         media_session = await self.generate_media_session(client, file_id)
 
         current_part = 1
@@ -220,6 +222,9 @@ class ByteStreamer:
                     current_part += 1
         except (TimeoutError, AttributeError):
             pass
+        finally:
+            logging.debug("Finished yielding file with {current_part} parts.")
+            work_loads[index] -= 1
 
     
     async def clean_cache(self) -> None:
@@ -229,5 +234,4 @@ class ByteStreamer:
         while True:
             await asyncio.sleep(self.clean_timer)
             self.cached_file_ids.clear()
-            self.cached_unique_ids.clear()
             logging.debug("Cleaned the cache")
