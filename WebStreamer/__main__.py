@@ -14,8 +14,12 @@ from WebStreamer.bot.clients import initialize_clients
 
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+    level=logging.INFO,
+    datefmt="%d/%m/%Y %H:%M:%S",
+    format="[%(asctime)s][%(levelname)s] => %(message)s",
+    handlers=[logging.StreamHandler(stream=sys.stdout),
+              logging.FileHandler("streambot.log", mode="a", encoding="utf-8")],)
+
 logging.getLogger("aiohttp").setLevel(logging.ERROR)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
