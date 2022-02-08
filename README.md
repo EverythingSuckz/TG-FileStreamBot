@@ -165,6 +165,7 @@ Feel free to contribute to this project if you have any further ideas
 
 You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUsername) ~~or you can PM me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)~~
 
+
 ## Credits
 
 - Me
@@ -172,3 +173,13 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUser
 - [BlackStone](https://github.com/eyMarv) for adding multi-client support.
 - [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library](https://github.com/pyrogram/pyrogram)
 - [TheHamkerCat](https://github.com/TheHamkerCat) for helping me with my common doubts.
+
+## Copyright
+
+Copyright (C) 2021 [EverythingSuckz](https://github.com/EverythingSuckz) under [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html).
+
+TG-FileStreamBot is Free Software: You can use, study share and improve it at your
+will. Specifically you can redistribute and/or modify it under the terms of the
+[GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html) as
+published by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. 
