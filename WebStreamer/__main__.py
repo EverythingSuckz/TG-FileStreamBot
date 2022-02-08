@@ -26,7 +26,11 @@ logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 
 server = web.AppRunner(web_server())
 
-loop = asyncio.get_event_loop()
+if sys.version_info[1] > 9:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+else:
+    loop = asyncio.get_event_loop()
 
 async def start_services():
     print()
