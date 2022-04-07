@@ -6,7 +6,7 @@ from pyrogram import filters
 from WebStreamer.vars import Var
 from urllib.parse import quote_plus
 from WebStreamer.bot import StreamBot
-from WebStreamer.utils import get_hash, get_name
+from WebStreamer.utils import get_hash, get_name, url_validator
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 
@@ -31,12 +31,11 @@ async def media_receive_handler(_, m: Message):
     stream_link = f"{Var.URL}{log_msg.message_id}/{quote_plus(get_name(m))}?hash={get_hash(log_msg)}"
     short_link = f"{Var.URL}{get_hash(log_msg)}{log_msg.message_id}"
     logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
-    rm = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("Open", url=stream_link)]]
-    )
-    if Var.FQDN == Var.BIND_ADDRESS:
-        # dkabl
-        rm = None
+    rm = None
+    if url_validator(stream_link):
+        rm = InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Open", url=stream_link)]]
+        )
     await m.reply_text(
         text="<code>{}</code>\n(<a href='{}'>shortened</a>)".format(
             stream_link, short_link
