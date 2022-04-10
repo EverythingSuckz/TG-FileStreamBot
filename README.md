@@ -67,7 +67,7 @@ Either you could locally host or deploy on [Heroku](https://heroku.com)
 
 Press the below button to fast deploy to Heroku
 
-- [![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https%3A%2F%2Fgithub.com%2Fzxlp%2Ftgfs)
+- [![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://github.com/DeekshithSH1/tgfs)
 
 then goto the <a href="#mandatory-vars">variables tab</a> for more info on setting up environmental variables.
 
