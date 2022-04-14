@@ -1,9 +1,21 @@
+import asyncio
 import logging
-import requests
-from ..vars import Var
-def ping_server():
-    k = requests.get(f'https://ping-pong-sn.herokuapp.com/pingback?link={Var.URL}').json()
-    if not k.get('error'):
-        logging.info('KeepAliveService: Pinged {} with status {}'.format(Var.FQDN, k.get('Status')))
-    else:
-        logging.error('Couldn\'t Ping the Server!')
+import aiohttp
+import traceback
+from WebStreamer.vars import Var
+
+
+async def ping_server():
+    sleep_time = Var.PING_INTERVAL
+    while True:
+        await asyncio.sleep(sleep_time)
+        try:
+            async with aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=10)
+            ) as session:
+                async with session.get(Var.URL) as resp:
+                    logging.info("Pinged server with response: {}".format(resp.status))
+        except TimeoutError:
+            logging.warning("Couldn't connect to the site URL..!")
+        except Exception:
+            traceback.print_exc()
