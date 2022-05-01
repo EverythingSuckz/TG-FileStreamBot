@@ -1,4 +1,4 @@
-pyrogram
+Pyrogram==1.4.16
 tgcrypto
 aiohttp
 python-dotenv
