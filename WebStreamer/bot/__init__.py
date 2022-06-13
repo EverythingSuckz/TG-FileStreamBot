@@ -19,3 +19,4 @@ StreamBot = Client(
 
 multi_clients = {}
 work_loads = {}
+class_cache = {}

@@ -8,7 +8,7 @@ from .vars import Var
 from aiohttp import web
 from pyrogram import idle
 from WebStreamer import utils
-from WebStreamer import StreamBot
+from WebStreamer.bot import StreamBot, class_cache
 from WebStreamer.server import web_server
 from WebStreamer.bot.clients import initialize_clients
 
@@ -25,6 +25,7 @@ logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
 
 server = web.AppRunner(web_server())
+clean_timer = 30 * 60
 
 if sys.version_info[1] > 9:
     loop = asyncio.new_event_loop()
@@ -49,6 +50,9 @@ async def start_services():
         print("------------------ Starting Keep Alive Service ------------------")
         print()
         asyncio.create_task(utils.ping_server())
+    print("--------------------- Starting Clean Cache ---------------------")
+    asyncio.create_task(clean_cache())
+    print()
     print("--------------------- Initalizing Web Server ---------------------")
     await server.setup()
     bind_address = "0.0.0.0" if Var.ON_HEROKU else Var.BIND_ADDRESS
@@ -68,6 +72,16 @@ async def start_services():
 async def cleanup():
     await server.cleanup()
     await StreamBot.stop()
+
+async def clean_cache() -> None:
+    """
+    function to clean the cache to reduce memory usage
+    """
+    while True:
+        await asyncio.sleep(clean_timer)
+        for _, tg_connect in class_cache.items():
+            await tg_connect.clean_cache()
+
 
 if __name__ == "__main__":
     try:
