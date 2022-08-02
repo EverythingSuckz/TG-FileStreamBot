@@ -52,4 +52,4 @@ def get_hash(media_msg: Message) -> str:
 
 def get_name(media_msg: Message) -> str:
     media = get_media_from_message(media_msg)
-    return media.file_name or ""
+    return getattr(media, 'file_name', "")
