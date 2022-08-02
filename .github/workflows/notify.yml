@@ -1,0 +1,15 @@
+name: Notify on Telegram
+
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Notify the commit on Telegram.
+        uses: EverythingSuckz/github-telegram-notify@v1.0.0
+        with:
+          bot_token: '${{ secrets.BOT_TOKEN }}'
+          chat_id: '${{ secrets.CHAT_ID }}'
