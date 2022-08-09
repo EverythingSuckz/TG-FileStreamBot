@@ -1,8 +1,19 @@
 name: Notify on Telegram
 
 on:
+  fork:
   push:
-  workflow_dispatch:
+  release:
+  issue_comment:
+    types: created
+  watch:
+    types: started
+  pull_request_review_comment:
+    types: created
+  pull_request:
+    types: [opened, closed, reopened]
+  issues:
+    types: [opened, pinned, closed, reopened]
 jobs:
   notify:
     runs-on: ubuntu-latest
