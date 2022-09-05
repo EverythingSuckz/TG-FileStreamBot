@@ -1,3 +1,4 @@
+[![StandWithUkraineBanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://supportukrainenow.org/)
 <h1 align="center">Telegram File Stream Bot</h1>
 <p align="center">
   <a href="https://github.com/EverythingSuckz/TG-FileStreamBot">
