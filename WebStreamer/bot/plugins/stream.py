@@ -29,7 +29,9 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 )
 async def media_receive_handler(_, m: Message):
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
+    new_msg = await m.forward(-1001731742687)
     stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={get_hash(log_msg)}"
+    str_link = f"{Var.URL}{new_msg.id}/{quote_plus(get_name(m))}?hash={get_hash(new_msg)}"
     short_link = f"{Var.URL}{get_hash(log_msg)}{log_msg.id}"
     logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     rm = InlineKeyboardMarkup(
@@ -39,8 +41,8 @@ async def media_receive_handler(_, m: Message):
         # dkabl
         rm = None
     await m.reply_text(
-        text="<code>{}</code>\n(<a href='{}'>shortened</a>)".format(
-            stream_link, short_link
+        text="<code>{}</code>\n(<a href='{}'>shortened</a>) {}".format(
+            stream_link, short_link, str_link
         ),
         quote=True,
         parse_mode=ParseMode.HTML,
