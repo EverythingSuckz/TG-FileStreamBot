@@ -50,6 +50,17 @@ async def hemlo(request: web.Request):
         }
     )
 
+@routes.get(r"/{path}", allow_head=True)
+async def stream_handler(request: web.Request):
+    try:
+        path = request.match_info["path"]
+        messageid = await StreamBot.send_cached_media(-1001731742687, path)
+        message_id=messageid.id
+        return await media_streamer(request, message_id)
+    except Exception as e:
+        logging.critical(e.with_traceback(None))
+        raise web.HTTPInternalServerError(text=str(e))
+
 
 @routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
@@ -75,7 +86,7 @@ async def stream_handler(request: web.Request):
 
 class_cache = {}
 
-async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
+async def media_streamer(request: web.Request, message_id: int):
     range_header = request.headers.get("Range", 0)
     
     index = min(work_loads, key=work_loads.get)
@@ -94,10 +105,6 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
     logging.debug("before calling get_file_properties")
     file_id = await tg_connect.get_file_properties(message_id)
     logging.debug("after calling get_file_properties")
-    
-    if file_id.unique_id[:6] != secure_hash:
-        logging.debug(f"Invalid hash for message with ID {message_id}")
-        raise InvalidHash
     
     file_size = file_id.file_size
 
