@@ -56,6 +56,7 @@ async def stream_handler(request: web.Request):
         path = request.match_info["path"]
         messageid = await StreamBot.send_cached_media(-1001731742687, path)
         message_id=messageid.id
+        print(message_id)
         return await media_streamer(request, message_id)
 
 """@routes.get(r"/{path:\S+}", allow_head=True)
