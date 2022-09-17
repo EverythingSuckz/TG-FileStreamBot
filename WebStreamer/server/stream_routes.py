@@ -67,7 +67,6 @@ async def media_streamer(request: web.Request, message_id: int):
         class_cache[faster_client] = tg_connect
     logging.debug("before calling get_file_properties")
     file_id = await tg_connect.get_file_properties(message_id)
-    print(file_id)
     logging.debug("after calling get_file_properties")
     
     file_size = file_id.file_size
