@@ -50,16 +50,16 @@ async def hemlo(request: web.Request):
         }
     )"""
 
-"""@routes.get(r"/{path}", allow_head=True)
+@routes.get(r"/{path}", allow_head=True)
 async def stream_handler(request: web.Request):
     
         path = request.match_info["path"]
         messageid = await StreamBot.send_cached_media(-1001731742687, path)
         message_id=messageid.id
         print(message_id)
-        return await media_streamer(request, message_id)"""
+        return await media_streamer(request, message_id)
 
-@routes.get(r"/{path:\S+}", allow_head=True)
+"""@routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
@@ -79,11 +79,11 @@ async def stream_handler(request: web.Request):
         pass
     except Exception as e:
         logging.critical(e.with_traceback(None))
-        raise web.HTTPInternalServerError(text=str(e))
+        raise web.HTTPInternalServerError(text=str(e))"""
 
 class_cache = {}
 
-async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
+async def media_streamer(request: web.Request, message_id: int):
     range_header = request.headers.get("Range", 0)
     
     index = min(work_loads, key=work_loads.get)
@@ -103,10 +103,6 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
     file_id = await tg_connect.get_file_properties(message_id)
     print(file_id)
     logging.debug("after calling get_file_properties")
-    
-    if file_id.unique_id[:6] != secure_hash:
-         logging.debug(f"Invalid hash for message with ID {message_id}")
-         raise InvalidHash
     
     file_size = file_id.file_size
 
@@ -143,8 +139,6 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
         else:
             mime_type = "application/octet-stream"
             file_name = f"{secrets.token_hex(2)}.unknown"
-    if "video/" in mime_type or "audio/" in mime_type:
-        disposition = "inline"
     return_resp = web.Response(
         status=206 if range_header else 200,
         body=body,
