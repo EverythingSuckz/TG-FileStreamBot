@@ -5,7 +5,7 @@ import logging
 from pyrogram import filters
 from WebStreamer.vars import Var
 from WebStreamer.bot import StreamBot
-from WebStreamer.util.file_properties import getFileid
+from WebStreamer.utils.file_properties import getFileid
 
 @StreamBot.on_message(
     filters.private
