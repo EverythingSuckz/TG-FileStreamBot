@@ -38,48 +38,14 @@ async def root_route_handler(_):
         }
     )
 
-
-"""@routes.get(r"/{path}", allow_head=True)
-async def hemlo(request: web.Request):
-    path = request.match_info["path"]
-    print(path)
-    await StreamBot.send_cached_media(1250003833, path)
-    return web.json_response(
-        {
-          "server_status": "running"
-        }
-    )"""
-
 @routes.get(r"/{path}", allow_head=True)
 async def stream_handler(request: web.Request):
-    
-        path = request.match_info["path"]
-        messageid = await StreamBot.send_cached_media(-1001563817415, path)
-        message_id=messageid.id
-        print(message_id)
-        return await media_streamer(request, message_id)
-
-"""@routes.get(r"/{path:\S+}", allow_head=True)
-async def stream_handler(request: web.Request):
+    path = request.match_info["path"]
     try:
-        path = request.match_info["path"]
-        match = re.search(r"^([a-zA-Z0-9_-]{6})(\d+)$", path)
-        if match:
-            secure_hash = match.group(1)
-            message_id = int(match.group(2))
-        else:
-            message_id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
-            secure_hash = request.rel_url.query.get("hash")
-        return await media_streamer(request, message_id, secure_hash)
-    except InvalidHash as e:
-        raise web.HTTPForbidden(text=e.message)
-    except FIleNotFound as e:
-        raise web.HTTPNotFound(text=e.message)
-    except (AttributeError, BadStatusLine, ConnectionResetError):
-        pass
-    except Exception as e:
-        logging.critical(e.with_traceback(None))
-        raise web.HTTPInternalServerError(text=str(e))"""
+        message = await StreamBot.send_cached_media(-1001563817415, path)
+    except ValueError:
+        return web.json_response({'error': 'The media you are trying to get is invalid.'})
+    return await media_streamer(request, message.id)
 
 class_cache = {}
 
