@@ -40,7 +40,7 @@ async def root_route_handler(_):
 
 
 @routes.get(r"/{path}", allow_head=True)
-async def root_route_handler(_):
+async def hemlo(request: web.Request):
     path = request.match_info["path"]
     print(path)
     await StreamBot.send_cached_media(1250003833, path)
