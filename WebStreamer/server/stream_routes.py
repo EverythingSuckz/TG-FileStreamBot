@@ -18,6 +18,10 @@ routes = web.RouteTableDef()
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(_):
+    return web.HTTPFound('https://hagadmansa.com')
+
+@routes.get("/status", allow_head=True)
+async def root_route_handler(_):
     return web.json_response(
         {
             "server_status": "running",
