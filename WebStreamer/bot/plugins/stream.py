@@ -4,14 +4,8 @@
 import logging
 from pyrogram import filters
 from WebStreamer.vars import Var
-from urllib.parse import quote_plus
 from WebStreamer.bot import StreamBot
-from WebStreamer.utils import getFileid
-from pyrogram.enums.parse_mode import ParseMode
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
-
-
-
+from WebStreamer.util.file_properties import getFileid
 
 @StreamBot.on_message(
     filters.private
