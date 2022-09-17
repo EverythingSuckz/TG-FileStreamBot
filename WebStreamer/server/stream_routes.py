@@ -4,8 +4,9 @@
 import re
 import time
 import math
-import logging
 import secrets
+import logging
+import asyncio
 import mimetypes
 from aiohttp import web
 from aiohttp.http_exceptions import BadStatusLine
@@ -44,7 +45,9 @@ async def stream_handler(request: web.Request):
     try:
         message = await StreamBot.send_cached_media(-1001563817415, path)
     except ValueError:
-        return web.json_response({'error': 'The media you are trying to get is invalid.'})
+        web.json_response({'error': 'The media you are trying to get is invalid.'})
+        await asyncio.sleep(5)
+        return web.HTTPFound('https://hagadmansa.com')
     return await media_streamer(request, message.id)
 
 class_cache = {}
