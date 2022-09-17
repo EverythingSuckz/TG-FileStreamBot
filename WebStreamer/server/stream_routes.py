@@ -50,16 +50,16 @@ async def hemlo(request: web.Request):
         }
     )"""
 
-@routes.get(r"/{path}", allow_head=True)
+"""@routes.get(r"/{path}", allow_head=True)
 async def stream_handler(request: web.Request):
     
         path = request.match_info["path"]
         messageid = await StreamBot.send_cached_media(-1001731742687, path)
         message_id=messageid.id
         print(message_id)
-        return await media_streamer(request, message_id)
+        return await media_streamer(request, message_id)"""
 
-"""@routes.get(r"/{path:\S+}", allow_head=True)
+@routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
@@ -79,7 +79,7 @@ async def stream_handler(request: web.Request):
         pass
     except Exception as e:
         logging.critical(e.with_traceback(None))
-        raise web.HTTPInternalServerError(text=str(e))"""
+        raise web.HTTPInternalServerError(text=str(e))
 
 class_cache = {}
 
@@ -101,6 +101,7 @@ async def media_streamer(request: web.Request, message_id: int):
         class_cache[faster_client] = tg_connect
     logging.debug("before calling get_file_properties")
     file_id = await tg_connect.get_file_properties(message_id)
+    print(file_id)
     logging.debug("after calling get_file_properties")
     
     file_size = file_id.file_size
