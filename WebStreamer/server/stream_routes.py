@@ -39,7 +39,7 @@ async def root_route_handler(_):
     )
 
 
-@routes.get(r"/{path}", allow_head=True)
+"""@routes.get(r"/{path}", allow_head=True)
 async def hemlo(request: web.Request):
     path = request.match_info["path"]
     print(path)
@@ -48,7 +48,7 @@ async def hemlo(request: web.Request):
         {
           "server_status": "running"
         }
-    )
+    )"""
 
 @routes.get(r"/{path}", allow_head=True)
 async def stream_handler(request: web.Request):
@@ -62,7 +62,7 @@ async def stream_handler(request: web.Request):
         raise web.HTTPInternalServerError(text=str(e))
 
 
-@routes.get(r"/{path:\S+}", allow_head=True)
+"""@routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
@@ -82,7 +82,7 @@ async def stream_handler(request: web.Request):
         pass
     except Exception as e:
         logging.critical(e.with_traceback(None))
-        raise web.HTTPInternalServerError(text=str(e))
+        raise web.HTTPInternalServerError(text=str(e))"""
 
 class_cache = {}
 
