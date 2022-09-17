@@ -45,7 +45,7 @@ async def stream_handler(request: web.Request):
     try:
         message = await StreamBot.send_cached_media(-1001563817415, path)
     except ValueError:
-        web.json_response({'error': 'The media you are trying to get is invalid.'})
+        return web.json_response({'error': 'The media you are trying to get is invalid.'})
         await asyncio.sleep(5)
         return web.HTTPFound('https://hagadmansa.com')
     return await media_streamer(request, message.id)
