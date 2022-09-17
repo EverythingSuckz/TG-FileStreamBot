@@ -83,7 +83,7 @@ async def stream_handler(request: web.Request):
 
 class_cache = {}
 
-async def media_streamer(request: web.Request, message_id: int):
+async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
     range_header = request.headers.get("Range", 0)
     
     index = min(work_loads, key=work_loads.get)
@@ -103,6 +103,10 @@ async def media_streamer(request: web.Request, message_id: int):
     file_id = await tg_connect.get_file_properties(message_id)
     print(file_id)
     logging.debug("after calling get_file_properties")
+    
+    if file_id.unique_id[:6] != secure_hash:
+         logging.debug(f"Invalid hash for message with ID {message_id}")
+         raise InvalidHash
     
     file_size = file_id.file_size
 
