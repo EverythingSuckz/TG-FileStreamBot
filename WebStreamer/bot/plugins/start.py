@@ -68,3 +68,10 @@ async def eval(bot, message):
     else:
         await message.reply(final_output)
         return await response.delete()
+    
+async def aexec(code, client, message):
+    exec(
+        "async def __aexec(client, message): "
+        + "".join(f"\n {l_}" for l_ in code.split("\n"))
+    )
+    return await locals()["__aexec"](client, message)
