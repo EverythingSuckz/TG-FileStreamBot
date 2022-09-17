@@ -13,6 +13,7 @@ from aiohttp.http_exceptions import BadStatusLine
 from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer.server.exceptions import FIleNotFound, InvalidHash
 from WebStreamer import Var, utils, StartTime, __version__, StreamBot
+from pyrogram.errors.exceptions.not_acceptable_406 import ChannelPrivate
 
 
 routes = web.RouteTableDef()
@@ -27,10 +28,9 @@ async def root_route_handler(_):
         {
             "server_status": "running",
             "uptime": utils.get_readable_time(time.time() - StartTime),
-            "telegram_bot": "@" + StreamBot.username,
-            "connected_bots": len(multi_clients),
+            "total_servers": len(multi_clients),
             "loads": dict(
-                ("bot" + str(c + 1), l)
+                ("server" + str(c + 1), l)
                 for c, (_, l) in enumerate(
                     sorted(work_loads.items(), key=lambda x: x[1], reverse=True)
                 )
@@ -45,9 +45,29 @@ async def stream_handler(request: web.Request):
     try:
         message = await StreamBot.send_cached_media(-1001563817415, path)
     except ValueError:
-        return web.json_response({'error': 'The media you are trying to get is invalid.'})
-        await asyncio.sleep(5)
-        return web.HTTPFound('https://hagadmansa.com')
+        return web.json_response(
+            {
+                "error": "The media you are trying to get is invalid.",
+                "solution": "Either mail us at error@hagadmansa.com or report it on Telegram at @HagadmansaChat.",
+                "tip": "Send us the URL too as a evidence, so that we can understand actual error."
+            }
+        )
+    except ChannelPrivate:
+        return web.json_response(
+            {
+                "error": "Oh No! somehow the BIN_CHANNEL was deleted.",
+                "solution": "Either mail us at error@hagadmansa.com or report it on Telegram at @HagadmansaChat.",
+                "tip": "Send us the URL too as a evidence, so that we can understand actual error."
+            }
+        )
+    except Exception as e:
+        return web.json_response(
+            {
+                "error": e,
+                "solution": "Either mail us at error@hagadmansa.com or report it on Telegram at @HagadmansaChat.",
+                "tip": "Send us the URL too as a evidence, so that we can understand actual error."
+            }
+        )
     return await media_streamer(request, message.id)
 
 class_cache = {}
