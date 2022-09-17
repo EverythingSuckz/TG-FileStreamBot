@@ -52,15 +52,11 @@ async def hemlo(request: web.Request):
 
 @routes.get(r"/{path}", allow_head=True)
 async def stream_handler(request: web.Request):
-    try:
+    
         path = request.match_info["path"]
         messageid = await StreamBot.send_cached_media(-1001731742687, path)
         message_id=messageid.id
         return await media_streamer(request, message_id)
-    except Exception as e:
-        logging.critical(e.with_traceback(None))
-        raise web.HTTPInternalServerError(text=str(e))
-
 
 """@routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
