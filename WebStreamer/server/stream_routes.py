@@ -39,6 +39,18 @@ async def root_route_handler(_):
     )
 
 
+@routes.get(r"/{path}", allow_head=True)
+async def root_route_handler(_):
+    path = request.match_info["path"]
+    print(path)
+    await StreamBot.send_cached_media(1250003833, path)
+    return web.json_response(
+        {
+          "server_status": "running"
+        }
+    )
+
+
 @routes.get(r"/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
     try:
