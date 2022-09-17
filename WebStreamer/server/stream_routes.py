@@ -54,7 +54,7 @@ async def hemlo(request: web.Request):
 async def stream_handler(request: web.Request):
     
         path = request.match_info["path"]
-        messageid = await StreamBot.send_cached_media(-1001731742687, path)
+        messageid = await StreamBot.send_cached_media(-1001563817415, path)
         message_id=messageid.id
         print(message_id)
         return await media_streamer(request, message_id)
