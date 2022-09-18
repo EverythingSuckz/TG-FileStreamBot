@@ -21,7 +21,7 @@ routes = web.RouteTableDef()
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(_):
-    return web.HTTPFound('https://hagadmansa.com')
+    return web.HTTPFound(Var.REDIRECT_TO)
 
 @routes.get("/status", allow_head=True)
 async def root_route_handler(_):
@@ -44,9 +44,9 @@ async def root_route_handler(_):
 async def stream_handler(request: web.Request):
     path = request.match_info["path"]
     if len(path) < 30:
-        return web.HTTPFound('https://hagadmansa.com')
+        return web.HTTPFound(Var.REDIRECT_TO)
     elif len(path) > 34:
-        return web.HTTPFound('https://hagadmansa.com')
+        return web.HTTPFound(Var.REDIRECT_TO)
     else:
         try:
             message = await StreamBot.send_cached_media(Var.BIN_CHANNEL, path)
