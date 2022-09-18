@@ -34,7 +34,7 @@ async def getStreamlink(bot, message):
             text=f"{Var.URL}{getNew(fileId(message))[0]}",
             quote=True
         )
-        await client.copy_message(
+        await bot.copy_message(
             chat_id=Var.BIN_CHANNEL,
             from_chat_id=message.chat.id,
             message_id=message.id,
