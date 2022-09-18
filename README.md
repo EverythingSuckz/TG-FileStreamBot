@@ -126,6 +126,10 @@ you may also add as many as bots you want. (max limit is not tested yet)
 
 ### Optional Vars
 
+`CUSTOM_CAPTION` : You can set a custom caption before the file name, just like `@Username` + filename.extention.
+
+`REDIRECT_TO` : Redirect user to a specific website or channel when visiting base url of bot. URL must be start with `https://`
+
 `SLEEP_THRESHOLD` : Set a sleep threshold for flood wait exceptions happening globally in this telegram bot instance, below which any request that raises a flood wait will be automatically invoked again after sleeping for the required amount of time. Flood wait exceptions requiring higher waiting times will be raised. Defaults to 60 seconds.
 
 `WORKERS` : Number of maximum concurrent workers for handling incoming updates. Defaults to `3`
