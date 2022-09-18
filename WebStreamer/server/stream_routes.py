@@ -43,9 +43,9 @@ async def root_route_handler(_):
 @routes.get(r"/{path}", allow_head=True)
 async def stream_handler(request: web.Request):
     path = request.match_info["path"]
-    if len(path) < 32:
+    if len(path) < 30:
         return web.HTTPFound('https://hagadmansa.com')
-    elif len(path) > 32:
+    elif len(path) > 34:
         return web.HTTPFound('https://hagadmansa.com')
     else:
         try:
@@ -119,20 +119,20 @@ async def media_streamer(request: web.Request, message_id: int):
     )
 
     mime_type = file_id.mime_type
-    file_name = '@Hagadmansa' + file_id.file_name
+    file_name = 'Www.Hagadmansa.Com ' + file_id.file_name
     disposition = "attachment"
     if mime_type:
         if not file_name:
             try:
-                file_name = f"@Hagadmansa {secrets.token_hex(2)}.{mime_type.split('/')[1]}"
+                file_name = f"Www.Hagadmansa.Com {secrets.token_hex(2)}.{mime_type.split('/')[1]}"
             except (IndexError, AttributeError):
-                file_name = f"@Hagadmansa {secrets.token_hex(2)}.unknown"
+                file_name = f"Www.Hagadmansa.Com {secrets.token_hex(2)}.unknown"
     else:
         if file_name:
             mime_type = mimetypes.guess_type(file_id.file_name)
         else:
             mime_type = "application/octet-stream"
-            file_name = f"@Hagadmansa {secrets.token_hex(2)}.unknown"
+            file_name = f"Www.Hagadmansa.Com {secrets.token_hex(2)}.unknown"
     return_resp = web.Response(
         status=206 if range_header else 200,
         body=body,
