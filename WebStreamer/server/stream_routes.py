@@ -9,6 +9,7 @@ import logging
 import asyncio
 import mimetypes
 from aiohttp import web
+from WebStreamer.vars import Var
 from aiohttp.http_exceptions import BadStatusLine
 from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer.server.exceptions import FIleNotFound, InvalidHash
@@ -48,7 +49,7 @@ async def stream_handler(request: web.Request):
         return web.HTTPFound('https://hagadmansa.com')
     else:
         try:
-            message = await StreamBot.send_cached_media(-1001563817415, path)
+            message = await StreamBot.send_cached_media(Var.BIN_CHANNEL, path)
         except ValueError:
             return web.json_response(
                 {
