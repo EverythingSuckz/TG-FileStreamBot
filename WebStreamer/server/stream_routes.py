@@ -42,6 +42,10 @@ async def root_route_handler(_):
 @routes.get(r"/{path}", allow_head=True)
 async def stream_handler(request: web.Request):
     path = request.match_info["path"]
+    if len(path) < 32:
+        return web.HTTPFound('https://hagadmansa.com')
+    elif len(path) > 32:
+        return web.HTTPFound('https://hagadmansa.com')
     try:
         message = await StreamBot.send_cached_media(-1001563817415, path)
     except ValueError:
