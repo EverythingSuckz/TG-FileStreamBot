@@ -21,8 +21,8 @@ class Var(object):
     HAS_SSL = True if str(HAS_SSL).lower() == "true" else False
     NO_PORT = environ.get("NO_PORT", False)
     NO_PORT = True if str(NO_PORT).lower() == "true" else False
-    CUSTOM_CAPTION = environ.get("CUSTOM_CAPTION", "Www.Hagadmansa.Com") # Set a custom caption in the starting of file name.
-    REDIRECT_TO = environ.get("REDIRECT_TO", "https://hagadmansa.com") # Redirect to your own website or channel.
+    CUSTOM_CAPTION = environ.get("CUSTOM_CAPTION", "@EverythingSuckz") # Set a custom caption in the starting of file name.
+    REDIRECT_TO = environ.get("REDIRECT_TO", "https://github.com/EverythingSuckz/TG-FileStreamBot") # Redirect to your own website or channel.
     if "DYNO" in environ:
         ON_HEROKU = True
         APP_NAME = str(environ.get("APP_NAME"))
