@@ -25,13 +25,15 @@ async def root_route_handler(_):
 
 @routes.get("/status", allow_head=True)
 async def root_route_handler(_):
+    async def root_route_handler(_):
     return web.json_response(
         {
             "server_status": "running",
             "uptime": utils.get_readable_time(time.time() - StartTime),
-            "total_servers": len(multi_clients),
+            "telegram_bot": "@" + StreamBot.username,
+            "connected_bots": len(multi_clients),
             "loads": dict(
-                ("server" + str(c + 1), l)
+                ("bot" + str(c + 1), l)
                 for c, (_, l) in enumerate(
                     sorted(work_loads.items(), key=lambda x: x[1], reverse=True)
                 )
@@ -53,25 +55,19 @@ async def stream_handler(request: web.Request):
         except ValueError:
             return web.json_response(
                 {
-                    "error": "The media you are trying to get is invalid.",
-                    "solution": "Either mail us at error@hagadmansa.com or report it on Telegram at @HagadmansaChat.",
-                    "tip": "Send us the URL too as a evidence, so that we can understand actual error."
+                    "error": "The media you are trying to get is invalid, contact support."
                 }
             )
         except ChannelPrivate:
             return web.json_response(
                 {
-                    "error": "Oh No! somehow the BIN_CHANNEL was deleted.",
-                    "solution": "Either mail us at error@hagadmansa.com or report it on Telegram at @HagadmansaChat.",
-                    "tip": "Send us the URL too as a evidence, so that we can understand actual error."
+                    "error": "Either the BIN_CHANNEL was deleted or not accessible, contact support."
                 }
             )
         except Exception as e:
             return web.json_response(
                 {
-                    "error": e, 
-                    "solution": "Either mail us at error@hagadmansa.com or report it on Telegram at @HagadmansaChat.",
-                    "tip": "Send us the URL too as a evidence, so that we can understand actual error."
+                    "error": f"{e}, contact supprot."
                 }
             ) 
         return await media_streamer(request, message.id)
