@@ -28,4 +28,7 @@ async def getStreamlink(bot, message):
             quote=True
         )
     except Exception as e:
-        await message.reply(e)
+        await message.reply(
+            text=e,
+            quote=True
+        )
