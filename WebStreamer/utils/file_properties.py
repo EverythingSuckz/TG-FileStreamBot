@@ -53,7 +53,18 @@ def get_name(media_msg: Message) -> str:
     media = get_media_from_message(media_msg)
     return getattr(media, 'file_name', "")
 
-def getFileid(message):
-    replied = message.reply_to_message
-    media = replied.document or replied.video or replied.audio or replied.animation or replied.voice or replied.video_note or replied.photo or replied.sticker 
-    return media.file_id
+def getFileid(message: "Message") -> Any:
+    media_types = (
+        "audio",
+        "document",
+        "photo",
+        "sticker",
+        "animation",
+        "video",
+        "voice",
+        "video_note",
+    )
+    for attr in media_types:
+        media = getattr(message, attr, None)
+        if media:
+            return media.file_id
