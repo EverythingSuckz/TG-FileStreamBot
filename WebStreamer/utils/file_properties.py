@@ -1,5 +1,5 @@
 import base64
-from struck import pack
+from struct import pack
 from pyrogram import Client
 from typing import Any, Optional
 from pyrogram.types import Message
