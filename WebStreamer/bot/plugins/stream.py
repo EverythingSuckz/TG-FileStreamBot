@@ -24,7 +24,7 @@ from WebStreamer.utils.file_properties import getNew, fileId
 async def getStreamlink(bot, message):
     try:
         await message.reply(
-            text=f"{Var.URL}{getNew(fileId(message))}",
+            text=f"{Var.URL}{getNew(fileId(message))[0]}",
             quote=True
         )
     except Exception as e:
