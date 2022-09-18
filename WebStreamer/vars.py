@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 class Var(object):
     MULTI_CLIENT = False
     API_ID = int(environ.get("API_ID"))
@@ -24,6 +23,7 @@ class Var(object):
     HAS_SSL = True if str(HAS_SSL).lower() == "true" else False
     NO_PORT = environ.get("NO_PORT", False)
     NO_PORT = True if str(NO_PORT).lower() == "true" else False
+    CUSTOM_CAPTION = environ.get("CUSTOM_CAPTION", "Himanshu Rastogi")
     if "DYNO" in environ:
         ON_HEROKU = True
         APP_NAME = str(environ.get("APP_NAME"))
