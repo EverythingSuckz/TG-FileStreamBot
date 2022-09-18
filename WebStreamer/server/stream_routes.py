@@ -119,20 +119,20 @@ async def media_streamer(request: web.Request, message_id: int):
     )
 
     mime_type = file_id.mime_type
-    file_name = 'Www.Hagadmansa.Com ' + file_id.file_name
+    file_name = Var.CUSTOM_CAPTION + " " + file_id.file_name
     disposition = "attachment"
     if mime_type:
         if not file_name:
             try:
-                file_name = f"Www.Hagadmansa.Com {secrets.token_hex(2)}.{mime_type.split('/')[1]}"
+                file_name = f"{Var.CUSTOM_CAPTION} {secrets.token_hex(2)}.{mime_type.split('/')[1]}"
             except (IndexError, AttributeError):
-                file_name = f"Www.Hagadmansa.Com {secrets.token_hex(2)}.unknown"
+                file_name = f"{Var.CUSTOM_CAPTION} {secrets.token_hex(2)}.unknown"
     else:
         if file_name:
             mime_type = mimetypes.guess_type(file_id.file_name)
         else:
             mime_type = "application/octet-stream"
-            file_name = f"Www.Hagadmansa.Com {secrets.token_hex(2)}.unknown"
+            file_name = f"{Var.CUSTOM_CAPTION} {secrets.token_hex(2)}.unknown"
     return_resp = web.Response(
         status=206 if range_header else 200,
         body=body,
