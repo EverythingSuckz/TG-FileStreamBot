@@ -24,7 +24,7 @@ from WebStreamer.utils.file_properties import getNew, fileId
 async def getStreamlink(bot, message):
     
     if message.photo:
-        await message.reply(
+        return await message.reply(
             text="Don't send me photos, send them as document.",
             quote=True
         )
@@ -33,12 +33,6 @@ async def getStreamlink(bot, message):
         await message.reply(
             text=f"{Var.URL}{getNew(fileId(message))[0]}",
             quote=True
-        )
-        await bot.copy_message(
-            chat_id=Var.BIN_CHANNEL,
-            from_chat_id=message.chat.id,
-            message_id=message.id,
-            caption='Hello'
         )
     except Exception as e:
         await message.reply(
