@@ -23,7 +23,8 @@ class Var(object):
     HAS_SSL = True if str(HAS_SSL).lower() == "true" else False
     NO_PORT = environ.get("NO_PORT", False)
     NO_PORT = True if str(NO_PORT).lower() == "true" else False
-    CUSTOM_CAPTION = environ.get("CUSTOM_CAPTION", "Himanshu Rastogi")
+    CUSTOM_CAPTION = environ.get("CUSTOM_CAPTION", "@EverythingSuckz")
+    REDIRECT_TO = environ.get("REDIRECT_TO", "https://github.com/EverythingSuckz/TG-FileStreamBot")
     if "DYNO" in environ:
         ON_HEROKU = True
         APP_NAME = str(environ.get("APP_NAME"))
