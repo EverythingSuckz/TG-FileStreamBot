@@ -118,7 +118,7 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
         else:
             mime_type = "application/octet-stream"
             file_name = f"{secrets.token_hex(2)}.unknown"
-    if "video/" in mime_type or "audio/" in mime_type:
+    if "video/" in mime_type or "audio/" in mime_type or "/html" in mime_type:
         disposition = "inline"
     return_resp = web.Response(
         status=206 if range_header else 200,
