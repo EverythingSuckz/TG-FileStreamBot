@@ -31,6 +31,7 @@
       <ul>
         <li><a href="#deploy-on-heroku">Deploy using Heroku</a></li>
         <li><a href="#host-it-on-vps-or-locally">Run it in a VPS / local</a></li>
+        <li><a href="#deploy-using-docker">Deploy using Docker</a></li>
       </ul>
     </li>
     <li><a href="#setting-up-things">Setting up things</a></li>
@@ -85,6 +86,31 @@ python3 -m WebStreamer
 
 and to stop the whole bot,
  do <kbd>CTRL</kbd>+<kbd>C</kbd>
+ 
+### Deploy using Docker
+first clone the repo
+```sh
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot
+cd TG-FileStreamBot
+```
+then build the docker image
+```sh
+docker build . -t stream-bot
+```
+now create the `.env` file with your variables. and start your container:
+```sh
+docker run -d --restart unless-stopped --name fsb \
+-v /PATH/TO/.env:/app/.env \
+-p 8000:8000 \
+stream-bot
+```
+
+your `PORT` variable has to be consistent with the container's exposed port since it's used for URL generation. so remember if you changed the `PORT` variable your docker run command changes too. (example: `PORT=9000` -> `-p 9000:9000`)
+
+if you need to change the variables in `.env` file after your bot was already started, all you need to do is restart the container for the bot settings to get updated:
+```sh
+docker restart fsb
+```
 
 ## Setting up things
 
