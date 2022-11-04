@@ -78,15 +78,24 @@ then goto the <a href="#mandatory-vars">variables tab</a> for more info on setti
 ```sh
 git clone https://github.com/EverythingSuckz/TG-FileStreamBot
 cd TG-FileStreamBot
-virtualenv -p /usr/bin/python3 venv
+python3 -m venv ./venv
 . ./venv/bin/activate
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 python3 -m WebStreamer
 ```
 
 and to stop the whole bot,
  do <kbd>CTRL</kbd>+<kbd>C</kbd>
- 
+
+- **If you wanna run this bot 24/7 on the VPS, follow these steps.**
+```sh
+sudo apt install tmux -y
+tmux
+python3 -m WebStreamer
+```
+
+now you can close the VPS and the bot will run on it.
+
 ### Deploy using Docker
 first clone the repo
 ```sh
