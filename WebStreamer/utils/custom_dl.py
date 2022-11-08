@@ -195,22 +195,26 @@ class ByteStreamer:
                     chunk = r.bytes
                     if not chunk:
                         break
-                    offset += chunk_size
-                    if part_count == 1:
+                    elif part_count == 1:
                         yield chunk[first_part_cut:last_part_cut]
-                        break
-                    if current_part == 1:
+                    elif current_part == 1:
                         yield chunk[first_part_cut:]
-                    if 1 < current_part <= part_count:
+                    elif current_part == part_count:
+                        yield chunk[:last_part_cut]
+                    else:
                         yield chunk
+
+                    current_part += 1
+                    offset += chunk_size
+
+                    if current_part > part_count:
+                        break
 
                     r = await media_session.invoke(
                         raw.functions.upload.GetFile(
                             location=location, offset=offset, limit=chunk_size
                         ),
                     )
-
-                    current_part += 1
         except (TimeoutError, AttributeError):
             pass
         finally:
