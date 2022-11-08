@@ -105,10 +105,10 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
 
     offset = from_bytes - (from_bytes % chunk_size)
     first_part_cut = from_bytes - offset
-    last_part_cut = chunk_size - (until_bytes % chunk_size)
+    last_part_cut = until_bytes % chunk_size + 1
 
     req_length = until_bytes - from_bytes + 1
-    part_count = math.ceil(req_length / chunk_size)
+    part_count = math.ceil(until_bytes / chunk_size) - math.floor(offset / chunk_size)
     body = tg_connect.yield_file(
         file_id, index, offset, first_part_cut, last_part_cut, part_count, chunk_size
     )

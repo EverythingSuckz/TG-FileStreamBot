@@ -181,7 +181,6 @@ class ByteStreamer:
         media_session = await self.generate_media_session(client, file_id)
 
         current_part = 1
-
         location = await self.get_location(file_id)
 
         try:
@@ -191,7 +190,7 @@ class ByteStreamer:
                 ),
             )
             if isinstance(r, raw.types.upload.File):
-                while current_part <= part_count:
+                while True:
                     chunk = r.bytes
                     if not chunk:
                         break
