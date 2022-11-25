@@ -63,13 +63,13 @@ The main working part was taken from [Megatron](https://github.com/eyaadh/megadl
 
 ## How to make your own
 
-Either you could locally host or deploy on [Heroku](https://heroku.com)
+Either you could locally host or deploy on ~~[Heroku](https://heroku.com)~~ Free tier is dead.
 
 ### Deploy on Heroku
 
 Press the below button to fast deploy to Heroku
 
-- [![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https%3A%2F%2Fgithub.com%2Fzxlp%2Ftgfs)
+[![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https%3A%2F%2Fgithub.com%2Fzxlp%2Ftgfs)
 
 then goto the <a href="#mandatory-vars">variables tab</a> for more info on setting up environmental variables.
 
@@ -87,17 +87,16 @@ python3 -m WebStreamer
 and to stop the whole bot,
  do <kbd>CTRL</kbd>+<kbd>C</kbd>
 
-- **If you wanna run this bot 24/7 on the VPS, follow these steps.**
-```sh
-sudo apt install tmux -y
-tmux
-python3 -m WebStreamer
-```
-
-now you can close the VPS and the bot will run on it.
+> **If you wanna run this bot 24/7 on the VPS, follow thesesteps.**
+> ```sh
+> sudo apt install tmux -y
+> tmux
+> python3 -m WebStreamer
+> ```
+> now you can close the VPS and the bot will run on it.
 
 ### Deploy using Docker
-first clone the repo
+First clone the repository
 ```sh
 git clone https://github.com/EverythingSuckz/TG-FileStreamBot
 cd TG-FileStreamBot
@@ -150,8 +149,10 @@ HAS_SSL=False
 
 `BIN_CHANNEL` : Create a new channel (private/public), post something in your channel. Forward that post to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply** `/id`. Now copy paste the forwarded channel ID in this field. 
 
-### For MultiClient
+### For making use of Multi-Client support
 
+> **What it does?** <br>
+> Shares the workload between other bots to avoid getting floodwaited and to make the server handle more requests.
 `MULTI_TOKEN1`: Add your first bot token here.
 
 `MULTI_TOKEN2`: Add your second bot token here.
@@ -159,26 +160,42 @@ HAS_SSL=False
 you may also add as many as bots you want. (max limit is not tested yet)
 `MULTI_TOKEN3`, `MULTI_TOKEN4`, etc.
 
+> Don't forget to add all these bots to the `BIN_CHANNEL`
+
 ### Optional Vars
 
-`SLEEP_THRESHOLD` : Set a sleep threshold for flood wait exceptions happening globally in this telegram bot instance, below which any request that raises a flood wait will be automatically invoked again after sleeping for the required amount of time. Flood wait exceptions requiring higher waiting times will be raised. Defaults to 60 seconds.
+-`HASH_LENGTH` : Set custom hash length for generated urls
+> **NOTE**: Hash length should be greater than 5 and less than 64.
 
-`WORKERS` : Number of maximum concurrent workers for handling incoming updates. Defaults to `3`
 
-`PORT` : The port that you want your webapp to be listened to. Defaults to `8080`
+- `SLEEP_THRESHOLD` : Set a sleep threshold for flood wait exceptions happening globally in this telegram bot instance, below which any request that raises a flood wait will be automatically invoked again after sleeping for the required amount of time. Flood wait exceptions requiring higher waiting times will be raised. Defaults to 60 seconds.
 
-`WEB_SERVER_BIND_ADDRESS` : Your server bind address. Defauls to `0.0.0.0`
 
-`NO_PORT` : (can be either `True` or `False`) If you don't want your port to be displayed. You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
+- `WORKERS` : Number of maximum concurrent workers for handling incoming updates.
+> Defaults to `3`
 
-`FQDN` :  A Fully Qualified Domain Name if present. Defaults to `WEB_SERVER_BIND_ADDRESS`
 
-`HAS_SSL` : (can be either `True` or `False`) If you want the generated links in https format.
+- `PORT` : The port that you want your webapp to be listened to.
+> Defaults to `8080`
 
-`PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (Only for Heroku). Defaults to `1200` or 20 minutes.
+
+- `WEB_SERVER_BIND_ADDRESS` : Your server bind address.
+> Defaults to `0.0.0.0`
+
+
+- `NO_PORT` : (can be either `True` or `False`) If you don't want your port to be displayed.
+> You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
+
+- `FQDN` :  A Fully Qualified Domain Name if present.
+> Defaults to `WEB_SERVER_BIND_ADDRESS`
+
+- `HAS_SSL` : (can be either `True` or `False`) If you want the generated links in https format.
+
+- `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (Only for Heroku). 
+> Defaults to `1200` or 20 minutes.
 ## How to use the bot
 
-:warning: **Before using the  bot, don't forget to add all the bots (multi-client ones too) to the `BIN_CHANNEL` as an admin**
+> :warning: **Before using the  bot, don't forget to add all the bots (multi-client ones too) to the `BIN_CHANNEL` as an admin**
  
 `/start` : To check if the bot is alive or not.
 
@@ -207,7 +224,7 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUser
 - [eyaadh](https://github.com/eyaadh) for his awesome [Megatron Bot](https://github.com/eyaadh/megadlbot_oss).
 - [BlackStone](https://github.com/eyMarv) for adding multi-client support.
 - [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library](https://github.com/pyrogram/pyrogram)
-- [TheHamkerCat](https://github.com/TheHamkerCat) for helping me with my common doubts.
+- [TheHamkerCat](https://github.com/TheHamkerCat)
 
 ## Copyright
 

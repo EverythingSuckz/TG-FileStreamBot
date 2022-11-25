@@ -1,6 +1,7 @@
 # This file is a part of TG-FileStreamBot
 # Coding : Jyothis Jayanth [@EverythingSuckz]
 
+import sys
 from os import environ
 from dotenv import load_dotenv
 
@@ -24,6 +25,9 @@ class Var(object):
     HAS_SSL = True if str(HAS_SSL).lower() == "true" else False
     NO_PORT = environ.get("NO_PORT", False)
     NO_PORT = True if str(NO_PORT).lower() == "true" else False
+    HASH_LENGTH = int(environ.get("HASH_LENGTH", 6))
+    if not 5 < HASH_LENGTH < 64:
+        sys.exit("Hash length should be greater than 5 and less than 64")
     if "DYNO" in environ:
         ON_HEROKU = True
         APP_NAME = str(environ.get("APP_NAME"))

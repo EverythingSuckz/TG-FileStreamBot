@@ -29,8 +29,9 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 )
 async def media_receive_handler(_, m: Message):
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
-    stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={get_hash(log_msg)}"
-    short_link = f"{Var.URL}{get_hash(log_msg)}{log_msg.id}"
+    file_hash = get_hash(log_msg, Var.HASH_LENGTH)
+    stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={file_hash}"
+    short_link = f"{Var.URL}{file_hash}{log_msg.id}"
     logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     rm = InlineKeyboardMarkup(
         [[InlineKeyboardButton("Open", url=stream_link)]]
