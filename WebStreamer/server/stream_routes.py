@@ -10,7 +10,6 @@ import mimetypes
 from aiohttp import web
 from aiohttp.http_exceptions import BadStatusLine
 from WebStreamer.bot import multi_clients, work_loads
-from WebStreamer.utils.file_properties import get_hash
 from WebStreamer.server.exceptions import FIleNotFound, InvalidHash
 from WebStreamer import Var, utils, StartTime, __version__, StreamBot
 
@@ -81,7 +80,7 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
     logging.debug("after calling get_file_properties")
     
     
-    if get_hash(file_id.unique_id, Var.HASH_LENGTH) != secure_hash:
+    if utils.get_hash(file_id.unique_id, Var.HASH_LENGTH) != secure_hash:
         logging.debug(f"Invalid hash for message with ID {message_id}")
         raise InvalidHash
     
