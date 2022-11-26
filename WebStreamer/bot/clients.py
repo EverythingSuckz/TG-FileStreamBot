@@ -3,16 +3,23 @@
 
 import asyncio
 import logging
+from os import environ
 from ..vars import Var
 from pyrogram import Client
-from WebStreamer.utils import TokenParser
 from . import multi_clients, work_loads, StreamBot
 
 
 async def initialize_clients():
     multi_clients[0] = StreamBot
     work_loads[0] = 0
-    all_tokens = TokenParser().parse_from_env()
+    all_tokens = dict(
+        (c + 1, t)
+        for c, (_, t) in enumerate(
+            filter(
+                lambda n: n[0].startswith("MULTI_TOKEN"), sorted(environ.items())
+            )
+        )
+    )
     if not all_tokens:
         print("No additional clients found, using default client")
         return
