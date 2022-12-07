@@ -120,6 +120,23 @@ if you need to change the variables in `.env` file after your bot was already st
 docker restart fsb
 ```
 
+### Deploy using docker-compose
+First install docker-compose. For debian based, run 
+```sh
+sudo apt install docker-compose -y
+```
+Afterwards, clone the repository
+```sh
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot
+cd TG-FileStreamBot
+```
+No need to create .env file, just edit the variables in the docker-compose.yml
+
+Now run the compose file
+```sh
+sudo docker compose up -d
+```
+
 ## Setting up things
 
 If you're on Heroku, just add these in the Environmental Variables
