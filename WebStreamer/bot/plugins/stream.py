@@ -30,7 +30,12 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 async def media_receive_handler(_, m: Message):
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
     file_hash = get_hash(log_msg, Var.HASH_LENGTH)
-    stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={file_hash}"
+    file_name = get_name(m)
+    if file_name:
+        quote_name = quote_plus(file_name) if len(file_name) >= 1 else ""
+    else:
+        quote_name = ""
+    stream_link = f"{Var.URL}{log_msg.id}/{quote_name}?hash={file_hash}"
     short_link = f"{Var.URL}{file_hash}{log_msg.id}"
     logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     rm = InlineKeyboardMarkup(
