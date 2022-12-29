@@ -14,15 +14,15 @@ from WebStreamer.bot.clients import initialize_clients
 
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if Var.DEBUG else logging.INFO,
     datefmt="%d/%m/%Y %H:%M:%S",
-    format="[%(asctime)s][%(levelname)s] => %(message)s",
+    format="[%(asctime)s][%(name)s][%(levelname)s] ==> %(message)s",
     handlers=[logging.StreamHandler(stream=sys.stdout),
               logging.FileHandler("streambot.log", mode="a", encoding="utf-8")],)
 
-logging.getLogger("aiohttp").setLevel(logging.ERROR)
-logging.getLogger("pyrogram").setLevel(logging.ERROR)
-logging.getLogger("aiohttp.web").setLevel(logging.ERROR)
+logging.getLogger("aiohttp").setLevel(logging.DEBUG if Var.DEBUG else logging.ERROR)
+logging.getLogger("pyrogram").setLevel(logging.INFO if Var.DEBUG else logging.ERROR)
+logging.getLogger("aiohttp.web").setLevel(logging.DEBUG if Var.DEBUG else logging.ERROR)
 
 server = web.AppRunner(web_server())
 
@@ -32,34 +32,25 @@ server = web.AppRunner(web_server())
 # else:
 loop = asyncio.get_event_loop()
 
+
+
 async def start_services():
-    print()
-    print("-------------------- Initializing Telegram Bot --------------------")
+    logging.info("Initializing Telegram Bot")
     await StreamBot.start()
     bot_info = await StreamBot.get_me()
+    logging.debug(bot_info)
     StreamBot.username = bot_info.username
-    print("------------------------------ DONE ------------------------------")
-    print()
-    print(
-        "---------------------- Initializing Clients ----------------------"
-    )
+    logging.info("Initialized Telegram Bot")
     await initialize_clients()
-    print("------------------------------ DONE ------------------------------")
     if Var.KEEP_ALIVE:
-        print("------------------ Starting Keep Alive Service ------------------")
-        print()
         asyncio.create_task(utils.ping_server())
-    print("--------------------- Initializing Web Server ---------------------")
     await server.setup()
     await web.TCPSite(server, Var.BIND_ADDRESS, Var.PORT).start()
-    print("------------------------------ DONE ------------------------------")
-    print()
-    print("------------------------- Service Started -------------------------")
-    print("                        bot =>> {}".format(bot_info.first_name))
+    logging.info("Service Started")
+    logging.info("bot =>> {}".format(bot_info.first_name))
     if bot_info.dc_id:
-        print("                        DC ID =>> {}".format(str(bot_info.dc_id)))
-    print("                        URL =>> {}".format(Var.URL))
-    print("------------------------------------------------------------------")
+        logging.info("DC ID =>> {}".format(str(bot_info.dc_id)))
+    logging.info("URL =>> {}".format(Var.URL))
     await idle()
 
 async def cleanup():
@@ -76,4 +67,4 @@ if __name__ == "__main__":
     finally:
         loop.run_until_complete(cleanup())
         loop.stop()
-        print("------------------------ Stopped Services ------------------------")
+        logging.info("Stopped Services")

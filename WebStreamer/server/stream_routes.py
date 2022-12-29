@@ -13,6 +13,8 @@ from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer.server.exceptions import FIleNotFound, InvalidHash
 from WebStreamer import Var, utils, StartTime, __version__, StreamBot
 
+logger = logging.getLogger("routes")
+
 
 routes = web.RouteTableDef()
 
@@ -54,7 +56,7 @@ async def stream_handler(request: web.Request):
     except (AttributeError, BadStatusLine, ConnectionResetError):
         pass
     except Exception as e:
-        logging.critical(e.with_traceback(None))
+        logger.critical(str(e), exc_info=True)
         raise web.HTTPInternalServerError(text=str(e))
 
 class_cache = {}
@@ -66,22 +68,22 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
     faster_client = multi_clients[index]
     
     if Var.MULTI_CLIENT:
-        logging.info(f"Client {index} is now serving {request.remote}")
+        logger.info(f"Client {index} is now serving {request.remote}")
 
     if faster_client in class_cache:
         tg_connect = class_cache[faster_client]
-        logging.debug(f"Using cached ByteStreamer object for client {index}")
+        logger.debug(f"Using cached ByteStreamer object for client {index}")
     else:
-        logging.debug(f"Creating new ByteStreamer object for client {index}")
+        logger.debug(f"Creating new ByteStreamer object for client {index}")
         tg_connect = utils.ByteStreamer(faster_client)
         class_cache[faster_client] = tg_connect
-    logging.debug("before calling get_file_properties")
+    logger.debug("before calling get_file_properties")
     file_id = await tg_connect.get_file_properties(message_id)
-    logging.debug("after calling get_file_properties")
+    logger.debug("after calling get_file_properties")
     
     
     if utils.get_hash(file_id.unique_id, Var.HASH_LENGTH) != secure_hash:
-        logging.debug(f"Invalid hash for message with ID {message_id}")
+        logger.debug(f"Invalid hash for message with ID {message_id}")
         raise InvalidHash
     
     file_size = file_id.file_size

@@ -11,7 +11,7 @@ from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 
-
+logger = logging.getLogger("bot")
 
 @StreamBot.on_message(
     filters.private
@@ -32,7 +32,7 @@ async def media_receive_handler(_, m: Message):
     file_hash = get_hash(log_msg, Var.HASH_LENGTH)
     stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={file_hash}"
     short_link = f"{Var.URL}{file_hash}{log_msg.id}"
-    logging.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
+    logger.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     rm = InlineKeyboardMarkup(
         [[InlineKeyboardButton("Open", url=stream_link)]]
     )
