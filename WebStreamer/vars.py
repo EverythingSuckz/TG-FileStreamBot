@@ -28,19 +28,8 @@ class Var(object):
     HASH_LENGTH = int(environ.get("HASH_LENGTH", 6))
     if not 5 < HASH_LENGTH < 64:
         sys.exit("Hash length should be greater than 5 and less than 64")
-    if "DYNO" in environ:
-        ON_HEROKU = True
-        APP_NAME = str(environ.get("APP_NAME"))
-    else:
-        ON_HEROKU = False
-    FQDN = (
-        str(environ.get("FQDN", BIND_ADDRESS))
-        if not ON_HEROKU or environ.get("FQDN")
-        else APP_NAME + ".herokuapp.com"
-    )
-    if ON_HEROKU:
-        URL = f"https://{FQDN}/"
-    else:
-        URL = "http{}://{}{}/".format(
+    FQDN = str(environ.get("FQDN", BIND_ADDRESS))
+    URL = "http{}://{}{}/".format(
             "s" if HAS_SSL else "", FQDN, "" if NO_PORT else ":" + str(PORT)
         )
+    KEEP_ALIVE = str(environ.get("KEEP_ALIVE", "0").lower()) in  ("1", "true", "t", "yes", "y")

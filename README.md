@@ -29,7 +29,6 @@
     <li>
       <a href="#how-to-make-your-own">How to make your own</a>
       <ul>
-        <li><a href="#deploy-on-heroku">Deploy using Heroku</a></li>
         <li><a href="#host-it-on-vps-or-locally">Run it in a VPS / local</a></li>
         <li><a href="#deploy-using-docker">Deploy using Docker</a></li>
       </ul>
@@ -64,14 +63,6 @@ The main working part was taken from [Megatron](https://github.com/eyaadh/megadl
 ## How to make your own
 
 Either you could locally host or deploy on ~~[Heroku](https://heroku.com)~~ Free tier is dead.
-
-### Deploy on Heroku
-
-Press the below button to fast deploy to Heroku
-
-[![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https%3A%2F%2Fgithub.com%2Fzxlp%2Ftgfs)
-
-then goto the <a href="#mandatory-vars">variables tab</a> for more info on setting up environmental variables.
 
 ### Host it on VPS or Locally
 
@@ -139,8 +130,7 @@ sudo docker compose up -d
 
 ## Setting up things
 
-If you're on Heroku, just add these in the Environmental Variables
-or if you're Locally hosting, create a file named `.env` in the root directory and add all the variables there.
+If you're locally hosting, create a file named `.env` in the root directory and add all the variables there.
 An example of `.env` file:
 
 ```sh
@@ -199,16 +189,18 @@ you may also add as many as bots you want. (max limit is not tested yet)
 - `WEB_SERVER_BIND_ADDRESS` : Your server bind address.
 > Defaults to `0.0.0.0`
 
-
 - `NO_PORT` : (can be either `True` or `False`) If you don't want your port to be displayed.
-> You should point your `PORT` to `80` (http) or `443` (https) for the links to work. Ignore this if you're on Heroku.
+> You should point your `PORT` to `80` (http) or `443` (https) for the links to work.
 
 - `FQDN` :  A Fully Qualified Domain Name if present.
 > Defaults to `WEB_SERVER_BIND_ADDRESS`
 
 - `HAS_SSL` : (can be either `True` or `False`) If you want the generated links in https format.
 
-- `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (Only for Heroku). 
+- `KEEP_ALIVE`: If you want to make the server ping itself every `PING_INTERVAL` seconds to avoid sleeping. Helpful in PaaS Free tiers. 
+> Defaults to `False`
+
+- `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (If you're on some PaaS). 
 > Defaults to `1200` or 20 minutes.
 ## How to use the bot
 
