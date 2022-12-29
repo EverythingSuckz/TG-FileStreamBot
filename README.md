@@ -202,6 +202,9 @@ you may also add as many as bots you want. (max limit is not tested yet)
 
 - `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (If you're on some PaaS). 
 > Defaults to `1200` or 20 minutes.
+
+- `USE_SESSION_FILE` : Use session files for client(s) rather than storing the pyrogram sqlite db in the memory
+
 ## How to use the bot
 
 > :warning: **Before using the  bot, don't forget to add all the bots (multi-client ones too) to the `BIN_CHANNEL` as an admin**

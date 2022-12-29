@@ -114,6 +114,7 @@ dmypy.json
 .pyre/
 
 #session files
+sessions/
 *.session
 *.session-journal
 .env

@@ -6,7 +6,7 @@ import logging
 from os import environ
 from ..vars import Var
 from pyrogram import Client
-from . import multi_clients, work_loads, StreamBot
+from . import multi_clients, work_loads, sessions_dir, StreamBot
 
 logger = logging.getLogger("multi_client")
 
@@ -37,8 +37,9 @@ async def initialize_clients():
                 api_hash=Var.API_HASH,
                 bot_token=token,
                 sleep_threshold=Var.SLEEP_THRESHOLD,
+                workdir=sessions_dir if Var.USE_SESSION_FILE else Client.PARENT_DIR,
                 no_updates=True,
-                in_memory=True
+                in_memory=not Var.USE_SESSION_FILE,
             ).start()
             work_loads[client_id] = 0
             return client_id, client
