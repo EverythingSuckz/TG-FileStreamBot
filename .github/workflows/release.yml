@@ -1,11 +1,11 @@
-name: Build
+name: Release
 on:
   workflow_dispatch:
   push:
 
 
 jobs:
-  build:
+  Release:
     if: "contains(github.event.head_commit.message, 'Bump version')"
     runs-on: ubuntu-22.04
     steps:
@@ -21,6 +21,7 @@ jobs:
         run: |
           rm -fr .vscode .git*
           zip -r ${{ github.WORKSPACE }}/TG-FileStreamBot-v${{ env.VERSION }}-main.zip *
+      - name: Release
         uses: softprops/action-gh-release@v1
         with:
           body_path: CHANGELOGS.md
