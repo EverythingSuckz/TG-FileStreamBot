@@ -4,6 +4,7 @@ on:
   fork:
   push:
   release:
+    types: published
   issue_comment:
     types: created
   watch:

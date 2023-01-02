@@ -28,5 +28,5 @@ jobs:
           body_path: CHANGELOGS.md
           files: |
             ${{ github.WORKSPACE }}/TG-FileStreamBot-v${{ env.VERSION }}-main.zip
-          prerelease: true
+          prerelease: false
           tag_name: v${{ env.VERSION }}
