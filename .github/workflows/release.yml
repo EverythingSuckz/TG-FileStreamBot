@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup ENV
-        run: echo "VERSION=$(${{ github.event.head_commit.message }} | sed -r 's/Bump\s+version\s+?(to\s+?)?`?v?([a-z0-9.\-_]+)`?$/\2/')-main" >> $GITHUB_ENV
+        run: echo "VERSION=$(echo ${{ github.event.head_commit.message }} | sed -r 's/Bump\s+version\s+?(to\s+?)?`?v?([a-z0-9.\-_]+)`?$/\2/')" >> $GITHUB_ENV
       - name: Generate CHANGELOGS
         run: | 
           chmod +x .github/workflows/generate_changelogs.sh
@@ -24,6 +24,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          name: TG-FileStreamBot-v${{ env.VERSION }} (main)
           body_path: CHANGELOGS.md
           files: |
             ${{ github.WORKSPACE }}/TG-FileStreamBot-v${{ env.VERSION }}-main.zip
