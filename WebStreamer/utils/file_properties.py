@@ -5,6 +5,7 @@ from pyrogram.file_id import FileId
 from typing import Any, Optional, Union
 from pyrogram.raw.types.messages import Messages
 from WebStreamer.server.exceptions import FIleNotFound
+from datetime import datetime
 
 
 async def parse_file_id(message: "Message") -> Optional[FileId]:
@@ -56,6 +57,27 @@ def get_hash(media_msg: Union[str, Message], length: int) -> str:
     long_hash = hashlib.sha256(unique_id.encode("UTF-8")).hexdigest()
     return long_hash[:length]
 
+
 def get_name(media_msg: Message) -> str:
     media = get_media_from_message(media_msg)
-    return getattr(media, 'file_name', "") or ""
+    file_name = getattr(media, 'file_name', "") or ""
+
+    if not file_name:
+        if media_msg.media and media_msg.media.value:
+            media_type = media_msg.media.value
+        else:
+            media_type = "file"
+
+        formats = {
+            "photo": "jpg", "audio": "mp3", "voice": "ogg",
+            "video": "mp4", "animation": "mp4", "video_note": "mp4",
+            "sticker": "webp"
+        }
+
+        ext = formats.get(media_type)
+        ext = "." + ext if ext else ""
+
+        date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        file_name = f"{media_type}-{date}{ext}"
+
+    return file_name
