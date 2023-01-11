@@ -58,12 +58,17 @@ def get_hash(media_msg: Union[str, Message], length: int) -> str:
     return long_hash[:length]
 
 
-def get_name(media_msg: Message) -> str:
-    media = get_media_from_message(media_msg)
-    file_name = getattr(media, 'file_name', "") or ""
+def get_name(media_msg: Message | FileId) -> str:
+
+    if isinstance(media_msg, Message):
+        media = get_media_from_message(media_msg)
+        file_name = getattr(media, "file_name", "")
+
+    elif isinstance(media_msg, FileId):
+        file_name = getattr(media_msg, "file_name", "")
 
     if not file_name:
-        if media_msg.media and media_msg.media.value:
+        if isinstance(media_msg, Message) and media_msg.media:
             media_type = media_msg.media.value
         else:
             media_type = "file"
