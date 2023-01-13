@@ -70,6 +70,8 @@ def get_name(media_msg: Message | FileId) -> str:
     if not file_name:
         if isinstance(media_msg, Message) and media_msg.media:
             media_type = media_msg.media.value
+        elif media_msg.file_type:
+            media_type = media_msg.file_type.name.lower()
         else:
             media_type = "file"
 

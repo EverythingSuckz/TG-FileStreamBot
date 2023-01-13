@@ -12,7 +12,6 @@ from aiohttp.http_exceptions import BadStatusLine
 from WebStreamer.bot import multi_clients, work_loads
 from WebStreamer.server.exceptions import FIleNotFound, InvalidHash
 from WebStreamer import Var, utils, StartTime, __version__, StreamBot
-from WebStreamer.utils import get_name
 
 logger = logging.getLogger("routes")
 
@@ -117,7 +116,7 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
         file_id, index, offset, first_part_cut, last_part_cut, part_count, chunk_size
     )
     mime_type = file_id.mime_type
-    file_name = get_name(file_id)
+    file_name = utils.get_name(file_id)
     disposition = "attachment"
 
     if not mime_type:
