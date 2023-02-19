@@ -160,6 +160,10 @@ Before running the bot, you will need to set up the following mandatory variable
 ### Optional Vars
 In addition to the mandatory variables, you can also set the following optional variables:
 
+- `ALLOWED_USERS`: The user Telegram IDs of users to which the bot only reply to.
+> **Note**
+> Leave this field empty and anyone will be able to use your bot instance.
+> You may also add multiple users by adding the IDs separated by comma (,)
 
 - `HASH_LENGTH` : This is the custom hash length for generated URLs. The hash length must be greater than 5 and less than 64.
 
