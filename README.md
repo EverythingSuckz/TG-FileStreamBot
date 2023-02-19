@@ -5,7 +5,7 @@
     <img src="https://socialify.git.ci/EverythingSuckz/TG-FileStreamBot/image?description=1&font=Source%20Code%20Pro&forks=1&issues=1&logo=https://telegra.ph/file/01385a9f4cf0419682b87.png&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark" alt="Cover Image" width="650">
   </a>
   <p align="center">
-    A Telegram bot to stream files to web
+    A Telegram bot to <b>generate direct link</b> for your Telegram files.
     <br />
     <a href="https://telegram.dog/TG_FileStreamBot"><strong>Demo Bot »</strong></a>
     <br />
@@ -147,19 +147,56 @@ HAS_SSL=False
 ```
 
 ### Mandatory Vars
+Before running the bot, you will need to set up the following mandatory variables:
 
-`API_ID` : Goto [my.telegram.org](https://my.telegram.org) to obtain this.
+- `API_ID` : This is the API ID for your Telegram account, which can be obtained from my.telegram.org.
 
-`API_HASH` : Goto [my.telegram.org](https://my.telegram.org) to obtain this.
+- `API_HASH` : This is the API hash for your Telegram account, which can also be obtained from my.telegram.org.
 
-`BOT_TOKEN` : Get the bot token from [@BotFather](https://telegram.dog/BotFather)
+- `BOT_TOKEN` : This is the bot token for the Telegram Media Streamer Bot, which can be obtained from [@BotFather](https://telegram.dog/BotFather).
 
-`BIN_CHANNEL` : Create a new channel (private/public), post something in your channel. Forward that post to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply** `/id`. Now copy paste the forwarded channel ID in this field. 
+- `BIN_CHANNEL` :  This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
+
+### Optional Vars
+In addition to the mandatory variables, you can also set the following optional variables:
+
+
+- `HASH_LENGTH` : This is the custom hash length for generated URLs. The hash length must be greater than 5 and less than 64.
+
+
+- `SLEEP_THRESHOLD` : This sets the sleep threshold for flood wait exceptions that occur globally in the bot instance. Requests that raise flood wait exceptions below this threshold will be automatically invoked again after sleeping for the required amount of time. Flood wait exceptions requiring longer waiting times will be raised. The default value is 60 seconds. Better leave this field empty.
+
+
+- `WORKERS` : This sets the maximum number of concurrent workers for handling incoming updates. The default value is 3.
+
+
+- `PORT` : This sets the port that your webapp will listen to. The default value is 8080.
+
+
+- `WEB_SERVER_BIND_ADDRESS` : This sets your server bind address. The default value is 0.0.0.0.
+
+- `NO_PORT` : This can be either True or False. If set to True, the port will not be displayed.
+> **Note**
+> To use this setting, you must point your `PORT` to 80 for HTTP protocol or to 443 for HTTPS protocol to make the generated links work.
+
+- `FQDN` :  A Fully Qualified Domain Name if present. Defaults to `WEB_SERVER_BIND_ADDRESS`
+
+- `HAS_SSL` : This can be either True or False. If set to True, the generated links will be in HTTPS format.
+
+- `KEEP_ALIVE`: If you want to make the server ping itself every `PING_INTERVAL` seconds to avoid sleeping. Helpful in PaaS Free tiers. Defaults to `False`
+
+- `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (If you're on some PaaS). Defaults to `1200` or 20 minutes.
+
+- `USE_SESSION_FILE` : Use session files for client(s) rather than storing the pyrogram sqlite database in the memory
 
 ### For making use of Multi-Client support
 
-> **What it does?** <br>
-> Shares the workload between other bots to avoid getting floodwaited and to make the server handle more requests.
+> **Note**
+> What it multi-client feature and what it does? <br>
+> This feature shares the Telegram API requests between other bots to avoid getting floodwaited (A kind of rate limiting that Telegram does in the backend to avoid flooding their servers) and to make the server handle more requests. <br>
+
+To enable multi-client, generate new bot tokens and add it as your environmental variables with the following key names. 
+
 `MULTI_TOKEN1`: Add your first bot token here.
 
 `MULTI_TOKEN2`: Add your second bot token here.
@@ -167,53 +204,19 @@ HAS_SSL=False
 you may also add as many as bots you want. (max limit is not tested yet)
 `MULTI_TOKEN3`, `MULTI_TOKEN4`, etc.
 
-> Don't forget to add all these bots to the `BIN_CHANNEL`
-
-### Optional Vars
-
--`HASH_LENGTH` : Set custom hash length for generated urls
-> **NOTE**: Hash length should be greater than 5 and less than 64.
-
-
-- `SLEEP_THRESHOLD` : Set a sleep threshold for flood wait exceptions happening globally in this telegram bot instance, below which any request that raises a flood wait will be automatically invoked again after sleeping for the required amount of time. Flood wait exceptions requiring higher waiting times will be raised. Defaults to 60 seconds.
-
-
-- `WORKERS` : Number of maximum concurrent workers for handling incoming updates.
-> Defaults to `3`
-
-
-- `PORT` : The port that you want your webapp to be listened to.
-> Defaults to `8080`
-
-
-- `WEB_SERVER_BIND_ADDRESS` : Your server bind address.
-> Defaults to `0.0.0.0`
-
-- `NO_PORT` : (can be either `True` or `False`) If you don't want your port to be displayed.
-> You should point your `PORT` to `80` (http) or `443` (https) for the links to work.
-
-- `FQDN` :  A Fully Qualified Domain Name if present.
-> Defaults to `WEB_SERVER_BIND_ADDRESS`
-
-- `HAS_SSL` : (can be either `True` or `False`) If you want the generated links in https format.
-
-- `KEEP_ALIVE`: If you want to make the server ping itself every `PING_INTERVAL` seconds to avoid sleeping. Helpful in PaaS Free tiers. 
-> Defaults to `False`
-
-- `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (If you're on some PaaS). 
-> Defaults to `1200` or 20 minutes.
-
-- `USE_SESSION_FILE` : Use session files for client(s) rather than storing the pyrogram sqlite db in the memory
+> **Warning**
+> Don't forget to add all these bots to the `BIN_CHANNEL` for the proper functioning
 
 ## How to use the bot
 
-> :warning: **Before using the  bot, don't forget to add all the bots (multi-client ones too) to the `BIN_CHANNEL` as an admin**
+> **Warning**
+> Before using the  bot, don't forget to add all the bots (multi-client ones too) to the `BIN_CHANNEL` as an admin
  
 `/start` : To check if the bot is alive or not.
 
-To get an instant stream link, just forward any media to the bot and boom, its fast af.
+To get an instant stream link, just forward any media to the bot and boom, the bot instantly replies a direct link to that Telegram media message.
 
-## faQ
+## FAQ
 
 - How long the links will remain valid or is there any expiration time for the links generated by the bot?
 > The links will will be valid as longs as your bot is alive and you haven't deleted the log channel.
