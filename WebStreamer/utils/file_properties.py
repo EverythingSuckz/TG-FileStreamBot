@@ -58,7 +58,7 @@ def get_hash(media_msg: Union[str, Message], length: int) -> str:
     return long_hash[:length]
 
 
-def get_name(media_msg: Message | FileId) -> str:
+def get_name(media_msg: Union[Message, FileId]) -> str:
 
     if isinstance(media_msg, Message):
         media = get_media_from_message(media_msg)
