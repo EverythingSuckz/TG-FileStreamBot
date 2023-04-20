@@ -218,7 +218,7 @@ class ByteStreamer:
         except (TimeoutError, AttributeError):
             pass
         finally:
-            logger.debug("Finished yielding file with {current_part} parts.")
+            logger.debug(f"Finished yielding file with {current_part} parts.")
             work_loads[index] -= 1
 
     
