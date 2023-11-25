@@ -26,3 +26,7 @@ sessons/
 
 # build folder
 dist/
+
+# logs folder
+logs/
+*.log

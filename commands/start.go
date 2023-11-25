@@ -1,15 +1,13 @@
 package commands
 
 import (
-	"log"
-
 	"github.com/celestix/gotgproto/dispatcher"
 	"github.com/celestix/gotgproto/dispatcher/handlers"
 	"github.com/celestix/gotgproto/ext"
 )
 
 func (m *command) LoadStart(dispatcher dispatcher.Dispatcher) {
-	defer log.Println("Loaded start command")
+	defer m.log.Sugar().Info("Loaded start command")
 	dispatcher.AddHandler(handlers.NewCommand("start", start))
 }
 

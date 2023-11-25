@@ -3,13 +3,14 @@ package bot
 import (
 	"EverythingSuckz/fsb/commands"
 	"EverythingSuckz/fsb/config"
-	"log"
+
+	"go.uber.org/zap"
 
 	"github.com/celestix/gotgproto"
 	"github.com/celestix/gotgproto/sessionMaker"
 )
 
-func StartClient() (*gotgproto.Client, error) {
+func StartClient(log *zap.Logger) (*gotgproto.Client, error) {
 	client, err := gotgproto.NewClient(
 		int(config.ValueOf.ApiID),
 		config.ValueOf.ApiHash,
@@ -24,7 +25,7 @@ func StartClient() (*gotgproto.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	commands.Load(client.Dispatcher)
-	log.Println("Client started")
+	commands.Load(log, client.Dispatcher)
+	log.Info("Client started", zap.String("username", client.Self.Username))
 	return client, nil
 }

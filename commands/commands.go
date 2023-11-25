@@ -1,19 +1,20 @@
 package commands
 
 import (
-	"log"
 	"reflect"
 
 	"github.com/celestix/gotgproto/dispatcher"
+	"go.uber.org/zap"
 )
 
 type command struct {
+	log *zap.Logger
 }
 
-func Load(dispatcher dispatcher.Dispatcher) {
-	defer log.Println("Initialized")
-	Type := reflect.TypeOf(&command{})
-	Value := reflect.ValueOf(&command{})
+func Load(log *zap.Logger, dispatcher dispatcher.Dispatcher) {
+	defer log.Info("Initialized all command handlers")
+	Type := reflect.TypeOf(&command{log})
+	Value := reflect.ValueOf(&command{log})
 	for i := 0; i < Type.NumMethod(); i++ {
 		Type.Method(i).Func.Call([]reflect.Value{Value, reflect.ValueOf(dispatcher)})
 	}
