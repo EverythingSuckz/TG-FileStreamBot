@@ -8,13 +8,10 @@ import (
 	"EverythingSuckz/fsb/utils"
 	"fmt"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 const versionString = "v0.0.1"
@@ -22,7 +19,8 @@ const versionString = "v0.0.1"
 var startTime time.Time = time.Now()
 
 func main() {
-	log := initLogger()
+	utils.InitLogger()
+	log := utils.Logger
 	log.Info("Starting server...")
 	config.Load(log)
 	router := getRouter(log)
@@ -38,38 +36,6 @@ func main() {
 	if err != nil {
 		log.Sugar().Fatalln(err)
 	}
-
-}
-
-func initLogger() *zap.Logger {
-	customTimeEncoder := func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-		enc.AppendString(t.Format("02/01/2006 03:04 PM"))
-	}
-	consoleConfig := zap.NewDevelopmentEncoderConfig()
-	consoleConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	consoleConfig.EncodeTime = customTimeEncoder
-	consoleEncoder := zapcore.NewConsoleEncoder(consoleConfig)
-	defaultLogLevel := zapcore.DebugLevel
-
-	fileEncoderConfig := zap.NewProductionEncoderConfig()
-	fileEncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	fileEncoder := zapcore.NewJSONEncoder(fileEncoderConfig)
-
-	fileWriter := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "logs/app.log",
-		MaxSize:    10,
-		MaxBackups: 3,
-		MaxAge:     7,
-		Compress:   true,
-	})
-
-	core := zapcore.NewTee(
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
-		zapcore.NewCore(fileEncoder, fileWriter, defaultLogLevel),
-	)
-
-	logger := zap.New(core, zap.AddStacktrace(zapcore.ErrorLevel))
-	return logger
 
 }
 
