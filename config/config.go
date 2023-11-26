@@ -18,6 +18,7 @@ type config struct {
 	LogChannelID int64  `envconfig:"LOG_CHANNEL" required:"false"`
 	Dev          bool   `envconfig:"DEV" default:"false"`
 	Port         int    `envconfig:"PORT" default:"8080"`
+	Host         string `envconfig:"HOST" default:"http://localhost:8080"`
 }
 
 func (c *config) setupEnvVars() {
