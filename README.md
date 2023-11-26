@@ -1,4 +1,8 @@
-[![StandWithUkraineBanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://supportukrainenow.org/)
+<hr>
+
+> [!WARNING]
+> This project is being rewritten to [golang](https://github.com/EverythingSuckz/TG-FileStreamBot/tree/golang).
+<hr>
 <h1 align="center">Telegram File Stream Bot</h1>
 <p align="center">
   <a href="https://github.com/EverythingSuckz/TG-FileStreamBot">
@@ -7,7 +11,7 @@
   <p align="center">
     A Telegram bot to <b>generate direct link</b> for your Telegram files.
     <br />
-    <a href="https://telegram.dog/TG_FileStreamBot"><strong>Demo Bot »</strong></a>
+    <a href="https://telegram.dog/TG_FileStreamBot"><strong><s>Demo Bot »</s></strong></a>
     <br />
     <a href="https://github.com/EverythingSuckz/TG-FileStreamBot/issues">Report a Bug</a>
     |
@@ -231,10 +235,10 @@ Feel free to contribute to this project if you have any further ideas
 
 ## Contact me
 
-[![Telegram Channel](https://img.shields.io/static/v1?label=Join&message=Telegram%20Channel&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/WhySooSerious)
-[![Telegram Group](https://img.shields.io/static/v1?label=Join&message=Telegram%20Group&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/WhyThisUsername)
+[![Telegram Channel](https://img.shields.io/static/v1?label=Join&message=Telegram%20Channel&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/wrench_labs)
+[![Telegram Group](https://img.shields.io/static/v1?label=Join&message=Telegram%20Group&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/AlteredVoid)
 
-You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUsername) ~~or you can PM me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)~~
+You can contact either via my [Telegram Group](https://xn--r1a.click/AlteredVoid) ~~or you can PM me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)~~
 
 
 ## Credits
@@ -247,7 +251,7 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/WhyThisUser
 
 ## Copyright
 
-Copyright (C) 2022 [EverythingSuckz](https://github.com/EverythingSuckz) under [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html).
+Copyright (C) 2023 [EverythingSuckz](https://github.com/EverythingSuckz) under [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html).
 
 TG-FileStreamBot is Free Software: You can use, study share and improve it at your
 will. Specifically you can redistribute and/or modify it under the terms of the
