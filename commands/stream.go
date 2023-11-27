@@ -10,6 +10,7 @@ import (
 	"github.com/celestix/gotgproto/dispatcher/handlers"
 	"github.com/celestix/gotgproto/dispatcher/handlers/filters"
 	"github.com/celestix/gotgproto/ext"
+	"github.com/celestix/gotgproto/storage"
 	"github.com/gotd/td/tg"
 )
 
@@ -28,13 +29,20 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		return dispatcher.EndGroups
 	}
 	chatId := u.EffectiveChat().GetID()
+	peer := storage.GetPeerById(config.ValueOf.LogChannelID)
+	switch storage.EntityType(peer.Type) {
+	case storage.TypeChat:
+		return dispatcher.EndGroups
+	case storage.TypeUser:
+		return dispatcher.EndGroups
+	}
 	update, err := ctx.ForwardMessages(
 		chatId,
 		config.ValueOf.LogChannelID,
 		&tg.MessagesForwardMessagesRequest{
 			FromPeer: &tg.InputPeerChat{ChatID: chatId},
 			ID:       []int{u.EffectiveMessage.ID},
-			ToPeer:   &tg.InputPeerChannel{ChannelID: config.ValueOf.LogChannelID, AccessHash: 0},
+			ToPeer:   &tg.InputPeerChannel{ChannelID: config.ValueOf.LogChannelID, AccessHash: peer.AccessHash},
 		},
 	)
 	if err != nil {
