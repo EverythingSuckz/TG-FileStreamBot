@@ -9,12 +9,16 @@ import (
 	"strconv"
 
 	range_parser "github.com/quantumsheep/range-parser"
+	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
 )
 
+var log *zap.Logger
+
 func (e *allRoutes) LoadHome(r *Route) {
-	defer e.log.Info("Loaded stream route")
+	log = e.log.Named("Stream")
+	defer log.Info("Loaded stream route")
 	r.Engine.GET("/stream/:messageID", getStreamRoute)
 }
 
@@ -57,6 +61,7 @@ func getStreamRoute(ctx *gin.Context) {
 		start = ranges[0].Start
 		end = ranges[0].End
 		ctx.Header("Content-Range", fmt.Sprintf("bytes %d-%d/%d", start, end, file.FileSize))
+		log.Info("Content-Range", zap.Int64("start", start), zap.Int64("end", end), zap.Int64("fileSize", file.FileSize))
 		w.WriteHeader(http.StatusPartialContent)
 	}
 
@@ -79,13 +84,13 @@ func getStreamRoute(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("%s; filename=\"%s\"", disposition, file.FileName))
 
 	if r.Method != "HEAD" {
-		parts, err := utils.GetParts(ctx, bot.Bot.Client, file)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		parts = utils.RangedParts(parts, start, end)
-		lr, _ := utils.NewLinearReader(ctx, bot.Bot.Client, parts, contentLength)
-		io.CopyN(w, lr, contentLength)
+		lr, _ := utils.NewTelegramReader(ctx, bot.Bot.Client, file.Location, start, end, contentLength)
+		if _, err := io.CopyN(w, lr, contentLength); err != nil {
+			log.WithOptions(zap.AddStacktrace(zap.DPanicLevel)).Error(err.Error())
+		}
 	}
 }

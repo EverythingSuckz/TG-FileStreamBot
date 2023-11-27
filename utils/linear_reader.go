@@ -1,21 +1,22 @@
 package utils
 
 import (
-	"EverythingSuckz/fsb/types"
 	"context"
 	"fmt"
 	"io"
-	"log"
 
 	"github.com/gotd/td/telegram"
 	"github.com/gotd/td/tg"
+	"go.uber.org/zap"
 )
 
-type linearReader struct {
+type telegramReader struct {
 	ctx           context.Context
-	parts         []types.Part
-	pos           int
+	log           *zap.Logger
 	client        *telegram.Client
+	location      *tg.InputDocumentFileLocation
+	start         int64
+	end           int64
 	next          func() ([]byte, error)
 	buffer        []byte
 	bytesread     int64
@@ -24,69 +25,69 @@ type linearReader struct {
 	contentLength int64
 }
 
-func (*linearReader) Close() error {
+func (*telegramReader) Close() error {
 	return nil
 }
 
-func NewLinearReader(ctx context.Context, client *telegram.Client, parts []types.Part, contentLength int64) (io.ReadCloser, error) {
+func NewTelegramReader(
+	ctx context.Context,
+	client *telegram.Client,
+	location *tg.InputDocumentFileLocation,
+	start int64,
+	end int64,
+	contentLength int64,
+) (io.ReadCloser, error) {
 
-	r := &linearReader{
+	r := &telegramReader{
 		ctx:           ctx,
-		parts:         parts,
+		log:           Logger.Named("telegramReader"),
+		location:      location,
 		client:        client,
+		start:         start,
+		end:           end,
 		chunkSize:     int64(1024 * 1024),
 		contentLength: contentLength,
 	}
-
+	r.log.Sugar().Info("Linear Reader: Start")
 	r.next = r.partStream()
-
 	return r, nil
 }
 
-func (r *linearReader) Read(p []byte) (n int, err error) {
+func (r *telegramReader) Read(p []byte) (n int, err error) {
 
 	if r.bytesread == r.contentLength {
-		log.Println("Linear Reader: EOF (bytesread == contentLength)")
+		r.log.Sugar().Info("Linear Reader: EOF (bytesread == contentLength)")
 		return 0, io.EOF
 	}
 
 	if r.i >= int64(len(r.buffer)) {
 		r.buffer, err = r.next()
+		r.log.Sugar().Infof("Next buffer: %d", len(r.buffer))
 		if err != nil {
 			return 0, err
 		}
 		if len(r.buffer) == 0 {
-			r.pos++
-			if r.pos == len(r.parts) {
-				log.Println("Linear Reader: EOF (pos==n(parts))")
-				return 0, io.EOF
-			} else {
-				r.next = r.partStream()
-				r.buffer, err = r.next()
-				if err != nil {
-					return 0, err
-				}
+			r.next = r.partStream()
+			r.buffer, err = r.next()
+			if err != nil {
+				return 0, err
 			}
 
 		}
 		r.i = 0
 	}
-
 	n = copy(p, r.buffer[r.i:])
-
 	r.i += int64(n)
-
 	r.bytesread += int64(n)
-
 	return n, nil
 }
 
-func (r *linearReader) chunk(offset int64, limit int64) ([]byte, error) {
+func (r *telegramReader) chunk(offset int64, limit int64) ([]byte, error) {
 
 	req := &tg.UploadGetFileRequest{
 		Offset:   offset,
 		Limit:    int(limit),
-		Location: r.parts[r.pos].Location,
+		Location: r.location,
 	}
 
 	res, err := r.client.API().UploadGetFile(r.ctx, req)
@@ -103,10 +104,10 @@ func (r *linearReader) chunk(offset int64, limit int64) ([]byte, error) {
 	}
 }
 
-func (r *linearReader) partStream() func() ([]byte, error) {
+func (r *telegramReader) partStream() func() ([]byte, error) {
 
-	start := r.parts[r.pos].Start
-	end := r.parts[r.pos].End
+	start := r.start
+	end := r.end
 	offset := start - (start % r.chunkSize)
 
 	firstPartCut := start - offset
