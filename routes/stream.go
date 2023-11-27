@@ -43,12 +43,7 @@ func getStreamRoute(ctx *gin.Context) {
 	var start, end int64
 	rangeHeader := r.Header.Get("Range")
 
-	messageMedia, err := utils.GetMessageMedia(ctx, bot.Bot.Client, messageID)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	file, err := utils.FileFromMedia(messageMedia)
+	file, err := utils.FileFromMessage(ctx, bot.Bot.Client, messageID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

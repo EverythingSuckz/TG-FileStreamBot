@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"EverythingSuckz/fsb/cache"
 	"EverythingSuckz/fsb/config"
 	"EverythingSuckz/fsb/types"
 	"context"
@@ -31,14 +32,6 @@ func GetTGMessage(ctx context.Context, client *telegram.Client, messageID int) (
 	}
 }
 
-func GetMessageMedia(ctx context.Context, client *telegram.Client, messageID int) (tg.MessageMediaClass, error) {
-	message, err := GetTGMessage(ctx, client, messageID)
-	if err != nil {
-		return nil, err
-	}
-	return message.Media, nil
-}
-
 func FileFromMedia(media tg.MessageMediaClass) (*types.File, error) {
 	switch media := media.(type) {
 	case *tg.MessageMediaDocument:
@@ -63,6 +56,36 @@ func FileFromMedia(media tg.MessageMediaClass) (*types.File, error) {
 		// TODO: add photo support
 	}
 	return nil, fmt.Errorf("unexpected type %T", media)
+}
+
+func FileFromMessage(ctx context.Context, client *telegram.Client, messageID int) (*types.File, error) {
+	key := fmt.Sprintf("file:%d", messageID)
+	log := Logger.Named("GetMessageMedia")
+	var cachedMedia types.File
+	err := cache.GetCache().Get(key, &cachedMedia)
+	if err == nil {
+		log.Sugar().Debug("Using cached media message properties")
+		return &cachedMedia, nil
+	}
+	log.Sugar().Debug("Fetching file properties from message ID")
+	message, err := GetTGMessage(ctx, client, messageID)
+	if err != nil {
+		return nil, err
+	}
+	file, err := FileFromMedia(message.Media)
+	if err != nil {
+		return nil, err
+	}
+	err = cache.GetCache().Set(
+		key,
+		file,
+		3600,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
+	// TODO: add photo support
 }
 
 func GetChannelById(ctx context.Context, client *telegram.Client) (*tg.InputChannel, error) {

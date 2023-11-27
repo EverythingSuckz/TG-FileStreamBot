@@ -8,7 +8,7 @@ import (
 
 func (m *command) LoadStart(dispatcher dispatcher.Dispatcher) {
 	log := m.log.Named("start")
-	defer log.Sugar().Info("Loaded start command")
+	defer log.Sugar().Info("Loaded")
 	dispatcher.AddHandler(handlers.NewCommand("start", start))
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"EverythingSuckz/fsb/bot"
+	"EverythingSuckz/fsb/cache"
 	"EverythingSuckz/fsb/config"
 	"EverythingSuckz/fsb/routes"
 	"EverythingSuckz/fsb/types"
@@ -22,15 +23,16 @@ func main() {
 	utils.InitLogger()
 	log := utils.Logger
 	mainLogger := log.Named("Main")
-	mainLogger.Info("Starting server...")
+	mainLogger.Info("Starting server")
 	config.Load(log)
 	router := getRouter(log)
-
+	
 	_, err := bot.StartClient(log)
 	if err != nil {
 		log.Info(err.Error())
 		return
 	}
+	cache.InitCache(log)
 	mainLogger.Info("Server started", zap.Int("port", config.ValueOf.Port))
 	mainLogger.Info("File Stream Bot", zap.String("version", versionString))
 	err = router.Run(fmt.Sprintf(":%d", config.ValueOf.Port))
