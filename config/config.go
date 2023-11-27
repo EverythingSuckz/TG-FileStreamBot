@@ -15,7 +15,7 @@ type config struct {
 	ApiID        int32  `envconfig:"API_ID" required:"true"`
 	ApiHash      string `envconfig:"API_HASH" required:"true"`
 	BotToken     string `envconfig:"BOT_TOKEN" required:"true"`
-	LogChannelID int64  `envconfig:"LOG_CHANNEL" required:"false"`
+	LogChannelID int64  `envconfig:"LOG_CHANNEL" required:"true"`
 	Dev          bool   `envconfig:"DEV" default:"false"`
 	Port         int    `envconfig:"PORT" default:"8080"`
 	Host         string `envconfig:"HOST" default:"http://localhost:8080"`
