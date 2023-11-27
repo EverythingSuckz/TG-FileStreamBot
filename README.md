@@ -64,7 +64,8 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/AlteredVoid
 
 ## Credits
 
-- [@celestix](https://github.com/celestix)
+- [@celestix](https://github.com/celestix) for [gotgproto](https://github.com/celestix/gotgproto)
+- [@divyam234](https://github.com/divyam234/teldrive) for his [Teldrive](https://github.com/divyam234/teldrive) Project
 
 ## Copyright
 
