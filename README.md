@@ -25,7 +25,19 @@
     <li>
       <a href="#how-to-make-your-own">How to make your own</a>
       <ul>
+        <li><a href="#download-from-releases">Download and run</a></li>
+      </ul>
+      <ul>
         <li><a href="#build-from-source">Run it in a VPS / local</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#setting-up-things">Setting up Things</a>
+      <ul>
+        <li><a href="#required-vars">Required environment variables</a></li>
+      </ul>
+      <ul>
+        <li><a href="#optional-vars">Optional environment variables</a></li>
       </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
@@ -35,6 +47,9 @@
 </details>
 
 ## How to make your own
+
+### Download from releases
+(available soon)
 
 ### Build from source
 
@@ -49,6 +64,39 @@ chmod +x fsb
 
 and to stop the program,
  do <kbd>CTRL</kbd>+<kbd>C</kbd>
+
+## Setting up things
+
+If you're locally hosting, create a file named `.env` in the root directory and add all the variables there.
+An example of `.env` file:
+
+```sh
+API_ID=452525
+API_HASH=esx576f8738x883f3sfzx83
+BOT_TOKEN=55838383:yourtbottokenhere
+BIN_CHANNEL=-10045145224562
+PORT=8080
+HOST=http://yourserverip
+```
+
+### Required Vars
+Before running the bot, you will need to set up the following mandatory variables:
+
+- `API_ID` : This is the API ID for your Telegram account, which can be obtained from my.telegram.org.
+
+- `API_HASH` : This is the API hash for your Telegram account, which can also be obtained from my.telegram.org.
+
+- `BOT_TOKEN` : This is the bot token for the Telegram Media Streamer Bot, which can be obtained from [@BotFather](https://telegram.dog/BotFather).
+
+- `BIN_CHANNEL` :  This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
+
+### Optional Vars
+In addition to the mandatory variables, you can also set the following optional variables:
+
+- `PORT` : This sets the port that your webapp will listen to. The default value is 8080.
+
+- `HOST` :  A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
+
 
 ## Contributing
 
