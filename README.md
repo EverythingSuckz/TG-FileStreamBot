@@ -97,6 +97,7 @@ In addition to the mandatory variables, you can also set the following optional 
 
 - `HOST` :  A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
 
+- `HASH_LENGTH` : This is the custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. The default value is 6.
 
 ## Contributing
 

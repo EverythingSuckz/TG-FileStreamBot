@@ -19,6 +19,7 @@ type config struct {
 	Dev          bool   `envconfig:"DEV" default:"false"`
 	Port         int    `envconfig:"PORT" default:"8080"`
 	Host         string `envconfig:"HOST" default:"http://localhost:8080"`
+	HashLength   int    `envconfig:"HASH_LENGTH" default:"6"`
 }
 
 func (c *config) setupEnvVars() {
@@ -33,6 +34,18 @@ func Load(log *zap.Logger) {
 	defer log.Info("Loaded config")
 	ValueOf.setupEnvVars()
 	ValueOf.LogChannelID = int64(stripInt(log, int(ValueOf.LogChannelID)))
+	if ValueOf.HashLength == 0 {
+		log.Sugar().Info("HASH_LENGTH can't be 0, defaulting to 6")
+		ValueOf.HashLength = 6
+	}
+	if ValueOf.HashLength > 32 {
+		log.Sugar().Info("HASH_LENGTH can't be more than 32, changing to 32")
+		ValueOf.HashLength = 32
+	}
+	if ValueOf.HashLength < 5 {
+		log.Sugar().Info("HASH_LENGTH can't be less than 5, defaulting to 6")
+		ValueOf.HashLength = 6
+	}
 }
 
 func stripInt(log *zap.Logger, a int) int {
