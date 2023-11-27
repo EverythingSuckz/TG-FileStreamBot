@@ -29,9 +29,10 @@ func (c *config) setupEnvVars() {
 }
 
 func Load(log *zap.Logger) {
+	log = log.Named("Config")
+	defer log.Info("Loaded config")
 	ValueOf.setupEnvVars()
 	ValueOf.LogChannelID = int64(stripInt(log, int(ValueOf.LogChannelID)))
-	log.Info("Loaded config")
 }
 
 func stripInt(log *zap.Logger, a int) int {

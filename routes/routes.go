@@ -21,6 +21,7 @@ type allRoutes struct {
 }
 
 func Load(log *zap.Logger, r *gin.Engine) {
+	log = log.Named("routes")
 	defer log.Sugar().Info("Loaded all API Routes")
 	route := &Route{Name: "/", Engine: r}
 	route.Init(r)

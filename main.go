@@ -21,7 +21,8 @@ var startTime time.Time = time.Now()
 func main() {
 	utils.InitLogger()
 	log := utils.Logger
-	log.Info("Starting server...")
+	mainLogger := log.Named("Main")
+	mainLogger.Info("Starting server...")
 	config.Load(log)
 	router := getRouter(log)
 
@@ -30,11 +31,11 @@ func main() {
 		log.Info(err.Error())
 		return
 	}
-	log.Info("Server started", zap.Int("port", config.ValueOf.Port))
-	log.Info("File Stream Bot", zap.String("version", versionString))
+	mainLogger.Info("Server started", zap.Int("port", config.ValueOf.Port))
+	mainLogger.Info("File Stream Bot", zap.String("version", versionString))
 	err = router.Run(fmt.Sprintf(":%d", config.ValueOf.Port))
 	if err != nil {
-		log.Sugar().Fatalln(err)
+		mainLogger.Sugar().Fatalln(err)
 	}
 
 }

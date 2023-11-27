@@ -12,6 +12,7 @@ type command struct {
 }
 
 func Load(log *zap.Logger, dispatcher dispatcher.Dispatcher) {
+	log = log.Named("commands")
 	defer log.Info("Initialized all command handlers")
 	Type := reflect.TypeOf(&command{log})
 	Value := reflect.ValueOf(&command{log})

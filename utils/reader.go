@@ -48,7 +48,7 @@ func NewTelegramReader(
 		chunkSize:     int64(1024 * 1024),
 		contentLength: contentLength,
 	}
-	r.log.Sugar().Info("Linear Reader: Start")
+	r.log.Sugar().Debug("Start")
 	r.next = r.partStream()
 	return r, nil
 }
@@ -56,13 +56,13 @@ func NewTelegramReader(
 func (r *telegramReader) Read(p []byte) (n int, err error) {
 
 	if r.bytesread == r.contentLength {
-		r.log.Sugar().Info("Linear Reader: EOF (bytesread == contentLength)")
+		r.log.Sugar().Debug("EOF (bytesread == contentLength)")
 		return 0, io.EOF
 	}
 
 	if r.i >= int64(len(r.buffer)) {
 		r.buffer, err = r.next()
-		r.log.Sugar().Infof("Next buffer: %d", len(r.buffer))
+		r.log.Debug("Next Buffer", zap.Int64("len", int64(len(r.buffer))))
 		if err != nil {
 			return 0, err
 		}
@@ -135,6 +135,7 @@ func (r *telegramReader) partStream() func() ([]byte, error) {
 
 		currentPart++
 		offset += r.chunkSize
+		r.log.Sugar().Debugf("Part %d/%d", currentPart, partCount)
 		return res, nil
 	}
 	return readData
