@@ -10,6 +10,8 @@ import (
 	"github.com/celestix/gotgproto/sessionMaker"
 )
 
+var Bot *gotgproto.Client
+
 func StartClient(log *zap.Logger) (*gotgproto.Client, error) {
 	client, err := gotgproto.NewClient(
 		int(config.ValueOf.ApiID),
@@ -27,5 +29,6 @@ func StartClient(log *zap.Logger) (*gotgproto.Client, error) {
 	}
 	commands.Load(log, client.Dispatcher)
 	log.Info("Client started", zap.String("username", client.Self.Username))
+	Bot = client
 	return client, nil
 }

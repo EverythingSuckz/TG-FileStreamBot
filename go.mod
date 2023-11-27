@@ -23,6 +23,7 @@ require (
 	github.com/klauspost/compress v1.17.3 // indirect
 	github.com/mattn/go-sqlite3 v1.14.18 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/quantumsheep/range-parser v1.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	go.opentelemetry.io/otel v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect

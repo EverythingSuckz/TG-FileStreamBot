@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const versionString = "v0.0.1"
+const versionString = "v0.0.0"
 
 var startTime time.Time = time.Now()
 
