@@ -8,9 +8,11 @@ before:
     - go generate ./...
 
 builds:
-  - main: ./cmd/fsb/main.go
-  - env:
+  - id: fsb-main
+    main: ./cmd/fsb
+    env:
       - CGO_ENABLED=0
+    binary: fsb
     goos:
       - linux
       - windows
@@ -18,6 +20,10 @@ builds:
     goarch:
       - amd64
       - arm64
+    ignore:
+      - goos: windows
+        goarch: 386
+    no_main_check: true
 
 archives:
   - format: tar.gz
@@ -28,7 +34,7 @@ archives:
 
 signs:
   - artifacts: checksum
-    cms: gpg2
+    cmd: gpg2
     args:
       - "--batch"
       - "-u"
@@ -39,7 +45,7 @@ signs:
       - "${artifact}"
 
 checksum:
-  name_template: "{{ .ProjectName }}_checksums.txt"
+  name_template: "{{ .ProjectName }}-{{ .Tag }}-checksums.txt"
 
 changelog:
   sort: asc
