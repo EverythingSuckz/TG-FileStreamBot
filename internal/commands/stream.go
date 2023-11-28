@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"EverythingSuckz/fsb/config"
-	"EverythingSuckz/fsb/utils"
+	"EverythingSuckz/fsb/internal/utils"
 
 	"github.com/celestix/gotgproto/dispatcher"
 	"github.com/celestix/gotgproto/dispatcher/handlers"

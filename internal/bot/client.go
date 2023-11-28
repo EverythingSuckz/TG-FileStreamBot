@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"EverythingSuckz/fsb/commands"
+	"EverythingSuckz/fsb/internal/commands"
 	"EverythingSuckz/fsb/config"
 
 	"go.uber.org/zap"

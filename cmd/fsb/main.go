@@ -1,12 +1,12 @@
 package main
 
 import (
-	"EverythingSuckz/fsb/bot"
-	"EverythingSuckz/fsb/cache"
 	"EverythingSuckz/fsb/config"
-	"EverythingSuckz/fsb/routes"
-	"EverythingSuckz/fsb/types"
-	"EverythingSuckz/fsb/utils"
+	"EverythingSuckz/fsb/internal/bot"
+	"EverythingSuckz/fsb/internal/cache"
+	"EverythingSuckz/fsb/internal/routes"
+	"EverythingSuckz/fsb/internal/types"
+	"EverythingSuckz/fsb/internal/utils"
 	"fmt"
 	"net/http"
 	"time"
@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const versionString = "v0.0.0"
+const versionString = "3.0.0-alpha1"
 
 var startTime time.Time = time.Now()
 

@@ -2,12 +2,15 @@ package config
 
 import (
 	"os"
+	"path"
+	"path/filepath"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"go.uber.org/zap"
 )
@@ -15,14 +18,14 @@ import (
 var ValueOf = &config{}
 
 type config struct {
-	ApiID        int32  `envconfig:"API_ID" required:"true"`
-	ApiHash      string `envconfig:"API_HASH" required:"true"`
-	BotToken     string `envconfig:"BOT_TOKEN" required:"true"`
-	LogChannelID int64  `envconfig:"LOG_CHANNEL" required:"true"`
-	Dev          bool   `envconfig:"DEV" default:"false"`
-	Port         int    `envconfig:"PORT" default:"8080"`
-	Host         string `envconfig:"HOST" default:"http://localhost:8080"`
-	HashLength   int    `envconfig:"HASH_LENGTH" default:"6"`
+	ApiID          int32  `envconfig:"API_ID" required:"true"`
+	ApiHash        string `envconfig:"API_HASH" required:"true"`
+	BotToken       string `envconfig:"BOT_TOKEN" required:"true"`
+	LogChannelID   int64  `envconfig:"LOG_CHANNEL" required:"true"`
+	Dev            bool   `envconfig:"DEV" default:"false"`
+	Port           int    `envconfig:"PORT" default:"8080"`
+	Host           string `envconfig:"HOST" default:"http://localhost:8080"`
+	HashLength     int    `envconfig:"HASH_LENGTH" default:"6"`
 	UseSessionFile bool   `envconfig:"USE_SESSION_FILE" default:"true"`
 	MultiTokens    []string
 }
@@ -30,7 +33,12 @@ type config struct {
 var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN[\d+]=(.*)`)
 
 func (c *config) setupEnvVars() {
-	err := envconfig.Process("", c)
+	envPath := filepath.Join(callerDir(), "fsb.env")
+	err := godotenv.Load(envPath)
+	if err != nil {
+		panic(err)
+	}
+	err = envconfig.Process("", c)
 	if err != nil {
 		panic(err)
 	}
@@ -78,4 +86,10 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+func callerDir() string {
+	_, b, _, _ := runtime.Caller(0)
+	d := path.Join(path.Dir(b))
+	return filepath.Dir(d)
 }
