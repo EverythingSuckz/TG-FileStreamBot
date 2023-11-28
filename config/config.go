@@ -2,11 +2,9 @@ package config
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 	"reflect"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -32,11 +30,19 @@ type config struct {
 
 var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN[\d+]=(.*)`)
 
-func (c *config) setupEnvVars() {
-	envPath := filepath.Join(callerDir(), "fsb.env")
+func (c *config) setupEnvVars(log *zap.Logger) {
+	envPath := filepath.Clean("fsb.env")
+	log.Sugar().Infof("Trying to load ENV vars from %s", envPath)
 	err := godotenv.Load(envPath)
 	if err != nil {
-		panic(err)
+		if os.IsNotExist(err) {
+			log.WithOptions(zap.AddStacktrace(zap.DPanicLevel)).Sugar().Errorf("ENV file not found: %s", envPath)
+			log.Sugar().Info("Please create fsb.env file")
+			log.Sugar().Info("For more info, refer: https://github.com/EverythingSuckz/TG-FileStreamBot/tree/golang#setting-up-things")
+			os.Exit(1)
+		} else {
+			panic(err)
+		}
 	}
 	err = envconfig.Process("", c)
 	if err != nil {
@@ -54,7 +60,7 @@ func (c *config) setupEnvVars() {
 func Load(log *zap.Logger) {
 	log = log.Named("Config")
 	defer log.Info("Loaded config")
-	ValueOf.setupEnvVars()
+	ValueOf.setupEnvVars(log)
 	ValueOf.LogChannelID = int64(stripInt(log, int(ValueOf.LogChannelID)))
 	if ValueOf.HashLength == 0 {
 		log.Sugar().Info("HASH_LENGTH can't be 0, defaulting to 6")
@@ -86,10 +92,4 @@ func abs(x int) int {
 		return -x
 	}
 	return x
-}
-
-func callerDir() string {
-	_, b, _, _ := runtime.Caller(0)
-	d := path.Join(path.Dir(b))
-	return filepath.Dir(d)
 }
