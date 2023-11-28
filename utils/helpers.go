@@ -8,11 +8,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/gotd/td/telegram"
+	"github.com/celestix/gotgproto"
 	"github.com/gotd/td/tg"
+	"go.uber.org/zap"
 )
 
-func GetTGMessage(ctx context.Context, client *telegram.Client, messageID int) (*tg.Message, error) {
+func GetTGMessage(ctx context.Context, client *gotgproto.Client, messageID int) (*tg.Message, error) {
 	inputMessageID := tg.InputMessageClass(&tg.InputMessageID{ID: messageID})
 	channel, err := GetChannelById(ctx, client)
 	if err != nil {
@@ -58,16 +59,16 @@ func FileFromMedia(media tg.MessageMediaClass) (*types.File, error) {
 	return nil, fmt.Errorf("unexpected type %T", media)
 }
 
-func FileFromMessage(ctx context.Context, client *telegram.Client, messageID int) (*types.File, error) {
-	key := fmt.Sprintf("file:%d", messageID)
+func FileFromMessage(ctx context.Context, client *gotgproto.Client, messageID int) (*types.File, error) {
+	key := fmt.Sprintf("file:%d:%d", messageID, client.Self.ID)
 	log := Logger.Named("GetMessageMedia")
 	var cachedMedia types.File
 	err := cache.GetCache().Get(key, &cachedMedia)
 	if err == nil {
-		log.Sugar().Debug("Using cached media message properties")
+		log.Debug("Using cached media message properties", zap.Int("messageID", messageID), zap.Int64("clientID", client.Self.ID))
 		return &cachedMedia, nil
 	}
-	log.Sugar().Debug("Fetching file properties from message ID")
+	log.Debug("Fetching file properties from message ID", zap.Int("messageID", messageID), zap.Int64("clientID", client.Self.ID))
 	message, err := GetTGMessage(ctx, client, messageID)
 	if err != nil {
 		return nil, err
@@ -88,7 +89,7 @@ func FileFromMessage(ctx context.Context, client *telegram.Client, messageID int
 	// TODO: add photo support
 }
 
-func GetChannelById(ctx context.Context, client *telegram.Client) (*tg.InputChannel, error) {
+func GetChannelById(ctx context.Context, client *gotgproto.Client) (*tg.InputChannel, error) {
 	channel := &tg.InputChannel{}
 	inputChannel := &tg.InputChannel{
 		ChannelID: config.ValueOf.LogChannelID,

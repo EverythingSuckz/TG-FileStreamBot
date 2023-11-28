@@ -20,7 +20,7 @@ func StartClient(log *zap.Logger) (*gotgproto.Client, error) {
 			BotToken: config.ValueOf.BotToken,
 		},
 		&gotgproto.ClientOpts{
-			Session:          sessionMaker.NewSession("fsb", sessionMaker.Session),
+			Session:          sessionMaker.SqliteSession("fsb"),
 			DisableCopyright: true,
 		},
 	)

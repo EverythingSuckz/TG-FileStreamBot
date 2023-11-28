@@ -27,11 +27,11 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		return dispatcher.EndGroups
 	}
 	chatId := u.EffectiveChat().GetID()
-	peerChatId := storage.GetPeerById(chatId)
+	peerChatId := ctx.PeerStorage.GetPeerById(chatId)
 	if peerChatId.Type != int(storage.TypeUser) {
 		return dispatcher.EndGroups
 	}
-	peer := storage.GetPeerById(config.ValueOf.LogChannelID)
+	peer := ctx.PeerStorage.GetPeerById(config.ValueOf.LogChannelID)
 	switch storage.EntityType(peer.Type) {
 	case storage.TypeChat:
 		return dispatcher.EndGroups

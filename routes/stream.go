@@ -43,7 +43,9 @@ func getStreamRoute(ctx *gin.Context) {
 	var start, end int64
 	rangeHeader := r.Header.Get("Range")
 
-	file, err := utils.FileFromMessage(ctx, bot.Bot.Client, messageID)
+	worker := bot.GetNextWorker()
+
+	file, err := utils.FileFromMessage(ctx, worker.Client, messageID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -100,7 +102,7 @@ func getStreamRoute(ctx *gin.Context) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		lr, _ := utils.NewTelegramReader(ctx, bot.Bot.Client, file.Location, start, end, contentLength)
+		lr, _ := utils.NewTelegramReader(ctx, worker.Client, file.Location, start, end, contentLength)
 		if _, err := io.CopyN(w, lr, contentLength); err != nil {
 			log.WithOptions(zap.AddStacktrace(zap.DPanicLevel)).Error(err.Error())
 		}

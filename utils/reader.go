@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/gotd/td/telegram"
+	"github.com/celestix/gotgproto"
 	"github.com/gotd/td/tg"
 	"go.uber.org/zap"
 )
@@ -13,7 +13,7 @@ import (
 type telegramReader struct {
 	ctx           context.Context
 	log           *zap.Logger
-	client        *telegram.Client
+	client        *gotgproto.Client
 	location      *tg.InputDocumentFileLocation
 	start         int64
 	end           int64
@@ -31,7 +31,7 @@ func (*telegramReader) Close() error {
 
 func NewTelegramReader(
 	ctx context.Context,
-	client *telegram.Client,
+	client *gotgproto.Client,
 	location *tg.InputDocumentFileLocation,
 	start int64,
 	end int64,

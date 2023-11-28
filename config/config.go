@@ -1,6 +1,9 @@
 package config
 
 import (
+	"os"
+	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -20,13 +23,24 @@ type config struct {
 	Port         int    `envconfig:"PORT" default:"8080"`
 	Host         string `envconfig:"HOST" default:"http://localhost:8080"`
 	HashLength   int    `envconfig:"HASH_LENGTH" default:"6"`
+	UseSessionFile bool   `envconfig:"USE_SESSION_FILE" default:"true"`
+	MultiTokens    []string
 }
+
+var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN[\d+]=(.*)`)
 
 func (c *config) setupEnvVars() {
 	err := envconfig.Process("", c)
 	if err != nil {
 		panic(err)
 	}
+	val := reflect.ValueOf(c).Elem()
+	for _, env := range os.Environ() {
+		if strings.HasPrefix(env, "MULTI_TOKEN") {
+			c.MultiTokens = append(c.MultiTokens, botTokenRegex.FindStringSubmatch(env)[1])
+		}
+	}
+	val.FieldByName("MultiTokens").Set(reflect.ValueOf(c.MultiTokens))
 }
 
 func Load(log *zap.Logger) {

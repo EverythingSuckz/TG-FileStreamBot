@@ -39,6 +39,9 @@
       <ul>
         <li><a href="#optional-vars">Optional environment variables</a></li>
       </ul>
+      <ul>
+        <li><a href="#use-multiple-bots-to-speed-up">Using multiple bots</a></li>
+      </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact-me">Contact me</a></li>
@@ -73,10 +76,13 @@ An example of `.env` file:
 ```sh
 API_ID=452525
 API_HASH=esx576f8738x883f3sfzx83
-BOT_TOKEN=55838383:yourtbottokenhere
+BOT_TOKEN=55838383:yourbottokenhere
 BIN_CHANNEL=-10045145224562
 PORT=8080
 HOST=http://yourserverip
+# (if you want to set up multiple bots)
+MULTI_TOKEN1=55838373:yourworkerbottokenhere
+MULTI_TOKEN2=55838355:yourworkerbottokenhere
 ```
 
 ### Required Vars
@@ -97,7 +103,30 @@ In addition to the mandatory variables, you can also set the following optional 
 
 - `HOST` :  A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
 
-- `HASH_LENGTH` : This is the custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. The default value is 6.
+- `HASH_LENGTH` : Custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. The default value is 6.
+
+- `USE_SESSION_FILE` : Use session files for worker client(s). This speeds up the worker bot startups. (default: `false`)
+
+### Use Multiple Bots to speed up
+
+> **Note**
+> What it multi-client feature and what it does? <br>
+> This feature shares the Telegram API requests between worker bots to speed up download speed when many users are using the server and to avoid the flood limits that are set by Telegram. <br>
+
+> **Note**
+> You can add up to 50 bots since 50 is the max amount of bot admins you can set in a Telegram Channel.
+
+To enable multi-client, generate new bot tokens and add it as your `.env` with the following key names. 
+
+`MULTI_TOKEN1`: Add your first bot token here.
+
+`MULTI_TOKEN2`: Add your second bot token here.
+
+you may also add as many as bots you want. (max limit is 50)
+`MULTI_TOKEN3`, `MULTI_TOKEN4`, etc.
+
+> **Warning**
+> Don't forget to add all these worker bots to the `BIN_CHANNEL` for the proper functioning
 
 ## Contributing
 
