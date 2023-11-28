@@ -26,10 +26,6 @@ logging.getLogger("aiohttp.web").setLevel(logging.DEBUG if Var.DEBUG else loggin
 
 server = web.AppRunner(web_server())
 
-# if sys.version_info[1] > 9:
-#     loop = asyncio.new_event_loop()
-#     asyncio.set_event_loop(loop)
-# else:
 loop = asyncio.get_event_loop()
 
 
