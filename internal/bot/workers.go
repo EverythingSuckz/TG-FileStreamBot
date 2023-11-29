@@ -2,10 +2,12 @@ package bot
 
 import (
 	"EverythingSuckz/fsb/config"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/celestix/gotgproto"
 	"github.com/celestix/gotgproto/sessionMaker"
@@ -89,6 +91,9 @@ func GetNextWorker() *Worker {
 
 func StartWorkers(log *zap.Logger) {
 	log.Sugar().Info("Starting workers")
+	timeOut := 30 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+	defer cancel()
 	Workers.Init(log)
 	if config.ValueOf.UseSessionFile {
 		log.Sugar().Info("Using session file for workers")
@@ -99,7 +104,7 @@ func StartWorkers(log *zap.Logger) {
 			return
 		}
 	}
-	c := make(chan struct{})
+	c := make(chan struct{}, len(config.ValueOf.MultiTokens))
 	for i := 0; i < len(config.ValueOf.MultiTokens); i++ {
 		go func(i int) {
 			err := Workers.Add(config.ValueOf.MultiTokens[i])
@@ -107,13 +112,22 @@ func StartWorkers(log *zap.Logger) {
 				log.Error("Failed to start worker", zap.Error(err))
 				return
 			}
-			c <- struct{}{}
+			select {
+			default:
+				c <- struct{}{}
+			case <-ctx.Done():
+				return
+			}
 		}(i)
 	}
 	// wait for all workers to start
 	log.Sugar().Info("Waiting for all workers to start")
 	for i := 0; i < len(config.ValueOf.MultiTokens); i++ {
-		<-c
+		select {
+		case <-c:
+		case <-time.After(timeOut):
+			log.Sugar().Warnf("Timed out waiting for worker %d to start", i)
+		}
 	}
 }
 
