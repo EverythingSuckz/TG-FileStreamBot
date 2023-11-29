@@ -3,10 +3,10 @@ name: Goreleaser
 on:
   workflow_dispatch:
     inputs:
-      goReleaserConfig:
-        description: 'Configuration ENV for goreleaser'     
+      goReleaserArgs:
+        description: 'Args goreleaser'     
         required: false
-        default: 'CGO_ENABLED=1'
+        default: '--clean'
   push:
     tags:
       - "*"
@@ -38,7 +38,7 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean
+          args: release ${{ github.event.inputs.goReleaserArgs }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
