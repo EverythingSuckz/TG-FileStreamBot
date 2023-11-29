@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  fsb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: fsb
+    volumes:
+      - ./:/app/:rw
+    env_file: fsb.env
+    ports:
+      - 8080:8080
