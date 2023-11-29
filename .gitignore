@@ -18,7 +18,8 @@ vendor/
 go.work
 
 # Env files
-*.env
+fsb.env
+.env
 
 # Session files
 *.session*

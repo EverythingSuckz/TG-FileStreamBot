@@ -70,6 +70,7 @@ git clone https://github.com/EverythingSuckz/TG-FileStreamBot -b golang
 cd TG-FileStreamBot
 go build ./cmd/fsb/
 chmod +x fsb
+mv fsb.sample.env fsb.env
 nano fsb.env
 # (add your environment variables, see the next section for more info)
 ./fsb
@@ -80,7 +81,8 @@ and to stop the program,
 
 ## Setting up things
 
-If you're locally hosting, create a file named `.env` in the root directory and add all the variables there.
+If you're locally hosting, create a file named `fsb.env` in the root directory and add all the variables there.
+You may check the `fsb.sample.env`.
 An example of `fsb.env` file:
 
 ```sh

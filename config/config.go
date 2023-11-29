@@ -39,14 +39,14 @@ func (c *config) setupEnvVars(log *zap.Logger) {
 			log.WithOptions(zap.AddStacktrace(zap.DPanicLevel)).Sugar().Errorf("ENV file not found: %s", envPath)
 			log.Sugar().Info("Please create fsb.env file")
 			log.Sugar().Info("For more info, refer: https://github.com/EverythingSuckz/TG-FileStreamBot/tree/golang#setting-up-things")
-			os.Exit(1)
+			log.Sugar().Info("Please ignore this message if you are hosting it in a service like Heroku or other alternatives.")
 		} else {
-			panic(err)
+			log.Fatal("Unknown error while parsing env file.", zap.Error(err))
 		}
 	}
 	err = envconfig.Process("", c)
 	if err != nil {
-		panic(err)
+		log.Fatal("Error while parsing env variables", zap.Error(err))
 	}
 	val := reflect.ValueOf(c).Elem()
 	for _, env := range os.Environ() {
