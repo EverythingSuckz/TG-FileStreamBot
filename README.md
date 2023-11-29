@@ -28,7 +28,10 @@
         <li><a href="#download-from-releases">Download and run</a></li>
       </ul>
       <ul>
-        <li><a href="#build-from-source">Run it in a VPS / local</a></li>
+        <li><a href="#build-from-source">Build and run</a></li>
+        <ul>
+        <li><a href="#ubuntu">Ubuntu</a></li>
+      </ul>
       </ul>
     </li>
     <li>
@@ -56,11 +59,16 @@
 
 ### Build from source
 
+#### Ubuntu
+
+> [!NOTE]
+> Make sure to install go 1.21 or above.
+> Refer https://stackoverflow.com/a/17566846/15807350
+
 ```sh
 git clone https://github.com/EverythingSuckz/TG-FileStreamBot -b golang
 cd TG-FileStreamBot
-go get -u
-go build .
+go build ./cmd/fsb/
 chmod +x fsb
 nano fsb.env
 # (add your environment variables, see the next section for more info)
