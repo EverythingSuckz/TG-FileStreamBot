@@ -1,17 +1,18 @@
 version: 1
-
 project_name: TG-FileStreamBot
-
+env:
+  - GO111MODULE=on
 before:
   hooks:
     - go mod tidy
     - go generate ./...
 
 builds:
-  - id: fsb-main
-    main: ./cmd/fsb
+  - main: ./cmd/fsb
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1
+    flags: -tags=musl
+    ldflags: "-linkmode=external -extldflags -static -s -w"
     binary: fsb
     goos:
       - linux
@@ -20,10 +21,6 @@ builds:
     goarch:
       - amd64
       - arm64
-    ignore:
-      - goos: windows
-        goarch: 386
-    no_main_check: true
 
 archives:
   - format: tar.gz

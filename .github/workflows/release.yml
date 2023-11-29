@@ -1,6 +1,12 @@
 name: Goreleaser
 
 on:
+  workflow_dispatch:
+    inputs:
+      goReleaserConfig:
+        description: 'Configuration ENV for goreleaser'     
+        required: false
+        default: 'CGO_ENABLED=1'
   push:
     tags:
       - "*"
