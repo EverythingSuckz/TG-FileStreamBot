@@ -28,7 +28,7 @@ type config struct {
 	MultiTokens    []string
 }
 
-var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN[\d+]=(.*)`)
+var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN\d+=(.*)`)
 
 func (c *config) setupEnvVars(log *zap.Logger) {
 	envPath := filepath.Clean("fsb.env")
