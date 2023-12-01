@@ -41,7 +41,7 @@ jobs:
         id: env-vars
         run: |
           echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-          echo "IMAGE_NAME=ghcr.io/${GITHUB_ACTOR}/fsb" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_ACTOR,,}/fsb" >> $GITHUB_ENV
 
       - name: Build docker image and push
         uses: docker/build-push-action@v5
