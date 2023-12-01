@@ -2,6 +2,10 @@ name: Package Build
 
 on:
   workflow_dispatch:
+      inputs:
+        tag:
+          description: 'Tag to release'
+          required: true
   push:
     tags:
       - '*'
@@ -9,7 +13,7 @@ env:
   DOCKER_BUILDKIT: 1
   
 jobs:
-   build_image:
+  build_image:
     name: Build Image
     runs-on: ubuntu-latest
     steps:

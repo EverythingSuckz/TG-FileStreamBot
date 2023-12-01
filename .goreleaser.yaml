@@ -10,9 +10,9 @@ before:
 builds:
   - main: ./cmd/fsb
     env:
-      - CGO_ENABLED=1
+      - CGO_ENABLED=0
     flags: -tags=musl
-    ldflags: "-linkmode=external -extldflags -static -s -w"
+    ldflags: "-extldflags -static -s -w"
     binary: fsb
     goos:
       - linux
@@ -51,51 +51,3 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
-
-dockers:
-  # amd64 only
-  - goarch: amd64
-    dockerfile: goreleaser.Dockerfile
-    use: buildx
-    image_templates:
-      - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-amd64"
-    build_flag_templates:
-      - "--platform=linux/amd64"
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-  # arm64 only
-  - goarch: arm64
-    dockerfile: goreleaser.Dockerfile
-    use: buildx
-    image_templates:
-      - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-amd64"
-    build_flag_templates:
-      - "--platform=linux/arm64/v8"
-      - "--pull"
-      - "--label=org.opencontainers.image.created={{.Date}}"
-      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-      - "--label=org.opencontainers.image.version={{.Version}}"
-
-docker_manifests:
-  - name_template: "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Version }}"
-    image_templates:
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-amd64"
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-arm64v8"
-  - name_template: "ghcr.io/EverythingSuckz/{{ .ProjectName }}:latest"
-    image_templates:
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-amd64"
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-arm64v8"
-
-  # github container registry
-  - name_template: "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Version }}"
-    image_templates:
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-amd64"
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-arm64v8"
-  - name_template: "ghcr.io/EverythingSuckz/{{ .ProjectName }}:latest"
-    image_templates:
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-amd64"
-    - "ghcr.io/EverythingSuckz/{{ .ProjectName }}:{{ .Tag }}-arm64v8"
