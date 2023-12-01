@@ -28,9 +28,18 @@
         <li><a href="#download-from-releases">Download and run</a></li>
       </ul>
       <ul>
+        <li><a href="#run-using-docker-compose">Run via Docker compose</a></li>
+      </ul>
+      <ul>
+        <li><a href="#run-using-docker">Run via Docker</a></li>
+      </ul>
+      <ul>
         <li><a href="#build-from-source">Build and run</a></li>
         <ul>
         <li><a href="#ubuntu">Ubuntu</a></li>
+      </ul>
+        <ul>
+        <li><a href="#windows">Windows</a></li>
       </ul>
       </ul>
     </li>
@@ -55,7 +64,49 @@
 ## How to make your own
 
 ### Download from releases
-(available soon)
+- Head over to [releases](https://github.com/EverythingSuckz/TG-FileStreamBot/releases) tab, from the *pre release* section, download the one for your platform and architecture.
+- Extract the zip file to a folder.
+- Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
+- Give the executable file permission to execute using the command `chmod +x fsb` (Not required for windows).
+- Run the bot using `./fsb` command. ( `./fsb.exe` for windows)
+
+<hr>
+
+### Run using docker-compose
+
+- Clone the repository
+```sh
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot -b golang
+cd TG-FileStreamBot
+```
+
+- Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
+
+```sh
+nano fsb.env
+```
+
+- Build and run the docker-compose file
+
+```sh
+docker-compose up -d
+```
+ OR
+
+```sh
+docker compose up -d
+```
+
+<hr>
+
+### Run using docker
+
+```sh
+docker run --env-file fsb.env ghcr.io/everythingsuckz/fsb:latest
+```
+Where `fsb.env` is the environment file containing all the variables.
+
+<hr>
 
 ### Build from source
 
@@ -74,6 +125,24 @@ mv fsb.sample.env fsb.env
 nano fsb.env
 # (add your environment variables, see the next section for more info)
 ./fsb
+```
+
+and to stop the program,
+ do <kbd>CTRL</kbd>+<kbd>C</kbd>
+
+#### Windows
+
+> [!NOTE]
+> Make sure to install go 1.21 or above.
+
+```powershell
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot -b golang
+cd TG-FileStreamBot
+go build ./cmd/fsb/
+Rename-Item -LiteralPath ".\fsb.sample.env" -NewName ".\fsb.env"
+notepad fsb.env
+# (add your environment variables, see the next section for more info)
+.\fsb
 ```
 
 and to stop the program,
@@ -119,6 +188,8 @@ In addition to the mandatory variables, you can also set the following optional 
 
 - `USE_SESSION_FILE` : Use session files for worker client(s). This speeds up the worker bot startups. (default: `false`)
 
+<hr>
+
 ### Use Multiple Bots to speed up
 
 > **Note**
@@ -128,7 +199,7 @@ In addition to the mandatory variables, you can also set the following optional 
 > **Note**
 > You can add up to 50 bots since 50 is the max amount of bot admins you can set in a Telegram Channel.
 
-To enable multi-client, generate new bot tokens and add it as your `.env` with the following key names. 
+To enable multi-client, generate new bot tokens and add it as your `fsb.env` with the following key names. 
 
 `MULTI_TOKEN1`: Add your first bot token here.
 
