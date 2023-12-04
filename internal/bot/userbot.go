@@ -85,11 +85,16 @@ func (u *UserBotStruct) AddBotsAsAdmins() error {
 		}
 	}
 	for _, bot := range Workers.Bots {
+		isAdmin := false
 		for _, admin := range currentAdmins {
 			if admin == bot.Self.ID {
 				u.log.Sugar().Infof("Bot @%s is already an admin", bot.Self.Username)
+				isAdmin = true
 				continue
 			}
+		}
+		if isAdmin {
+			continue
 		}
 		botInfo, err := ctx.ResolveUsername(bot.Self.Username)
 		if err != nil {
