@@ -188,6 +188,8 @@ In addition to the mandatory variables, you can also set the following optional 
 
 - `USE_SESSION_FILE` : Use session files for worker client(s). This speeds up the worker bot startups. (default: `false`)
 
+- `USER_SESSION` : A pyrogram session string for the user bot. (default: `null`)
+
 <hr>
 
 ### Use Multiple Bots to speed up

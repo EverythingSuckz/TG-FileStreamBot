@@ -25,6 +25,7 @@ type config struct {
 	Host           string `envconfig:"HOST" default:"http://localhost:8080"`
 	HashLength     int    `envconfig:"HASH_LENGTH" default:"6"`
 	UseSessionFile bool   `envconfig:"USE_SESSION_FILE" default:"true"`
+	UserSession    string `envconfig:"USER_SESSION"`
 	MultiTokens    []string
 }
 

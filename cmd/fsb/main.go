@@ -34,6 +34,7 @@ func main() {
 	}
 	cache.InitCache(log)
 	bot.StartWorkers(log)
+	bot.StartUserBot(log)
 	mainLogger.Info("Server started", zap.Int("port", config.ValueOf.Port))
 	mainLogger.Info("File Stream Bot", zap.String("version", versionString))
 	err = router.Run(fmt.Sprintf(":%d", config.ValueOf.Port))
