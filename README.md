@@ -68,7 +68,7 @@
 - Extract the zip file to a folder.
 - Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
 - Give the executable file permission to execute using the command `chmod +x fsb` (Not required for windows).
-- Run the bot using `./fsb` command. ( `./fsb.exe` for windows)
+- Run the bot using `./fsb run` command. ( `./fsb.exe run` for windows)
 
 <hr>
 
@@ -124,7 +124,7 @@ chmod +x fsb
 mv fsb.sample.env fsb.env
 nano fsb.env
 # (add your environment variables, see the next section for more info)
-./fsb
+./fsb run
 ```
 
 and to stop the program,
@@ -142,7 +142,7 @@ go build ./cmd/fsb/
 Rename-Item -LiteralPath ".\fsb.sample.env" -NewName ".\fsb.env"
 notepad fsb.env
 # (add your environment variables, see the next section for more info)
-.\fsb
+.\fsb run
 ```
 
 and to stop the program,

@@ -2,64 +2,35 @@ package main
 
 import (
 	"EverythingSuckz/fsb/config"
-	"EverythingSuckz/fsb/internal/bot"
-	"EverythingSuckz/fsb/internal/cache"
-	"EverythingSuckz/fsb/internal/routes"
-	"EverythingSuckz/fsb/internal/types"
-	"EverythingSuckz/fsb/internal/utils"
 	"fmt"
-	"net/http"
-	"time"
+	"os"
 
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
+	"github.com/spf13/cobra"
 )
 
 const versionString = "3.0.0-alpha1"
 
-var startTime time.Time = time.Now()
-
-func main() {
-	utils.InitLogger()
-	log := utils.Logger
-	mainLogger := log.Named("Main")
-	mainLogger.Info("Starting server")
-	config.Load(log)
-	router := getRouter(log)
-
-	_, err := bot.StartClient(log)
-	if err != nil {
-		log.Info(err.Error())
-		return
-	}
-	cache.InitCache(log)
-	bot.StartWorkers(log)
-	bot.StartUserBot(log)
-	mainLogger.Info("Server started", zap.Int("port", config.ValueOf.Port))
-	mainLogger.Info("File Stream Bot", zap.String("version", versionString))
-	err = router.Run(fmt.Sprintf(":%d", config.ValueOf.Port))
-	if err != nil {
-		mainLogger.Sugar().Fatalln(err)
-	}
-
+var rootCmd = &cobra.Command{
+	Use:               "fsb [command]",
+	Short:             "Telegram File Stream Bot",
+	Long:              "Telegram Bot to generate direct streamable links for telegram media.",
+	Example:           "fsb run --port 8080",
+	Version:           versionString,
+	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
+	Run: func(cmd *cobra.Command, args []string) {
+		cmd.Help()
+	},
 }
 
-func getRouter(log *zap.Logger) *gin.Engine {
-	if config.ValueOf.Dev {
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
+func init() {
+	config.SetFlagsFromConfig(runCmd)
+	rootCmd.AddCommand(runCmd)
+	rootCmd.SetVersionTemplate(fmt.Sprintf(`Telegram File Stream Bot version %s`, versionString))
+}
+
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	router := gin.Default()
-	router.Use(gin.ErrorLogger())
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, types.RootResponse{
-			Message: "Server is running.",
-			Ok:      true,
-			Uptime:  utils.TimeFormat(uint64(time.Since(startTime).Seconds())),
-			Version: versionString,
-		})
-	})
-	routes.Load(log, router)
-	return router
 }
