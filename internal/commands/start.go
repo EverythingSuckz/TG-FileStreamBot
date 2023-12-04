@@ -13,6 +13,6 @@ func (m *command) LoadStart(dispatcher dispatcher.Dispatcher) {
 }
 
 func start(ctx *ext.Context, u *ext.Update) error {
-	ctx.Reply(u, "Hi", nil)
+	ctx.Reply(u, "Hi, send me any file to get a direct streamble link to that file.", nil)
 	return dispatcher.EndGroups
 }
