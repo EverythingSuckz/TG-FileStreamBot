@@ -158,7 +158,7 @@ An example of `fsb.env` file:
 API_ID=452525
 API_HASH=esx576f8738x883f3sfzx83
 BOT_TOKEN=55838383:yourbottokenhere
-BIN_CHANNEL=-10045145224562
+LOG_CHANNEL=-10045145224562
 PORT=8080
 HOST=http://yourserverip
 # (if you want to set up multiple bots)
@@ -175,7 +175,7 @@ Before running the bot, you will need to set up the following mandatory variable
 
 - `BOT_TOKEN` : This is the bot token for the Telegram Media Streamer Bot, which can be obtained from [@BotFather](https://telegram.dog/BotFather).
 
-- `BIN_CHANNEL` :  This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
+- `LOG_CHANNEL` :  This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
 
 ### Optional Vars
 In addition to the mandatory variables, you can also set the following optional variables:
@@ -188,7 +188,7 @@ In addition to the mandatory variables, you can also set the following optional 
 
 - `USE_SESSION_FILE` : Use session files for worker client(s). This speeds up the worker bot startups. (default: `false`)
 
-- `USER_SESSION` : A pyrogram session string for the user bot. (default: `null`)
+- `USER_SESSION` : A pyrogram session string for a user bot. Used for auto adding the bots to `LOG_CHANNEL`.(default: `null`)
 
 <hr>
 
@@ -211,7 +211,7 @@ you may also add as many as bots you want. (max limit is 50)
 `MULTI_TOKEN3`, `MULTI_TOKEN4`, etc.
 
 > **Warning**
-> Don't forget to add all these worker bots to the `BIN_CHANNEL` for the proper functioning
+> Don't forget to add all these worker bots to the `LOG_CHANNEL` for the proper functioning
 
 ## Contributing
 
