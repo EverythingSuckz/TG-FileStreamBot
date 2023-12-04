@@ -32,7 +32,7 @@ async def root_route_handler(_):
                     sorted(work_loads.items(), key=lambda x: x[1], reverse=True)
                 )
             ),
-            "version": __version__,
+            "version": f"v{__version__}",
         }
     )
 
