@@ -25,6 +25,9 @@
     <li>
       <a href="#how-to-make-your-own">How to make your own</a>
       <ul>
+        <li><a href="#deploy-to-heroku">Deploy to Heroku</a></li>
+      </ul>
+      <ul>
         <li><a href="#download-from-releases">Download and run</a></li>
       </ul>
       <ul>
@@ -62,6 +65,15 @@
 </details>
 
 ## How to make your own
+
+### Deploy to Heroku
+Press the below button to fast deploy to Heroku
+
+[![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+[Click Here](https://devcenter.heroku.com/articles/config-vars#using-the-heroku-dashboard) to know how to edit Variables
+
+<hr>
 
 ### Download from releases
 - Head over to [releases](https://github.com/EverythingSuckz/TG-FileStreamBot/releases) tab, from the *pre release* section, download the one for your platform and architecture.
