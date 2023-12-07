@@ -157,6 +157,7 @@ func startWorker(l *zap.Logger, botToken string, index int) (*gotgproto.Client, 
 		&gotgproto.ClientOpts{
 			Session:          sessionType,
 			DisableCopyright: true,
+			Middlewares:      GetFloodMiddleware(log.Desugar()),
 		},
 	)
 	if err != nil {
