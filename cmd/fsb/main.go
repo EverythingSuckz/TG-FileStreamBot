@@ -25,6 +25,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	config.SetFlagsFromConfig(runCmd)
 	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(sessionCmd)
 	rootCmd.SetVersionTemplate(fmt.Sprintf(`Telegram File Stream Bot version %s`, versionString))
 }
 

@@ -26,33 +26,28 @@
       <a href="#how-to-make-your-own">How to make your own</a>
       <ul>
         <li><a href="#download-from-releases">Download and run</a></li>
-      </ul>
-      <ul>
         <li><a href="#run-using-docker-compose">Run via Docker compose</a></li>
-      </ul>
-      <ul>
         <li><a href="#run-using-docker">Run via Docker</a></li>
-      </ul>
-      <ul>
-        <li><a href="#build-from-source">Build and run</a></li>
-        <ul>
-        <li><a href="#ubuntu">Ubuntu</a></li>
-      </ul>
-        <ul>
-        <li><a href="#windows">Windows</a></li>
-      </ul>
+        <li><a href="#build-from-source">Build and run</a>
+          <ul>
+            <li><a href="#ubuntu">Ubuntu</a></li>
+            <li><a href="#windows">Windows</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
     <li>
       <a href="#setting-up-things">Setting up Things</a>
       <ul>
         <li><a href="#required-vars">Required environment variables</a></li>
-      </ul>
-      <ul>
         <li><a href="#optional-vars">Optional environment variables</a></li>
-      </ul>
-      <ul>
         <li><a href="#use-multiple-bots-to-speed-up">Using multiple bots</a></li>
+        <li><a href="#use-multiple-bots-to-speed-up">Using user session to auto add bots</a>
+          <ul>
+            <li><a href="#what-it-does">What it does?</a></li>
+            <li><a href="#how-to-generate-a-session-string">How to generate a session string?</a></li>
+          </ul>
+        </li>
       </ul>
     </li>
     <li><a href="#contributing">Contributing</a></li>
@@ -60,6 +55,8 @@
     <li><a href="#credits">Credits</a></li>
   </ol>
 </details>
+
+
 
 ## How to make your own
 
@@ -194,11 +191,11 @@ In addition to the mandatory variables, you can also set the following optional 
 
 ### Use Multiple Bots to speed up
 
-> **Note**
-> What it multi-client feature and what it does? <br>
+> [!NOTE]
+> **What it multi-client feature and what it does?** <br>
 > This feature shares the Telegram API requests between worker bots to speed up download speed when many users are using the server and to avoid the flood limits that are set by Telegram. <br>
 
-> **Note**
+> [!NOTE]
 > You can add up to 50 bots since 50 is the max amount of bot admins you can set in a Telegram Channel.
 
 To enable multi-client, generate new bot tokens and add it as your `fsb.env` with the following key names. 
@@ -210,8 +207,30 @@ To enable multi-client, generate new bot tokens and add it as your `fsb.env` wit
 you may also add as many as bots you want. (max limit is 50)
 `MULTI_TOKEN3`, `MULTI_TOKEN4`, etc.
 
-> **Warning**
+> [!WARNING]
 > Don't forget to add all these worker bots to the `LOG_CHANNEL` for the proper functioning
+
+### Using user session to auto add bots
+
+> [!WARNING]
+> This might sometimes result in your account getting resticted or banned.
+> **Only newly created accounts are prone to this.**
+
+To use this feature, you need to generate a pyrogram session string for the user account and add it to the `USER_SESSION` variable in the `fsb.env` file.
+
+#### What it does?
+
+This feature is used to auto add the worker bots to the `LOG_CHANNEL` when they are started. This is useful when you have a lot of worker bots and you don't want to add them manually to the `LOG_CHANNEL`.
+
+#### How to generate a session string?
+
+The easiest way to generate a session string is by running
+
+```sh
+./fsb session --api-id <your api id> --api-hash <your api hash>
+```
+
+This will generate a session string for your user account using QR code authentication. Authentication via phone number is not supported yet and will be added in the future.
 
 ## Contributing
 
