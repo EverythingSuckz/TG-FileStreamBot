@@ -5,8 +5,9 @@
         "telegram",
         "web",
         "go",
-        "gola",
-        "FileToLink",
+        "golang",
+        "file-streaming",
+        "file-to-link",
         "TG-FileStreamBot"
     ],
     "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot",

@@ -64,11 +64,16 @@
 ## How to make your own
 
 ### Deploy to Heroku
+
+> [!NOTE]
+> You'll have to [fork](https://github.com/EverythingSuckz/TG-FileStreamBot/fork) this repository to deploy to Heroku.
+> Also don't forget to choose the `golang` branch in the deployment page.
+
 Press the below button to fast deploy to Heroku
 
 [![Deploy To Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-[Click Here](https://devcenter.heroku.com/articles/config-vars#using-the-heroku-dashboard) to know how to edit Variables
+[Click Here](https://devcenter.heroku.com/articles/config-vars#using-the-heroku-dashboard) to know how to add / edit [environment variables](#required-vars) in Heroku.
 
 <hr>
 
@@ -241,6 +246,10 @@ The easiest way to generate a session string is by running
 ```sh
 ./fsb session --api-id <your api id> --api-hash <your api hash>
 ```
+
+<img src="https://github.com/EverythingSuckz/TG-FileStreamBot/assets/65120517/b5bd2b88-0e1f-4dbc-ad9a-faa6d5a17320" height=300>
+
+<br><br>
 
 This will generate a session string for your user account using QR code authentication. Authentication via phone number is not supported yet and will be added in the future.
 
