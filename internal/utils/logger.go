@@ -19,7 +19,6 @@ func InitLogger() {
 	consoleConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	consoleConfig.EncodeTime = customTimeEncoder
 	consoleEncoder := zapcore.NewConsoleEncoder(consoleConfig)
-	defaultLogLevel := zapcore.DebugLevel
 
 	fileEncoderConfig := zap.NewProductionEncoderConfig()
 	fileEncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -34,9 +33,9 @@ func InitLogger() {
 	})
 
 	core := zapcore.NewTee(
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
-		zapcore.NewCore(fileEncoder, fileWriter, defaultLogLevel),
+		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zapcore.InfoLevel),
+		zapcore.NewCore(fileEncoder, fileWriter, zapcore.DebugLevel),
 	)
 
-	Logger = zap.New(core, zap.AddStacktrace(zapcore.ErrorLevel))
+	Logger = zap.New(core, zap.AddStacktrace(zapcore.FatalLevel))
 }

@@ -36,8 +36,7 @@ func runApp(cmd *cobra.Command, args []string) {
 
 	mainBot, err := bot.StartClient(log)
 	if err != nil {
-		log.Info(err.Error())
-		return
+		log.Panic("Failed to start main bot", zap.Error(err))
 	}
 	cache.InitCache(log)
 	workers, err := bot.StartWorkers(log)

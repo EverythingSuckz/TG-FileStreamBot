@@ -38,7 +38,7 @@ func (c *config) loadFromEnvFile(log *zap.Logger) {
 	err := godotenv.Load(envPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			log.WithOptions(zap.AddStacktrace(zap.DPanicLevel)).Sugar().Errorf("ENV file not found: %s", envPath)
+			log.Sugar().Errorf("ENV file not found: %s", envPath)
 			log.Sugar().Info("Please create fsb.env file")
 			log.Sugar().Info("For more info, refer: https://github.com/EverythingSuckz/TG-FileStreamBot/tree/golang#setting-up-things")
 			log.Sugar().Info("Please ignore this message if you are hosting it in a service like Heroku or other alternatives.")
