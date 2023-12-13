@@ -53,6 +53,7 @@ func (w *BotWorkers) AddDefaultClient(client *gotgproto.Client, self *tg.User) {
 		Client: client,
 		ID:     w.starting,
 		Self:   self,
+		log:    w.log,
 	})
 	w.log.Sugar().Info("Default bot loaded")
 }
@@ -90,17 +91,20 @@ func GetNextWorker() *Worker {
 	return worker
 }
 
-func StartWorkers(log *zap.Logger) {
-	log.Sugar().Info("Starting workers")
-
+func StartWorkers(log *zap.Logger) (*BotWorkers, error) {
 	Workers.Init(log)
 
+	if len(config.ValueOf.MultiTokens) == 0 {
+		Workers.log.Sugar().Info("No worker bot tokens provided, skipping worker initialization")
+		return Workers, nil
+	}
+	Workers.log.Sugar().Info("Starting")
 	if config.ValueOf.UseSessionFile {
-		log.Sugar().Info("Using session file for workers")
+		Workers.log.Sugar().Info("Using session file for workers")
 		newpath := filepath.Join(".", "sessions")
 		if err := os.MkdirAll(newpath, os.ModePerm); err != nil {
-			log.Error("Failed to create sessions directory", zap.Error(err))
-			return
+			Workers.log.Error("Failed to create sessions directory", zap.Error(err))
+			return nil, err
 		}
 	}
 
@@ -125,18 +129,19 @@ func StartWorkers(log *zap.Logger) {
 			select {
 			case err := <-done:
 				if err != nil {
-					log.Error("Failed to start worker", zap.Int("Worker Index", i), zap.Error(err))
+					Workers.log.Error("Failed to start worker", zap.Int("Worker Index", i), zap.Error(err))
 				} else {
 					atomic.AddInt32(&successfulStarts, 1)
 				}
 			case <-ctx.Done():
-				log.Error("Timed out starting worker", zap.Int("Worker Index", i))
+				Workers.log.Error("Timed out starting worker", zap.Int("Worker Index", i))
 			}
 		}(i)
 	}
 
 	wg.Wait() // Wait for all goroutines to finish
-	log.Sugar().Infof("Successfully started %d/%d bots", successfulStarts, totalBots)
+	Workers.log.Sugar().Infof("Successfully started %d/%d bots", successfulStarts, totalBots)
+	return Workers, nil
 }
 
 func startWorker(l *zap.Logger, botToken string, index int) (*gotgproto.Client, error) {

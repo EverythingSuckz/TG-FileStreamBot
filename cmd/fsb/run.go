@@ -34,13 +34,18 @@ func runApp(cmd *cobra.Command, args []string) {
 	config.Load(log, cmd)
 	router := getRouter(log)
 
-	_, err := bot.StartClient(log)
+	mainBot, err := bot.StartClient(log)
 	if err != nil {
 		log.Info(err.Error())
 		return
 	}
 	cache.InitCache(log)
-	bot.StartWorkers(log)
+	workers, err := bot.StartWorkers(log)
+	if err != nil {
+		log.Panic("Failed to start workers", zap.Error(err))
+		return
+	}
+	workers.AddDefaultClient(mainBot, mainBot.Self)
 	bot.StartUserBot(log)
 	mainLogger.Info("Server started", zap.Int("port", config.ValueOf.Port))
 	mainLogger.Info("File Stream Bot", zap.String("version", versionString))
