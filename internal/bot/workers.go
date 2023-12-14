@@ -87,7 +87,7 @@ func GetNextWorker() *Worker {
 	index := (Workers.index + 1) % len(Workers.Bots)
 	Workers.index = index
 	worker := Workers.Bots[index]
-	Workers.log.Sugar().Infof("Using worker %d", worker.ID)
+	Workers.log.Sugar().Debugf("Using worker %d", worker.ID)
 	return worker
 }
 
@@ -129,12 +129,12 @@ func StartWorkers(log *zap.Logger) (*BotWorkers, error) {
 			select {
 			case err := <-done:
 				if err != nil {
-					Workers.log.Error("Failed to start worker", zap.Int("Worker Index", i), zap.Error(err))
+					Workers.log.Error("Failed to start worker", zap.Int("index", i), zap.Error(err))
 				} else {
 					atomic.AddInt32(&successfulStarts, 1)
 				}
 			case <-ctx.Done():
-				Workers.log.Error("Timed out starting worker", zap.Int("Worker Index", i))
+				Workers.log.Error("Timed out starting worker", zap.Int("index", i))
 			}
 		}(i)
 	}
