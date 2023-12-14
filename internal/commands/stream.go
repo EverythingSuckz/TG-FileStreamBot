@@ -31,34 +31,20 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 	if peerChatId.Type != int(storage.TypeUser) {
 		return dispatcher.EndGroups
 	}
-	peer := ctx.PeerStorage.GetPeerById(config.ValueOf.LogChannelID)
-	switch storage.EntityType(peer.Type) {
-	case storage.TypeChat:
-		return dispatcher.EndGroups
-	case storage.TypeUser:
-		return dispatcher.EndGroups
-	}
-	update, err := ctx.ForwardMessages(
-		chatId,
-		config.ValueOf.LogChannelID,
-		&tg.MessagesForwardMessagesRequest{
-			FromPeer: &tg.InputPeerChat{ChatID: chatId},
-			ID:       []int{u.EffectiveMessage.ID},
-			ToPeer:   &tg.InputPeerChannel{ChannelID: config.ValueOf.LogChannelID, AccessHash: peer.AccessHash},
-		},
-	)
+
+	update, err := utils.ForwardMessages(ctx, chatId, config.ValueOf.LogChannelID, u.EffectiveMessage.ID)
 	if err != nil {
 		utils.Logger.Sugar().Error(err)
 		ctx.Reply(u, fmt.Sprintf("Error - %s", err.Error()), nil)
 		return dispatcher.EndGroups
 	}
-	messageID := update.(*tg.Updates).Updates[0].(*tg.UpdateMessageID).ID
+	messageID := update.Updates[0].(*tg.UpdateMessageID).ID
 	if err != nil {
 		utils.Logger.Sugar().Error(err)
 		ctx.Reply(u, fmt.Sprintf("Error - %s", err.Error()), nil)
 		return dispatcher.EndGroups
 	}
-	doc := update.(*tg.Updates).Updates[1].(*tg.UpdateNewChannelMessage).Message.(*tg.Message).Media
+	doc := update.Updates[1].(*tg.UpdateNewChannelMessage).Message.(*tg.Message).Media
 	file, err := utils.FileFromMedia(doc)
 	if err != nil {
 		ctx.Reply(u, fmt.Sprintf("Error - %s", err.Error()), nil)
@@ -70,7 +56,6 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		file.MimeType,
 		file.ID,
 	)
-
 	hash := utils.GetShortHash(fullHash)
 	link := fmt.Sprintf("%s/stream/%d?hash=%s", config.ValueOf.Host, messageID, hash)
 	ctx.Reply(u, link, nil)

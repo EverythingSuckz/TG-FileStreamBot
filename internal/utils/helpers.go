@@ -7,15 +7,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand"
 
 	"github.com/celestix/gotgproto"
+	"github.com/celestix/gotgproto/ext"
+	"github.com/celestix/gotgproto/storage"
 	"github.com/gotd/td/tg"
 	"go.uber.org/zap"
 )
 
 func GetTGMessage(ctx context.Context, client *gotgproto.Client, messageID int) (*tg.Message, error) {
 	inputMessageID := tg.InputMessageClass(&tg.InputMessageID{ID: messageID})
-	channel, err := GetChannelById(ctx, client)
+	channel, err := GetLogChannelPeer(ctx, client.API(), client.PeerStorage)
 	if err != nil {
 		return nil, err
 	}
@@ -89,18 +92,56 @@ func FileFromMessage(ctx context.Context, client *gotgproto.Client, messageID in
 	// TODO: add photo support
 }
 
-func GetChannelById(ctx context.Context, client *gotgproto.Client) (*tg.InputChannel, error) {
-	channel := &tg.InputChannel{}
+func GetLogChannelPeer(ctx context.Context, api *tg.Client, peerStorage *storage.PeerStorage) (*tg.InputChannel, error) {
+	cachedInputPeer := peerStorage.GetInputPeerById(config.ValueOf.LogChannelID)
+
+	switch peer := cachedInputPeer.(type) {
+	case *tg.InputPeerEmpty:
+		break
+	case *tg.InputPeerChannel:
+		return &tg.InputChannel{
+			ChannelID:  peer.ChannelID,
+			AccessHash: peer.AccessHash,
+		}, nil
+	default:
+		return nil, errors.New("unexpected type of input peer")
+	}
 	inputChannel := &tg.InputChannel{
 		ChannelID: config.ValueOf.LogChannelID,
 	}
-	channels, err := client.API().ChannelsGetChannels(ctx, []tg.InputChannelClass{inputChannel})
+	channels, err := api.ChannelsGetChannels(ctx, []tg.InputChannelClass{inputChannel})
 	if err != nil {
 		return nil, err
 	}
 	if len(channels.GetChats()) == 0 {
 		return nil, errors.New("no channels found")
 	}
-	channel = channels.GetChats()[0].(*tg.Channel).AsInput()
-	return channel, nil
+	channel, ok := channels.GetChats()[0].(*tg.Channel)
+	if !ok {
+		return nil, errors.New("type assertion to *tg.Channel failed")
+	}
+	// Bruh, I literally have to call library internal functions at this point
+	peerStorage.AddPeer(channel.GetID(), channel.AccessHash, storage.TypeChannel, "")
+	return channel.AsInput(), nil
+}
+
+func ForwardMessages(ctx *ext.Context, fromChatId, toChatId int64, messageID int) (*tg.Updates, error) {
+	fromPeer := ctx.PeerStorage.GetInputPeerById(fromChatId)
+	if fromPeer.Zero() {
+		return nil, fmt.Errorf("fromChatId: %d is not a valid peer", fromChatId)
+	}
+	toPeer, err := GetLogChannelPeer(ctx, ctx.Raw, ctx.PeerStorage)
+	if err != nil {
+		return nil, err
+	}
+	update, err := ctx.Raw.MessagesForwardMessages(ctx, &tg.MessagesForwardMessagesRequest{
+		RandomID: []int64{rand.Int63()},
+		FromPeer: fromPeer,
+		ID:       []int{messageID},
+		ToPeer:   &tg.InputPeerChannel{ChannelID: toPeer.ChannelID, AccessHash: toPeer.AccessHash},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return update.(*tg.Updates), nil
 }
