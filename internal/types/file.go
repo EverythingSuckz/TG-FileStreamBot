@@ -1,10 +1,10 @@
 package types
 
 import (
-	"bytes"
 	"crypto/md5"
-	"encoding/gob"
-	"fmt"
+	"encoding/hex"
+	"reflect"
+	"strconv"
 
 	"github.com/gotd/td/tg"
 )
@@ -25,12 +25,20 @@ type HashableFileStruct struct {
 }
 
 func (f *HashableFileStruct) Pack() string {
-	var b bytes.Buffer
-	gob.NewEncoder(&b).Encode(f)
-	return FromBytes(b.Bytes())
-}
+	hasher := md5.New()
+	val := reflect.ValueOf(*f)
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
 
-func FromBytes(data []byte) string {
-	result := md5.Sum(data)
-	return fmt.Sprintf("%x", result)
+		var fieldValue []byte
+		switch field.Kind() {
+		case reflect.String:
+			fieldValue = []byte(field.String())
+		case reflect.Int64:
+			fieldValue = []byte(strconv.FormatInt(field.Int(), 10))
+		}
+
+		hasher.Write(fieldValue)
+	}
+	return hex.EncodeToString(hasher.Sum(nil))
 }
