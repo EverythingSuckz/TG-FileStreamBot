@@ -15,7 +15,7 @@ import (
 var Bot *gotgproto.Client
 
 func StartClient(log *zap.Logger) (*gotgproto.Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 	resultChan := make(chan struct {
 		client *gotgproto.Client
