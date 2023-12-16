@@ -1,5 +1,5 @@
-FROM golang:1.21 AS builder
-RUN apt-get update && apt-get upgrade -y && apt-get install build-essential -y
+FROM golang:1.21-alpine3.18 as builder
+RUN apk update && apk upgrade --available && sync
 WORKDIR /app
 COPY . .
 RUN CGO_ENABLED=0 go build -o /app/fsb -ldflags="-w -s" ./cmd/fsb
