@@ -51,12 +51,10 @@ func (c *Cache) Set(key string, value *types.File, expireSeconds int) error {
 	defer c.mu.Unlock()
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(value)
-	if err != nil {
+	if err := enc.Encode(value); err != nil {
 		return err
 	}
-	cache.cache.Set([]byte(key), buf.Bytes(), expireSeconds)
-	return nil
+	return cache.cache.Set([]byte(key), buf.Bytes(), expireSeconds)
 }
 
 func (c *Cache) Delete(key string) error {

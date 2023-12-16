@@ -15,7 +15,7 @@ type UserBotStruct struct {
 	client *gotgproto.Client
 }
 
-var UserBot *UserBotStruct = &UserBotStruct{}
+var UserBot = &UserBotStruct{}
 
 func StartUserBot(l *zap.Logger) {
 	log := l.Named("USERBOT")
@@ -42,7 +42,7 @@ func StartUserBot(l *zap.Logger) {
 	UserBot.log = log
 	UserBot.client = client
 	log.Info("Userbot started", zap.String("username", client.Self.Username), zap.String("FirstName", client.Self.FirstName), zap.String("LastName", client.Self.LastName))
-	if err := UserBot.AddBotsAsAdmins(); err != nil {
+	if err = UserBot.AddBotsAsAdmins(); err != nil {
 		log.Error("Failed to add bots as admins", zap.Error(err))
 		return
 	}
@@ -68,7 +68,7 @@ func (u *UserBotStruct) AddBotsAsAdmins() error {
 		return errors.New("no channels found")
 	}
 	inputChannel := channelInfos.GetChats()[0].(*tg.Channel).AsInput()
-	currentAdmins := []int64{}
+	var currentAdmins []int64
 	admins, err := u.client.API().ChannelsGetParticipants(ctx, &tg.ChannelsGetParticipantsRequest{
 		Channel: inputChannel,
 		Filter:  &tg.ChannelParticipantsAdmins{},

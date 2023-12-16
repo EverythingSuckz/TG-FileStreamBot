@@ -35,7 +35,7 @@ type BotWorkers struct {
 	log      *zap.Logger
 }
 
-var Workers *BotWorkers = &BotWorkers{
+var Workers = &BotWorkers{
 	log:  nil,
 	Bots: make([]*Worker, 0),
 }
@@ -66,7 +66,7 @@ func (w *BotWorkers) incStarting() {
 
 func (w *BotWorkers) Add(token string) (err error) {
 	w.incStarting()
-	var botID int = w.starting
+	var botID = w.starting
 	client, err := startWorker(w.log, token, botID)
 	if err != nil {
 		return err

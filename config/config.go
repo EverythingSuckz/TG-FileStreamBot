@@ -14,23 +14,24 @@ import (
 	"go.uber.org/zap"
 )
 
-var ValueOf = &config{}
+var (
+	ValueOf       = &config{}
+	botTokenRegex = regexp.MustCompile(`MULTI_TOKEN\d+=(.*)`)
+)
 
 type config struct {
-	ApiID          int32  `envconfig:"API_ID" required:"true"`
-	ApiHash        string `envconfig:"API_HASH" required:"true"`
-	BotToken       string `envconfig:"BOT_TOKEN" required:"true"`
-	LogChannelID   int64  `envconfig:"LOG_CHANNEL" required:"true"`
-	Dev            bool   `envconfig:"DEV" default:"false"`
-	Port           int    `envconfig:"PORT" default:"8080"`
-	Host           string `envconfig:"HOST" default:"http://localhost:8080"`
-	HashLength     int    `envconfig:"HASH_LENGTH" default:"6"`
-	UseSessionFile bool   `envconfig:"USE_SESSION_FILE" default:"true"`
-	UserSession    string `envconfig:"USER_SESSION"`
-	MultiTokens    []string
+	Dev            bool     `envconfig:"DEV" default:"false"`
+	UseSessionFile bool     `envconfig:"USE_SESSION_FILE" default:"true"`
+	ApiID          int32    `envconfig:"API_ID" required:"true"`
+	HashLength     int      `envconfig:"HASH_LENGTH" default:"6"`
+	Port           int      `envconfig:"PORT" default:"8080"`
+	ApiHash        string   `envconfig:"API_HASH" required:"true"`
+	UserSession    string   `envconfig:"USER_SESSION"`
+	BotToken       string   `envconfig:"BOT_TOKEN" required:"true"`
+	LogChannelID   int64    `envconfig:"LOG_CHANNEL" required:"true"`
+	MultiTokens    []string `envconfig:"MULTI_TOKENS"`
+	Host           string   `envconfig:"HOST" default:"http://localhost:8080"`
 }
-
-var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN\d+=(.*)`)
 
 func (c *config) loadFromEnvFile(log *zap.Logger) {
 	envPath := filepath.Clean("fsb.env")

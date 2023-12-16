@@ -17,16 +17,17 @@ import (
 	"go.uber.org/zap"
 )
 
-var runCmd = &cobra.Command{
-	Use:                "run",
-	Short:              "Run the bot with the given configuration.",
-	DisableSuggestions: false,
-	Run:                runApp,
-}
+var (
+	runCmd = &cobra.Command{
+		Use:                "run",
+		Short:              "Run the bot with the given configuration.",
+		DisableSuggestions: false,
+		Run:                runApp,
+	}
+	startTime = time.Now()
+)
 
-var startTime time.Time = time.Now()
-
-func runApp(cmd *cobra.Command, args []string) {
+func runApp(cmd *cobra.Command, _ []string) {
 	utils.InitLogger()
 	log := utils.Logger
 	mainLogger := log.Named("Main")

@@ -1,6 +1,6 @@
 module EverythingSuckz/fsb
 
-go 1.21.3
+go 1.21.5
 
 require (
 	github.com/celestix/gotgproto v1.0.0-beta13.0.20231201105236-366763b5cc2e

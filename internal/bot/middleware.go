@@ -10,7 +10,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-func GetFloodMiddleware(log *zap.Logger) []telegram.Middleware {
+func GetFloodMiddleware(_ *zap.Logger) []telegram.Middleware {
 	waiter := floodwait.NewSimpleWaiter().WithMaxRetries(10)
 	ratelimiter := ratelimit.New(rate.Every(time.Millisecond*100), 5)
 	return []telegram.Middleware{

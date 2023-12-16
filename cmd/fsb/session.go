@@ -23,7 +23,7 @@ func init() {
 	sessionCmd.MarkFlagRequired("api-hash")
 }
 
-func generateSession(cmd *cobra.Command, args []string) {
+func generateSession(cmd *cobra.Command, _ []string) {
 	loginType, _ := cmd.Flags().GetString("login-type")
 	apiId, _ := cmd.Flags().GetInt32("api-id")
 	apiHash, _ := cmd.Flags().GetString("api-hash")

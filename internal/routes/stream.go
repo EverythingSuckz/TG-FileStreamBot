@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	range_parser "github.com/quantumsheep/range-parser"
+	rangeparser "github.com/quantumsheep/range-parser"
 	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
@@ -67,7 +67,7 @@ func getStreamRoute(ctx *gin.Context) {
 		end = file.FileSize - 1
 		w.WriteHeader(http.StatusOK)
 	} else {
-		ranges, err := range_parser.Parse(file.FileSize, r.Header.Get("Range"))
+		ranges, err := rangeparser.Parse(file.FileSize, r.Header.Get("Range"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -103,7 +103,7 @@ func getStreamRoute(ctx *gin.Context) {
 			return
 		}
 		lr, _ := utils.NewTelegramReader(ctx, worker.Client, file.Location, start, end, contentLength)
-		if _, err := io.CopyN(w, lr, contentLength); err != nil {
+		if _, err = io.CopyN(w, lr, contentLength); err != nil {
 			log.Error("Error while copying stream", zap.Error(err))
 		}
 	}
