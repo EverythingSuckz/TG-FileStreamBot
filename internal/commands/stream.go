@@ -12,6 +12,7 @@ import (
 	"github.com/celestix/gotgproto/ext"
 	"github.com/celestix/gotgproto/storage"
 	"github.com/celestix/gotgproto/types"
+	"github.com/gotd/td/telegram/message/styling"
 	"github.com/gotd/td/tg"
 )
 
@@ -69,6 +70,7 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 	)
 	hash := utils.GetShortHash(fullHash)
 	link := fmt.Sprintf("%s/stream/%d?hash=%s", config.ValueOf.Host, messageID, hash)
+	text := []styling.StyledTextOption{styling.Code(link)}
 	row := tg.KeyboardButtonRow{
 		Buttons: []tg.KeyboardButtonClass{
 			&tg.KeyboardButtonURL{
@@ -87,12 +89,12 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		Rows: []tg.KeyboardButtonRow{row},
 	}
 	if strings.Contains(link, "http://localhost") {
-		_, err = ctx.Reply(u, link, &ext.ReplyOpts{
+		_, err = ctx.Reply(u, text, &ext.ReplyOpts{
 			NoWebpage:        false,
 			ReplyToMessageId: u.EffectiveMessage.ID,
 		})
 	} else {
-		_, err = ctx.Reply(u, link, &ext.ReplyOpts{
+		_, err = ctx.Reply(u, text, &ext.ReplyOpts{
 			Markup:           markup,
 			NoWebpage:        false,
 			ReplyToMessageId: u.EffectiveMessage.ID,
