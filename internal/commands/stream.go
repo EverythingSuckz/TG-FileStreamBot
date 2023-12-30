@@ -9,9 +9,9 @@ import (
 
 	"github.com/celestix/gotgproto/dispatcher"
 	"github.com/celestix/gotgproto/dispatcher/handlers"
-	"github.com/celestix/gotgproto/dispatcher/handlers/filters"
 	"github.com/celestix/gotgproto/ext"
 	"github.com/celestix/gotgproto/storage"
+	"github.com/celestix/gotgproto/types"
 	"github.com/gotd/td/tg"
 )
 
@@ -19,12 +19,22 @@ func (m *command) LoadStream(dispatcher dispatcher.Dispatcher) {
 	log := m.log.Named("start")
 	defer log.Sugar().Info("Loaded")
 	dispatcher.AddHandler(
-		handlers.NewMessage(filters.Message.Media, sendLink),
+		handlers.NewMessage(nil, sendLink),
 	)
 }
 
+func supportedMediaFilter(m *types.Message) bool {
+	switch m.Media.(type) {
+	case *tg.MessageMediaDocument:
+		return true
+	default:
+		return false
+	}
+}
+
 func sendLink(ctx *ext.Context, u *ext.Update) error {
-	if u.EffectiveMessage.Media == nil {
+	if !supportedMediaFilter(u.EffectiveMessage) {
+		ctx.Reply(u, "Sorry, any media except photos are supported.", nil)
 		return dispatcher.EndGroups
 	}
 	chatId := u.EffectiveChat().GetID()

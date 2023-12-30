@@ -4,6 +4,7 @@ import (
 	"github.com/celestix/gotgproto/dispatcher"
 	"github.com/celestix/gotgproto/dispatcher/handlers"
 	"github.com/celestix/gotgproto/ext"
+	"github.com/celestix/gotgproto/storage"
 )
 
 func (m *command) LoadStart(dispatcher dispatcher.Dispatcher) {
@@ -13,6 +14,11 @@ func (m *command) LoadStart(dispatcher dispatcher.Dispatcher) {
 }
 
 func start(ctx *ext.Context, u *ext.Update) error {
+	chatId := u.EffectiveChat().GetID()
+	peerChatId := ctx.PeerStorage.GetPeerById(chatId)
+	if peerChatId.Type != int(storage.TypeUser) {
+		return dispatcher.EndGroups
+	}
 	ctx.Reply(u, "Hi, send me any file to get a direct streamble link to that file.", nil)
 	return dispatcher.EndGroups
 }
