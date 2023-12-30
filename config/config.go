@@ -1,6 +1,10 @@
 package config
 
 import (
+	"errors"
+	"io"
+	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -23,7 +27,7 @@ type config struct {
 	LogChannelID   int64  `envconfig:"LOG_CHANNEL" required:"true"`
 	Dev            bool   `envconfig:"DEV" default:"false"`
 	Port           int    `envconfig:"PORT" default:"8080"`
-	Host           string `envconfig:"HOST" default:"http://localhost:8080"`
+	Host           string `envconfig:"HOST" default:""`
 	HashLength     int    `envconfig:"HASH_LENGTH" default:"6"`
 	UseSessionFile bool   `envconfig:"USE_SESSION_FILE" default:"true"`
 	UserSession    string `envconfig:"USER_SESSION"`
@@ -117,6 +121,10 @@ func (c *config) setupEnvVars(log *zap.Logger, cmd *cobra.Command) {
 	if err != nil {
 		log.Fatal("Error while parsing env variables", zap.Error(err))
 	}
+	if c.Host == "" {
+		c.Host = "http://" + getIP() + ":" + strconv.Itoa(c.Port)
+		log.Sugar().Info("HOST not set, automatically set to " + c.Host)
+	}
 	val := reflect.ValueOf(c).Elem()
 	for _, env := range os.Environ() {
 		if strings.HasPrefix(env, "MULTI_TOKEN") {
@@ -143,6 +151,50 @@ func Load(log *zap.Logger, cmd *cobra.Command) {
 		log.Sugar().Info("HASH_LENGTH can't be less than 5, defaulting to 6")
 		ValueOf.HashLength = 6
 	}
+}
+
+func getIP() string {
+	ip, err := getInternalIP()
+	if err != nil {
+		return "localhost"
+	}
+	return ip
+}
+
+// https://stackoverflow.com/a/23558495/15807350
+func getInternalIP() (string, error) {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		return "", errors.New("no internet connection")
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	return localAddr.IP.String(), nil
+}
+
+func GetPublicIP() (string, error) {
+	resp, err := http.Get("https://api.ipify.org?format=text")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	ip, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	if !checkIfIpAccessible(string(ip)) {
+		return "", errors.New("PORT is blocked by firewall")
+	}
+	return string(ip), nil
+}
+
+func checkIfIpAccessible(ip string) bool {
+	conn, err := net.Dial("tcp", ip+":80")
+	if err != nil {
+		return false
+	}
+	defer conn.Close()
+	return true
 }
 
 func stripInt(log *zap.Logger, a int) int {
