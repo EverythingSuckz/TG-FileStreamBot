@@ -24,26 +24,36 @@ func (m *command) LoadStream(dispatcher dispatcher.Dispatcher) {
 	)
 }
 
-func supportedMediaFilter(m *types.Message) bool {
+func supportedMediaFilter(m *types.Message) (bool, error) {
+	if not := m.Media == nil; not {
+		return false, dispatcher.EndGroups
+	}
 	switch m.Media.(type) {
 	case *tg.MessageMediaDocument:
-		return true
+		return true, nil
+	case *tg.MessageMediaPhoto:
+		return false, nil
+	case tg.MessageMediaClass:
+		return false, dispatcher.EndGroups
 	default:
-		return false
+		return false, nil
 	}
 }
 
 func sendLink(ctx *ext.Context, u *ext.Update) error {
-	if !supportedMediaFilter(u.EffectiveMessage) {
-		ctx.Reply(u, "Sorry, any media except photos are supported.", nil)
-		return dispatcher.EndGroups
-	}
 	chatId := u.EffectiveChat().GetID()
 	peerChatId := ctx.PeerStorage.GetPeerById(chatId)
 	if peerChatId.Type != int(storage.TypeUser) {
 		return dispatcher.EndGroups
 	}
-
+	supported, err := supportedMediaFilter(u.EffectiveMessage)
+	if err != nil {
+		return err
+	}
+	if !supported {
+		ctx.Reply(u, "Sorry, this message type is unsupported.", nil)
+		return dispatcher.EndGroups
+	}
 	update, err := utils.ForwardMessages(ctx, chatId, config.ValueOf.LogChannelID, u.EffectiveMessage.ID)
 	if err != nil {
 		utils.Logger.Sugar().Error(err)
