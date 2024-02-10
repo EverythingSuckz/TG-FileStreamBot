@@ -31,6 +31,7 @@ type config struct {
 	HashLength     int    `envconfig:"HASH_LENGTH" default:"6"`
 	UseSessionFile bool   `envconfig:"USE_SESSION_FILE" default:"true"`
 	UserSession    string `envconfig:"USER_SESSION"`
+	UsePublicIP    bool   `envconfig:"USE_PUBLIC_IP" default:"true"`
 	MultiTokens    []string
 }
 
@@ -63,6 +64,7 @@ func SetFlagsFromConfig(cmd *cobra.Command) {
 	cmd.Flags().Int("hash-length", ValueOf.HashLength, "Hash length in links")
 	cmd.Flags().Bool("use-session-file", ValueOf.UseSessionFile, "Use session files")
 	cmd.Flags().String("user-session", ValueOf.UserSession, "Pyrogram user session")
+	cmd.Flags().Bool("use-public-ip", ValueOf.UsePublicIP, "Use public IP instead of local IP")
 	cmd.Flags().String("multi-token-txt-file", "", "Multi token txt file (Not implemented)")
 }
 
@@ -107,6 +109,10 @@ func (c *config) loadConfigFromArgs(log *zap.Logger, cmd *cobra.Command) {
 	if userSession != "" {
 		os.Setenv("USER_SESSION", userSession)
 	}
+	usePublicIP, _ := cmd.Flags().GetBool("use-public-ip")
+	if usePublicIP {
+		os.Setenv("USE_PUBLIC_IP", strconv.FormatBool(usePublicIP))
+	}
 	multiTokens, _ := cmd.Flags().GetString("multi-token-txt-file")
 	if multiTokens != "" {
 		os.Setenv("MULTI_TOKEN_TXT_FILE", multiTokens)
@@ -121,8 +127,22 @@ func (c *config) setupEnvVars(log *zap.Logger, cmd *cobra.Command) {
 	if err != nil {
 		log.Fatal("Error while parsing env variables", zap.Error(err))
 	}
+	var ipBlocked bool
+	ip, err := getIP(c.UsePublicIP)
+	if err != nil {
+		log.Error("Error while getting IP", zap.Error(err))
+		ipBlocked = true
+	}
 	if c.Host == "" {
-		c.Host = "http://" + getIP() + ":" + strconv.Itoa(c.Port)
+		c.Host = "http://" + ip + ":" + strconv.Itoa(c.Port)
+		if c.UsePublicIP {
+			if ipBlocked {
+				log.Sugar().Warn("Can't get public IP, using local IP")
+			} else {
+				log.Sugar().Warn("You are using a public IP, please be aware of the security risks while exposing your IP to the internet.")
+				log.Sugar().Warn("Use 'HOST' variable to set a domain name")
+			}
+		}
 		log.Sugar().Info("HOST not set, automatically set to " + c.Host)
 	}
 	val := reflect.ValueOf(c).Elem()
@@ -153,12 +173,21 @@ func Load(log *zap.Logger, cmd *cobra.Command) {
 	}
 }
 
-func getIP() string {
-	ip, err := getInternalIP()
-	if err != nil {
-		return "localhost"
+func getIP(public bool) (string, error) {
+	var ip string
+	var err error
+	if public {
+		ip, err = GetPublicIP()
+	} else {
+		ip, err = getInternalIP()
 	}
-	return ip
+	if ip == "" {
+		ip = "localhost"
+	}
+	if err != nil {
+		return "localhost", err
+	}
+	return ip, nil
 }
 
 // https://stackoverflow.com/a/23558495/15807350
@@ -183,7 +212,7 @@ func GetPublicIP() (string, error) {
 		return "", err
 	}
 	if !checkIfIpAccessible(string(ip)) {
-		return "", errors.New("PORT is blocked by firewall")
+		return string(ip), errors.New("PORT is blocked by firewall")
 	}
 	return string(ip), nil
 }

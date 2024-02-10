@@ -48,6 +48,7 @@ func runApp(cmd *cobra.Command, args []string) {
 	bot.StartUserBot(log)
 	mainLogger.Info("Server started", zap.Int("port", config.ValueOf.Port))
 	mainLogger.Info("File Stream Bot", zap.String("version", versionString))
+	mainLogger.Sugar().Infof("Server is running at %s", config.ValueOf.Host)
 	publicIp, err := config.GetPublicIP()
 	if err != nil {
 		mainLogger.Debug("Failed to get public IP", zap.Error(err))
@@ -58,7 +59,6 @@ func runApp(cmd *cobra.Command, args []string) {
 	if err != nil {
 		mainLogger.Sugar().Fatalln(err)
 	}
-
 }
 
 func getRouter(log *zap.Logger) *gin.Engine {
