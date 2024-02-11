@@ -16,6 +16,16 @@ import (
 	"go.uber.org/zap"
 )
 
+// https://stackoverflow.com/a/70802740/15807350
+func Contains[T comparable](s []T, e T) bool {
+	for _, v := range s {
+		if v == e {
+			return true
+		}
+	}
+	return false
+}
+
 func GetTGMessage(ctx context.Context, client *gotgproto.Client, messageID int) (*tg.Message, error) {
 	inputMessageID := tg.InputMessageClass(&tg.InputMessageID{ID: messageID})
 	channel, err := GetLogChannelPeer(ctx, client.API(), client.PeerStorage)
