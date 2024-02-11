@@ -14,8 +14,8 @@
 
 <hr>
 
-> [!WARNING]
-> This branch is still under development and it is advised to use the [python branch](https://github.com/EverythingSuckz/TG-FileStreamBot/tree/main).
+> [!NOTE]
+> Checkout [python branch](https://github.com/EverythingSuckz/TG-FileStreamBot/tree/main) if you are interested in that.
 
 <hr>
 
