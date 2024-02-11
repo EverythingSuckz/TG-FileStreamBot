@@ -15,7 +15,7 @@
 <hr>
 
 > [!NOTE]
-> Checkout [python branch](https://github.com/EverythingSuckz/TG-FileStreamBot/tree/main) if you are interested in that.
+> Checkout [python branch](https://github.com/EverythingSuckz/TG-FileStreamBot/tree/python) if you are interested in that.
 
 <hr>
 
