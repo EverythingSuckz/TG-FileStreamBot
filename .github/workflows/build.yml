@@ -1,0 +1,53 @@
+name: Package Build
+
+on:
+  workflow_dispatch:
+      inputs:
+        tag:
+          description: 'Tag to release'
+          required: true
+  push:
+    tags:
+      - '*'
+env:
+  DOCKER_BUILDKIT: 1
+  
+jobs:
+  build_image:
+    name: Build Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+            config-inline: |
+              [worker.oci]
+                platforms = ["linux/amd64", "linux/arm64"]
+                max-parallelism = 4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup ENV vars
+        id: env-vars
+        run: |
+          echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_ACTOR,,}/fsb" >> $GITHUB_ENV
+
+      - name: Build docker image and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./
+          pull: true
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags:  ${{ env.IMAGE_NAME }}:${{ env.TAG }} , ${{ env.IMAGE_NAME }}:latest

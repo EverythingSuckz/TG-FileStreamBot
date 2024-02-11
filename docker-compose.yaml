@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  fsb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fsb
+    restart: always
+    volumes:
+      - ./logs:/app/logs
+    env_file:
+      - fsb.env
+    ports:
+      - "${PORT:-8038}:${PORT:-8038}"

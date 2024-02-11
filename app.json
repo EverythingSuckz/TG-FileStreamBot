@@ -1,0 +1,55 @@
+{
+    "name": "TG FileStreamBot",
+    "description": "Stream Telegram files to web",
+    "keywords": [
+        "telegram",
+        "web",
+        "go",
+        "golang",
+        "file-streaming",
+        "file-to-link",
+        "TG-FileStreamBot"
+    ],
+    "repository": "https://github.com/EverythingSuckz/TG-FileStreamBot",
+    "logo": "https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png",
+    "env": {
+        "API_ID": {
+            "description": "Get this value from https://my.telegram.org"
+        },
+        "API_HASH": {
+            "description": "Get this value from https://my.telegram.org"
+        },
+        "BOT_TOKEN": {
+            "description": "Get this value from @BotFather"
+        },
+        "LOG_CHANNEL": {
+            "description": "channel ID for the log channel where the bot will forward media messages and store these files"
+        },
+        "HOST": {
+            "description": "A Fully Qualified Domain Name or Heroku App URL. (eg. https://example.herokuapp.com). Update it After Deploying the Bot",
+            "required": false
+        },
+        "HASH_LENGTH": {
+            "description": "Custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. Default to 6",
+            "value": "6",
+            "required": false
+        },
+        "USE_SESSION_FILE": {
+            "description": "Use session files for worker client(s). This speeds up the worker bot startups. default to false",
+            "required": false
+        },
+        "USER_SESSION": {
+            "description": "A pyrogram session string for a user bot. Used for auto adding the bots to LOG_CHANNEL. Default to null",
+            "required": false
+        }
+    },
+    "buildpacks": [{
+        "url": "heroku/go"
+      }],
+    "formation": {
+        "web": {
+            "quantity": 1,
+            "size": "Eco"
+        }
+    }
+}

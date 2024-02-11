@@ -5,11 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Module",
-            "type": "python",
+            "name": "Launch Package",
+            "type": "go",
             "request": "launch",
-            "module": "WebStreamer",
-            "justMyCode": true
+            "mode": "auto",
+            "program": "./cmd/fsb/",
+            "args": [
+                "run"
+            ]
+        },
+        {
+            "name": "Generate Session",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "./cmd/fsb/",
+            "args": [
+                "session"
+            ],
+            "console": "integratedTerminal"
         }
     ]
 }

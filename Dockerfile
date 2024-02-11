@@ -1,13 +1,10 @@
-FROM python:3.9-alpine
-
+FROM golang:1.21-alpine3.18 as builder
+RUN apk update && apk upgrade --available && sync
 WORKDIR /app
-
-COPY requirements.txt ./
-
-RUN apk add build-base
-
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
+RUN CGO_ENABLED=0 go build -o /app/fsb -ldflags="-w -s" ./cmd/fsb
 
-CMD ["python3","-m","WebStreamer"]
+FROM scratch
+COPY --from=builder /app/fsb /app/fsb
+EXPOSE ${PORT}
+ENTRYPOINT ["/app/fsb", "run"]

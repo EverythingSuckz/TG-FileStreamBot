@@ -1,32 +1,44 @@
-name: Release
+name: Goreleaser
+
 on:
   workflow_dispatch:
+    inputs:
+      goReleaserArgs:
+        description: 'Args goreleaser'     
+        required: false
+        default: '--clean'
   push:
+    tags:
+      - "*"
 
+permissions:
+  contents: write
 
 jobs:
-  Release:
-    if: "contains(github.event.head_commit.message, 'Bump version')"
-    runs-on: ubuntu-22.04
+  goreleaser:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup ENV
-        run: echo "VERSION=$(echo ${{ github.event.head_commit.message }} | sed -r 's/Bump\s+version\s+?(to\s+?)?`?v?([a-z0-9.\-_]+)`?$/\2/')" >> $GITHUB_ENV
-      - name: Generate CHANGELOGS
-        run: | 
-          chmod +x .github/workflows/generate_changelogs.sh
-          ./.github/workflows/generate_changelogs.sh > CHANGELOGS.md
-      - name: Package Server
-        run: |
-          rm -fr .vscode .git*
-          zip -r ${{ github.WORKSPACE }}/TG-FileStreamBot-v${{ env.VERSION }}-main.zip *
-      - name: Release
-        uses: softprops/action-gh-release@v1
         with:
-          name: TG-FileStreamBot-v${{ env.VERSION }} (main)
-          body_path: CHANGELOGS.md
-          files: |
-            ${{ github.WORKSPACE }}/TG-FileStreamBot-v${{ env.VERSION }}-main.zip
-          prerelease: false
-          tag_name: v${{ env.VERSION }}
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release ${{ github.event.inputs.goReleaserArgs }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
