@@ -67,7 +67,6 @@
 
 > [!NOTE]
 > You'll have to [fork](https://github.com/EverythingSuckz/TG-FileStreamBot/fork) this repository to deploy to Heroku.
-> Also don't forget to choose the `golang` branch in the deployment page.
 
 Press the below button to fast deploy to Heroku
 
@@ -90,7 +89,7 @@ Press the below button to fast deploy to Heroku
 
 - Clone the repository
 ```sh
-git clone https://github.com/EverythingSuckz/TG-FileStreamBot -b golang
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot
 cd TG-FileStreamBot
 ```
 
@@ -131,7 +130,7 @@ Where `fsb.env` is the environment file containing all the variables.
 > Refer https://stackoverflow.com/a/17566846/15807350
 
 ```sh
-git clone https://github.com/EverythingSuckz/TG-FileStreamBot -b golang
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot
 cd TG-FileStreamBot
 go build ./cmd/fsb/
 chmod +x fsb
@@ -150,7 +149,7 @@ and to stop the program,
 > Make sure to install go 1.21 or above.
 
 ```powershell
-git clone https://github.com/EverythingSuckz/TG-FileStreamBot -b golang
+git clone https://github.com/EverythingSuckz/TG-FileStreamBot
 cd TG-FileStreamBot
 go build ./cmd/fsb/
 Rename-Item -LiteralPath ".\fsb.sample.env" -NewName ".\fsb.env"
