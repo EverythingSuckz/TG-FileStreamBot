@@ -12,6 +12,10 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import FloodWait
 
 
+
+
+
+
 @StreamBot.on_message(
     filters.private
     & (
@@ -46,15 +50,15 @@ async def media_receive_handler(_, m: Message):
             await StreamBot.send_photo(
             chat_id=-1002144037144,
             photo=thumbnail_path,
-            caption=stream_link,
+            caption=f"Your Link Generated!\n\nShort Link : {short_link}\nDownload Link : {stream_link}",
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Open", url=stream_link)]]))
+                [[InlineKeyboardButton("Download Link", url=stream_link),InlineKeyboardButton("Short Link", url=short_link)]]))
         else:
                await StreamBot.send_message(
                chat_id=-1002144037144,
-               text=stream_link,
+               text=f"Your Link Generated!\n\nShort Link : {short_link}\nDownload Link : {stream_link}",
                reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Open", url=stream_link)]]))
+                [[InlineKeyboardButton("Download Link", url=stream_link),InlineKeyboardButton("Short Link", url=short_link)]]))
     except FloodWait as e:
         print(f"Sleeping for {str(e.value)}s")
         
@@ -92,16 +96,16 @@ async def media_receive_handler(_, m: Message):
           await StreamBot.send_photo(
             chat_id=-1002144037144,
             photo=thumbnail_path,
-            caption=stream_link,
+            caption=f"Your Link Generated!\n\nShort Link : {short_link}\nDownload Link : {stream_link}",
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Open", url=stream_link)]]
+                [[InlineKeyboardButton("Download Link", url=stream_link),InlineKeyboardButton("Short Link", url=short_link)]]
             ))
         else:
              await StreamBot.send_message(
                chat_id=-1002144037144,
-               text=stream_link,
+               text=f"Your Link Generated!\n\nShort Link : {short_link}\nDownload Link : {stream_link}",
                reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Open", url=stream_link)]]
+                [[InlineKeyboardButton("Download Link", url=stream_link),InlineKeyboardButton("Short Link", url=short_link)]]
             ))
     except FloodWait as e:
         print(f"Sleeping for {str(e.value)}s")
