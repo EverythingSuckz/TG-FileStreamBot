@@ -1,1 +1,1 @@
-web: fsb run
+worker: bash start.sh
