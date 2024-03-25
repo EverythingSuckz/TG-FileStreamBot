@@ -1,1 +1,1 @@
-chmod +x fsb && ./fsb run
+chmod +x fsb && fsb run
