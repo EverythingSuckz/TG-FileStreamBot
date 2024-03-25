@@ -1,1 +1,1 @@
-go build ./cmd/fsb/ && chmod +x fsb && ./fsb run
+chmod +x fsb && ./fsb run
