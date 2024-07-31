@@ -12,6 +12,7 @@ import (
 
 	"github.com/celestix/gotgproto"
 	"github.com/celestix/gotgproto/sessionMaker"
+	"github.com/glebarez/sqlite"
 	"github.com/gotd/td/tg"
 	"go.uber.org/zap"
 )
@@ -147,22 +148,20 @@ func StartWorkers(log *zap.Logger) (*BotWorkers, error) {
 func startWorker(l *zap.Logger, botToken string, index int) (*gotgproto.Client, error) {
 	log := l.Named("Worker").Sugar()
 	log.Infof("Starting worker with index - %d", index)
-	var sessionType *sessionMaker.SqliteSessionConstructor
+	var sessionType sessionMaker.SessionConstructor
 	if config.ValueOf.UseSessionFile {
-		sessionType = sessionMaker.SqliteSession(fmt.Sprintf("sessions/worker-%d", index))
+		sessionType = sessionMaker.SqlSession(sqlite.Open(fmt.Sprintf("sessions/worker-%d.session", index)))
 	} else {
-		sessionType = sessionMaker.SqliteSession(":memory:")
+		sessionType = sessionMaker.SimpleSession()
 	}
 	client, err := gotgproto.NewClient(
 		int(config.ValueOf.ApiID),
 		config.ValueOf.ApiHash,
-		gotgproto.ClientType{
-			BotToken: botToken,
-		},
+		gotgproto.ClientTypeBot(botToken),
 		&gotgproto.ClientOpts{
 			Session:          sessionType,
 			DisableCopyright: true,
-			Middlewares:      GetFloodMiddleware(log.Desugar()),
+			Middlewares:      GetFloodMiddleware(l),
 		},
 	)
 	if err != nil {
