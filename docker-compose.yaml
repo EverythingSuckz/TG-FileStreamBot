@@ -1,7 +1,7 @@
-version: "3.9"
+name: TG File Stream Bot
 
 services:
-  fsb:
+  fsb-run:
     image: ghcr.io/everythingsuckz/fsb
     container_name: fsb
     restart: always
