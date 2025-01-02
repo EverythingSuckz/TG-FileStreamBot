@@ -27,7 +27,7 @@ var runCmd = &cobra.Command{
 var startTime time.Time = time.Now()
 
 func runApp(cmd *cobra.Command, args []string) {
-	utils.InitLogger()
+	utils.InitLogger(config.ValueOf.Dev)
 	log := utils.Logger
 	mainLogger := log.Named("Main")
 	mainLogger.Info("Starting server")
