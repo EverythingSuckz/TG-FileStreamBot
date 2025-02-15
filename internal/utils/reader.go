@@ -14,7 +14,7 @@ type telegramReader struct {
 	ctx           context.Context
 	log           *zap.Logger
 	client        *gotgproto.Client
-	location      *tg.InputDocumentFileLocation
+	location      tg.InputFileLocationClass
 	start         int64
 	end           int64
 	next          func() ([]byte, error)
@@ -32,7 +32,7 @@ func (*telegramReader) Close() error {
 func NewTelegramReader(
 	ctx context.Context,
 	client *gotgproto.Client,
-	location *tg.InputDocumentFileLocation,
+	location tg.InputFileLocationClass,
 	start int64,
 	end int64,
 	contentLength int64,

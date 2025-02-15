@@ -32,7 +32,7 @@ func supportedMediaFilter(m *types.Message) (bool, error) {
 	case *tg.MessageMediaDocument:
 		return true, nil
 	case *tg.MessageMediaPhoto:
-		return false, nil
+		return true, nil
 	case tg.MessageMediaClass:
 		return false, dispatcher.EndGroups
 	default:
