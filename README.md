@@ -270,6 +270,7 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/AlteredVoid
 
 - [@celestix](https://github.com/celestix) for [gotgproto](https://github.com/celestix/gotgproto)
 - [@divyam234](https://github.com/divyam234/teldrive) for his [Teldrive](https://github.com/divyam234/teldrive) Project
+- [@karu](https://github.com/krau) for adding image support
 
 ## Copyright
 
