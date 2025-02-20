@@ -67,7 +67,32 @@ func FileFromMedia(media tg.MessageMediaClass) (*types.File, error) {
 			MimeType: document.MimeType,
 			ID:       document.ID,
 		}, nil
-		// TODO: add photo support
+	case *tg.MessageMediaPhoto:
+		photo, ok := media.Photo.AsNotEmpty()
+		if !ok {
+			return nil, fmt.Errorf("unexpected type %T", media)
+		}
+		sizes := photo.Sizes
+		if len(sizes) == 0 {
+			return nil, errors.New("photo has no sizes")
+		}
+		photoSize := sizes[len(sizes)-1]
+		size, ok := photoSize.AsNotEmpty()
+		if !ok {
+			return nil, errors.New("photo size is empty")
+		}
+		location := new(tg.InputPhotoFileLocation)
+		location.ID = photo.GetID()
+		location.AccessHash = photo.GetAccessHash()
+		location.FileReference = photo.GetFileReference()
+		location.ThumbSize = size.GetType()
+		return &types.File{
+			Location: location,
+			FileSize: 0, // caller should judge if this is a photo or not
+			FileName: fmt.Sprintf("photo_%d.jpg", photo.GetID()),
+			MimeType: "image/jpeg",
+			ID:       photo.GetID(),
+		}, nil
 	}
 	return nil, fmt.Errorf("unexpected type %T", media)
 }
@@ -99,7 +124,6 @@ func FileFromMessage(ctx context.Context, client *gotgproto.Client, messageID in
 		return nil, err
 	}
 	return file, nil
-	// TODO: add photo support
 }
 
 func GetLogChannelPeer(ctx context.Context, api *tg.Client, peerStorage *storage.PeerStorage) (*tg.InputChannel, error) {

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gotd/td/tg"
 	range_parser "github.com/quantumsheep/range-parser"
 	"go.uber.org/zap"
 
@@ -39,10 +40,6 @@ func getStreamRoute(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Header("Accept-Ranges", "bytes")
-	var start, end int64
-	rangeHeader := r.Header.Get("Range")
-
 	worker := bot.GetNextWorker()
 
 	file, err := utils.FileFromMessage(ctx, worker.Client, messageID)
@@ -61,6 +58,34 @@ func getStreamRoute(ctx *gin.Context) {
 		http.Error(w, "invalid hash", http.StatusBadRequest)
 		return
 	}
+
+	// for photo messages
+	if file.FileSize == 0 {
+		res, err := worker.Client.API().UploadGetFile(ctx, &tg.UploadGetFileRequest{
+			Location: file.Location,
+			Offset:   0,
+			Limit:    1024 * 1024,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		result, ok := res.(*tg.UploadFile)
+		if !ok {
+			http.Error(w, "unexpected response", http.StatusInternalServerError)
+			return
+		}
+		fileBytes := result.GetBytes()
+		ctx.Header("Content-Disposition", fmt.Sprintf("inline; filename=\"%s\"", file.FileName))
+		if r.Method != "HEAD" {
+			ctx.Data(http.StatusOK, file.MimeType, fileBytes)
+		}
+		return
+	}
+
+	ctx.Header("Accept-Ranges", "bytes")
+	var start, end int64
+	rangeHeader := r.Header.Get("Range")
 
 	if rangeHeader == "" {
 		start = 0
@@ -98,10 +123,6 @@ func getStreamRoute(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("%s; filename=\"%s\"", disposition, file.FileName))
 
 	if r.Method != "HEAD" {
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 		lr, _ := utils.NewTelegramReader(ctx, worker.Client, file.Location, start, end, contentLength)
 		if _, err := io.CopyN(w, lr, contentLength); err != nil {
 			log.Error("Error while copying stream", zap.Error(err))

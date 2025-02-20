@@ -32,7 +32,7 @@ func supportedMediaFilter(m *types.Message) (bool, error) {
 	case *tg.MessageMediaDocument:
 		return true, nil
 	case *tg.MessageMediaPhoto:
-		return false, nil
+		return true, nil
 	case tg.MessageMediaClass:
 		return false, dispatcher.EndGroups
 	default:
@@ -65,11 +65,6 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		return dispatcher.EndGroups
 	}
 	messageID := update.Updates[0].(*tg.UpdateMessageID).ID
-	if err != nil {
-		utils.Logger.Sugar().Error(err)
-		ctx.Reply(u, fmt.Sprintf("Error - %s", err.Error()), nil)
-		return dispatcher.EndGroups
-	}
 	doc := update.Updates[1].(*tg.UpdateNewChannelMessage).Message.(*tg.Message).Media
 	file, err := utils.FileFromMedia(doc)
 	if err != nil {
