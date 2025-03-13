@@ -50,6 +50,10 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		ctx.Reply(u, "You are not allowed to use this bot.", nil)
 		return dispatcher.EndGroups
 	}
+	if len(config.ValueOf.BlockUsers) != 0 && utils.Contains(config.ValueOf.BlockUsers, chatId) {
+		ctx.Reply(u, "You are blocked from using this bot.", nil)
+		return dispatcher.EndGroups
+	}
 	supported, err := supportedMediaFilter(u.EffectiveMessage)
 	if err != nil {
 		return err

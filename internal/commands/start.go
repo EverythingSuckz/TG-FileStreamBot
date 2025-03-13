@@ -26,6 +26,10 @@ func start(ctx *ext.Context, u *ext.Update) error {
 		ctx.Reply(u, "You are not allowed to use this bot.", nil)
 		return dispatcher.EndGroups
 	}
+	if len(config.ValueOf.BlockUsers) != 0 && utils.Contains(config.ValueOf.BlockUsers, chatId) {
+		ctx.Reply(u, "You are blocked from using this bot.", nil)
+		return dispatcher.EndGroups
+	}
 	ctx.Reply(u, "Hi, send me any file to get a direct streamble link to that file.", nil)
 	return dispatcher.EndGroups
 }

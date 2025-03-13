@@ -21,8 +21,24 @@ import (
 var ValueOf = &config{}
 
 type allowedUsers []int64
+type blockUsers []int64
 
 func (au *allowedUsers) Decode(value string) error {
+	if value == "" {
+		return nil
+	}
+	ids := strings.Split(string(value), ",")
+	for _, id := range ids {
+		idInt, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			return err
+		}
+		*au = append(*au, idInt)
+	}
+	return nil
+}
+
+func (au *blockUsers) Decode(value string) error {
 	if value == "" {
 		return nil
 	}
@@ -50,6 +66,7 @@ type config struct {
 	UserSession    string       `envconfig:"USER_SESSION"`
 	UsePublicIP    bool         `envconfig:"USE_PUBLIC_IP" default:"false"`
 	AllowedUsers   allowedUsers `envconfig:"ALLOWED_USERS"`
+	BlockUsers	   blockUsers   `envconfig:"BLOCK_USERS"`
 	MultiTokens    []string
 }
 

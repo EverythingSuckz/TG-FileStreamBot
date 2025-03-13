@@ -205,6 +205,8 @@ In addition to the mandatory variables, you can also set the following optional 
 
 - `ALLOWED_USERS` : A list of user IDs separated by comma (`,`). If this is set, only the users in this list will be able to use the bot. (default: `null`)
 
+- `BLOCK_USERS` : A list of user IDs separated by comma (`,`). If this is set, users in this list will be blocked from using the bot. (default: `null`)
+
 <hr>
 
 ### Use Multiple Bots to speed up
