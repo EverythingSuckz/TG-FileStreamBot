@@ -4,6 +4,7 @@
 import sys
 import asyncio
 import logging
+from logging import handlers
 from aiohttp import web
 from pyrogram import idle
 from WebStreamer import utils
@@ -18,7 +19,7 @@ logging.basicConfig(
     datefmt="%d/%m/%Y %H:%M:%S",
     format="[%(asctime)s][%(name)s][%(levelname)s] ==> %(message)s",
     handlers=[logging.StreamHandler(stream=sys.stdout),
-              logging.FileHandler("streambot.log", mode="a", encoding="utf-8")],)
+              handlers.RotatingFileHandler("streambot.log", mode="a", maxBytes=1048576*25, backupCount=2, encoding="utf-8")],)
 
 logging.getLogger("aiohttp").setLevel(logging.DEBUG if Var.DEBUG else logging.ERROR)
 logging.getLogger("pyrogram").setLevel(logging.INFO if Var.DEBUG else logging.ERROR)
