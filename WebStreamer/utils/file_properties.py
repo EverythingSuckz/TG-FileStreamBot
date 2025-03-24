@@ -88,3 +88,7 @@ def get_name(media_msg: Union[Message, FileId]) -> str:
         file_name = f"{media_type}-{date}{ext}"
 
     return file_name
+
+def get_mimetype(media_msg: Message) -> str:
+    media = get_media_from_message(media_msg)
+    return media.mime_type or "application/octet-stream"
