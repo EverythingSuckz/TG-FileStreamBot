@@ -31,26 +31,21 @@ async def media_receive_handler(_, m: Message):
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
     file_hash = get_hash(log_msg, Var.HASH_LENGTH)
     mimetype = get_mimetype(log_msg)
-    stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={file_hash}"
-    short_link = f"{Var.URL}{file_hash}{log_msg.id}"
+    stream_link = f"{Var.URL}{log_msg.id}?hash={file_hash}"
     logger.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
     markup = [InlineKeyboardButton("Download", url=stream_link+"&d=true")]
     if set(mimetype.split("/")) & {"video","audio","pdf"}:
         markup.append(InlineKeyboardButton("Stream", url=stream_link))
     try:
         await m.reply_text(
-            text="<code>{}</code>\n(<a href='{}'>shortened</a>)".format(
-                stream_link, short_link
-            ),
+            text=f"<code>{stream_link}</code>",
             quote=True,
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([markup]),
         )
     except errors.ButtonUrlInvalid:
         await m.reply_text(
-            text="<code>{}</code>\n\nshortened: {})".format(
-                stream_link, short_link
-            ),
+            text=f"<code>{stream_link}</code>)",
             quote=True,
             parse_mode=ParseMode.HTML,
         )

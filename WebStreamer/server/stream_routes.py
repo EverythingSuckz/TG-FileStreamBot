@@ -37,17 +37,11 @@ async def root_route_handler(_):
     )
 
 
-@routes.get(r"/{path:\S+}", allow_head=True)
+@routes.get(r"/{message_id:\d+}", allow_head=True)
 async def stream_handler(request: web.Request):
     try:
-        path = request.match_info["path"]
-        match = re.search(r"^([0-9a-f]{%s})(\d+)$" % (Var.HASH_LENGTH), path)
-        if match:
-            secure_hash = match.group(1)
-            message_id = int(match.group(2))
-        else:
-            message_id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
-            secure_hash = request.rel_url.query.get("hash")
+        message_id = int(request.match_info["message_id"])
+        secure_hash = request.rel_url.query.get("hash")
         return await media_streamer(request, message_id, secure_hash)
     except InvalidHash as e:
         raise web.HTTPForbidden(text=e.message)
