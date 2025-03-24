@@ -4,13 +4,13 @@
 import sys
 import asyncio
 import logging
-from .vars import Var
 from aiohttp import web
 from pyrogram import idle
 from WebStreamer import utils
 from WebStreamer import StreamBot
 from WebStreamer.server import web_server
 from WebStreamer.bot.clients import initialize_clients
+from .vars import Var
 
 
 logging.basicConfig(
@@ -43,10 +43,10 @@ async def start_services():
     await server.setup()
     await web.TCPSite(server, Var.BIND_ADDRESS, Var.PORT).start()
     logging.info("Service Started")
-    logging.info("bot =>> {}".format(bot_info.first_name))
+    logging.info("bot =>> %s", bot_info.first_name)
     if bot_info.dc_id:
-        logging.info("DC ID =>> {}".format(str(bot_info.dc_id)))
-    logging.info("URL =>> {}".format(Var.URL))
+        logging.info("DC ID =>> %d", bot_info.dc_id)
+    logging.info("URL =>> %s", Var.URL)
     await idle()
 
 async def cleanup():

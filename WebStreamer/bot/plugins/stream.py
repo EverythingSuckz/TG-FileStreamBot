@@ -1,14 +1,12 @@
 # This file is a part of TG-FileStreamBot
 # Coding : Jyothis Jayanth [@EverythingSuckz]
 
-import logging
 from pyrogram import filters, errors
-from WebStreamer.vars import Var
-from urllib.parse import quote_plus
-from WebStreamer.bot import StreamBot, logger
-from WebStreamer.utils import get_hash, get_name, get_mimetype
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from WebStreamer.vars import Var
+from WebStreamer.bot import StreamBot, logger
+from WebStreamer.utils import get_hash, get_mimetype
 
 
 @StreamBot.on_message(
@@ -32,7 +30,7 @@ async def media_receive_handler(_, m: Message):
     file_hash = get_hash(log_msg, Var.HASH_LENGTH)
     mimetype = get_mimetype(log_msg)
     stream_link = f"{Var.URL}{log_msg.id}?hash={file_hash}"
-    logger.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
+    logger.info("Generated link: %s for %s", stream_link, m.from_user.first_name)
     markup = [InlineKeyboardButton("Download", url=stream_link+"&d=true")]
     if set(mimetype.split("/")) & {"video","audio","pdf"}:
         markup.append(InlineKeyboardButton("Stream", url=stream_link))

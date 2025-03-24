@@ -4,16 +4,17 @@
 
 import os
 import os.path
-from ..vars import Var
 import logging
+from typing import Dict
 from pyrogram import Client
+from ..vars import Var
 
 logger = logging.getLogger("bot")
 
 sessions_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sessions")
 if Var.USE_SESSION_FILE:
     logger.info("Using session files")
-    logger.info("Session folder path: {}".format(sessions_dir))
+    logger.info("Session folder path: %s", sessions_dir)
     if not os.path.isdir(sessions_dir):
         os.makedirs(sessions_dir)
 
@@ -29,5 +30,5 @@ StreamBot = Client(
     in_memory=not Var.USE_SESSION_FILE,
 )
 
-multi_clients = {}
-work_loads = {}
+multi_clients: Dict[int, Client] = {}
+work_loads: Dict[int, int] = {}
