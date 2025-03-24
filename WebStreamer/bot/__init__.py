@@ -5,7 +5,6 @@
 import os
 import os.path
 import logging
-from typing import Dict
 from pyrogram import Client
 from ..vars import Var
 
@@ -30,5 +29,5 @@ StreamBot = Client(
     in_memory=not Var.USE_SESSION_FILE,
 )
 
-multi_clients: Dict[int, Client] = {}
-work_loads: Dict[int, int] = {}
+multi_clients: dict[int, Client] = {}
+work_loads: dict[int, int] = {}
