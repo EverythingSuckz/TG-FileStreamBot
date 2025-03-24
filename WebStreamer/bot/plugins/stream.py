@@ -1,12 +1,13 @@
 # This file is a part of TG-FileStreamBot
 # Coding : Jyothis Jayanth [@EverythingSuckz]
 
+from urllib.parse import quote_plus
 from pyrogram import filters, errors
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from WebStreamer.vars import Var
 from WebStreamer.bot import StreamBot, logger
-from WebStreamer.utils import get_hash, get_mimetype
+from WebStreamer.utils import get_hash, get_name, get_mimetype
 
 
 @StreamBot.on_message(
@@ -29,21 +30,22 @@ async def media_receive_handler(_, m: Message):
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
     file_hash = get_hash(log_msg, Var.HASH_LENGTH)
     mimetype = get_mimetype(log_msg)
-    stream_link = f"{Var.URL}{log_msg.id}?hash={file_hash}"
+    stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={file_hash}"
+    short_link = f"{Var.URL}{file_hash}{log_msg.id}"
     logger.info("Generated link: %s for %s", stream_link, m.from_user.first_name)
     markup = [InlineKeyboardButton("Download", url=stream_link+"&d=true")]
     if set(mimetype.split("/")) & {"video","audio","pdf"}:
         markup.append(InlineKeyboardButton("Stream", url=stream_link))
     try:
         await m.reply_text(
-            text=f"<code>{stream_link}</code>",
+            text=f"<code>{stream_link}</code>\n(<a href='{short_link}'>shortened</a>)",
             quote=True,
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([markup]),
         )
     except errors.ButtonUrlInvalid:
         await m.reply_text(
-            text=f"<code>{stream_link}</code>)",
+            text=f"<code>{stream_link}</code>\n(<a href='{short_link}'>shortened</a>)",
             quote=True,
             parse_mode=ParseMode.HTML,
         )
