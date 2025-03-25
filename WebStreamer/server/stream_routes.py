@@ -61,6 +61,7 @@ async def stream_handler(request: web.Request):
 class_cache = {}
 
 async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
+    head: bool = request.method == "HEAD"
     range_header = request.headers.get("Range", 0)
 
     index = min(work_loads, key=work_loads.get)
@@ -111,9 +112,12 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
 
     req_length = until_bytes - from_bytes + 1
     part_count = math.ceil(until_bytes / chunk_size) - math.floor(offset / chunk_size)
-    body = tg_connect.yield_file(
-        file_id, index, offset, first_part_cut, last_part_cut, part_count, chunk_size
-    )
+    if head:
+        body=None
+    else:
+        body = tg_connect.yield_file(
+            file_id, index, offset, first_part_cut, last_part_cut, part_count, chunk_size
+        )
     mime_type = file_id.mime_type
     file_name = utils.get_name(file_id)
     disposition = "inline"
