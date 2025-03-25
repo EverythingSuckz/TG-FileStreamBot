@@ -4,13 +4,14 @@
 import sys
 import asyncio
 import logging
-from .vars import Var
+from logging import handlers
 from aiohttp import web
 from pyrogram import idle
 from WebStreamer import utils
 from WebStreamer import StreamBot
 from WebStreamer.server import web_server
 from WebStreamer.bot.clients import initialize_clients
+from .vars import Var
 
 
 logging.basicConfig(
@@ -18,7 +19,7 @@ logging.basicConfig(
     datefmt="%d/%m/%Y %H:%M:%S",
     format="[%(asctime)s][%(name)s][%(levelname)s] ==> %(message)s",
     handlers=[logging.StreamHandler(stream=sys.stdout),
-              logging.FileHandler("streambot.log", mode="a", encoding="utf-8")],)
+              handlers.RotatingFileHandler("streambot.log", mode="a", maxBytes=1048576*25, backupCount=2, encoding="utf-8")],)
 
 logging.getLogger("aiohttp").setLevel(logging.DEBUG if Var.DEBUG else logging.ERROR)
 logging.getLogger("pyrogram").setLevel(logging.INFO if Var.DEBUG else logging.ERROR)
@@ -43,10 +44,10 @@ async def start_services():
     await server.setup()
     await web.TCPSite(server, Var.BIND_ADDRESS, Var.PORT).start()
     logging.info("Service Started")
-    logging.info("bot =>> {}".format(bot_info.first_name))
+    logging.info("bot =>> %s", bot_info.first_name)
     if bot_info.dc_id:
-        logging.info("DC ID =>> {}".format(str(bot_info.dc_id)))
-    logging.info("URL =>> {}".format(Var.URL))
+        logging.info("DC ID =>> %d", bot_info.dc_id)
+    logging.info("URL =>> %s", Var.URL)
     await idle()
 
 async def cleanup():

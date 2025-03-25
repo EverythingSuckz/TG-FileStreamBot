@@ -4,7 +4,7 @@
 from pyrogram import filters
 from pyrogram.types import Message
 
-from WebStreamer.vars import Var 
+from WebStreamer.vars import Var
 from WebStreamer.bot import StreamBot
 
 @StreamBot.on_message(filters.command(["start", "help"]) & filters.private)

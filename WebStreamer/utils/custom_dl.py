@@ -1,15 +1,14 @@
-import math
 import asyncio
 import logging
-from WebStreamer import Var
-from typing import Dict, Union
-from WebStreamer.bot import work_loads
+from typing import AsyncGenerator, Union
 from pyrogram import Client, utils, raw
-from .file_properties import get_file_ids
 from pyrogram.session import Session, Auth
 from pyrogram.errors import AuthBytesInvalid
-from WebStreamer.server.exceptions import FIleNotFound
 from pyrogram.file_id import FileId, FileType, ThumbnailSource
+from WebStreamer.server.exceptions import FIleNotFound
+from WebStreamer import Var
+from WebStreamer.bot import work_loads
+from .file_properties import get_file_ids
 
 logger = logging.getLogger("streamer")
 
@@ -31,7 +30,7 @@ class ByteStreamer:
         """
         self.clean_timer = 30 * 60
         self.client: Client = client
-        self.cached_file_ids: Dict[int, FileId] = {}
+        self.cached_file_ids: dict[int, FileId] = {}
         asyncio.create_task(self.clean_cache())
 
     async def get_file_properties(self, message_id: int) -> FileId:
@@ -42,21 +41,21 @@ class ByteStreamer:
         """
         if message_id not in self.cached_file_ids:
             await self.generate_file_properties(message_id)
-            logger.debug(f"Cached file properties for message with ID {message_id}")
+            logger.debug("Cached file properties for message with ID %d", message_id)
         return self.cached_file_ids[message_id]
-    
+
     async def generate_file_properties(self, message_id: int) -> FileId:
         """
         Generates the properties of a media file on a specific message.
         returns ths properties in a FIleId class.
         """
         file_id = await get_file_ids(self.client, Var.BIN_CHANNEL, message_id)
-        logger.debug(f"Generated file ID and Unique ID for message with ID {message_id}")
+        logger.debug("Generated file ID and Unique ID for message with ID %d", message_id)
         if not file_id:
-            logger.debug(f"Message with ID {message_id} not found")
+            logger.debug("Message with ID %d not found", message_id)
             raise FIleNotFound
         self.cached_file_ids[message_id] = file_id
-        logger.debug(f"Cached media message with ID {message_id}")
+        logger.debug("Cached media message with ID %d", message_id)
         return self.cached_file_ids[message_id]
 
     async def generate_media_session(self, client: Client, file_id: FileId) -> Session:
@@ -93,9 +92,7 @@ class ByteStreamer:
                         )
                         break
                     except AuthBytesInvalid:
-                        logger.debug(
-                            f"Invalid authorization bytes for DC {file_id.dc_id}"
-                        )
+                        logger.debug("Invalid authorization bytes for DC %d", file_id.dc_id)
                         continue
                 else:
                     await media_session.stop()
@@ -109,10 +106,10 @@ class ByteStreamer:
                     is_media=True,
                 )
                 await media_session.start()
-            logger.debug(f"Created media session for DC {file_id.dc_id}")
+            logger.debug("Created media session for DC %d", file_id.dc_id)
             client.media_sessions[file_id.dc_id] = media_session
         else:
-            logger.debug(f"Using cached media session for DC {file_id.dc_id}")
+            logger.debug("Using cached media session for DC %d", file_id.dc_id)
         return media_session
 
 
@@ -141,9 +138,8 @@ class ByteStreamer:
 
             location = raw.types.InputPeerPhotoFileLocation(
                 peer=peer,
-                volume_id=file_id.volume_id,
-                local_id=file_id.local_id,
-                big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG,
+                photo_id=file_id.media_id,
+                big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG
             )
         elif file_type == FileType.PHOTO:
             location = raw.types.InputPhotoFileLocation(
@@ -170,7 +166,7 @@ class ByteStreamer:
         last_part_cut: int,
         part_count: int,
         chunk_size: int,
-    ) -> Union[str, None]:
+    ) -> AsyncGenerator[bytes, None]:
         """
         Custom generator that yields the bytes of the media file.
         Modded from <https://github.com/eyaadh/megadlbot_oss/blob/master/mega/telegram/utils/custom_download.py#L20>
@@ -178,7 +174,7 @@ class ByteStreamer:
         """
         client = self.client
         work_loads[index] += 1
-        logger.debug(f"Starting to yielding file with client {index}.")
+        logger.debug("Starting to yielding file with client %d.", index)
         media_session = await self.generate_media_session(client, file_id)
 
         current_part = 1
@@ -218,10 +214,10 @@ class ByteStreamer:
         except (TimeoutError, AttributeError):
             pass
         finally:
-            logger.debug(f"Finished yielding file with {current_part} parts.")
+            logger.debug("Finished yielding file with %d parts.", current_part)
             work_loads[index] -= 1
 
-    
+
     async def clean_cache(self) -> None:
         """
         function to clean the cache to reduce memory usage

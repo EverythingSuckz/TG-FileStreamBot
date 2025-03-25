@@ -1,11 +1,11 @@
 import hashlib
+from datetime import datetime
+from typing import Any, Optional, Union
 from pyrogram import Client
 from pyrogram.types import Message
 from pyrogram.file_id import FileId
-from typing import Any, Optional, Union
 from pyrogram.raw.types.messages import Messages
 from WebStreamer.server.exceptions import FIleNotFound
-from datetime import datetime
 
 
 async def parse_file_id(message: "Message") -> Optional[FileId]:
@@ -88,3 +88,7 @@ def get_name(media_msg: Union[Message, FileId]) -> str:
         file_name = f"{media_type}-{date}{ext}"
 
     return file_name
+
+def get_mimetype(media_msg: Message) -> str:
+    media = get_media_from_message(media_msg)
+    return media.mime_type or "application/octet-stream"

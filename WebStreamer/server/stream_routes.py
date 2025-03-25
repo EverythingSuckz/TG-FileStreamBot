@@ -5,7 +5,6 @@ import re
 import time
 import math
 import logging
-import secrets
 import mimetypes
 from aiohttp import web
 from aiohttp.http_exceptions import BadStatusLine
@@ -62,30 +61,31 @@ async def stream_handler(request: web.Request):
 class_cache = {}
 
 async def media_streamer(request: web.Request, message_id: int, secure_hash: str):
+    head: bool = request.method == "HEAD"
     range_header = request.headers.get("Range", 0)
-    
+
     index = min(work_loads, key=work_loads.get)
     faster_client = multi_clients[index]
-    
+
     if Var.MULTI_CLIENT:
-        logger.info(f"Client {index} is now serving {request.remote}")
+        logger.info("Client %d is now serving %s", index, request.remote)
 
     if faster_client in class_cache:
         tg_connect = class_cache[faster_client]
-        logger.debug(f"Using cached ByteStreamer object for client {index}")
+        logger.debug("Using cached ByteStreamer object for client %d", index)
     else:
-        logger.debug(f"Creating new ByteStreamer object for client {index}")
+        logger.debug("Creating new ByteStreamer object for client %d", index)
         tg_connect = utils.ByteStreamer(faster_client)
         class_cache[faster_client] = tg_connect
     logger.debug("before calling get_file_properties")
     file_id = await tg_connect.get_file_properties(message_id)
     logger.debug("after calling get_file_properties")
-    
-    
+
+
     if utils.get_hash(file_id.unique_id, Var.HASH_LENGTH) != secure_hash:
-        logger.debug(f"Invalid hash for message with ID {message_id}")
+        logger.debug("Invalid hash for message with ID %d", message_id)
         raise InvalidHash
-    
+
     file_size = file_id.file_size
 
     if range_header:
@@ -112,18 +112,21 @@ async def media_streamer(request: web.Request, message_id: int, secure_hash: str
 
     req_length = until_bytes - from_bytes + 1
     part_count = math.ceil(until_bytes / chunk_size) - math.floor(offset / chunk_size)
-    body = tg_connect.yield_file(
-        file_id, index, offset, first_part_cut, last_part_cut, part_count, chunk_size
-    )
+    if head:
+        body=None
+    else:
+        body = tg_connect.yield_file(
+            file_id, index, offset, first_part_cut, last_part_cut, part_count, chunk_size
+        )
     mime_type = file_id.mime_type
     file_name = utils.get_name(file_id)
-    disposition = "attachment"
+    disposition = "inline"
 
     if not mime_type:
         mime_type = mimetypes.guess_type(file_name)[0] or "application/octet-stream"
 
-    if "video/" in mime_type or "audio/" in mime_type or "/html" in mime_type:
-        disposition = "inline"
+    if request.rel_url.query.get("d") == "true":
+        disposition = "attachment"
 
     return web.Response(
         status=206 if range_header else 200,

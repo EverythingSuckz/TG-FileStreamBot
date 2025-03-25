@@ -7,7 +7,7 @@ logger = logging.getLogger("keep_alive")
 
 async def ping_server():
     sleep_time = Var.PING_INTERVAL
-    logger.info("Started with {}s interval between pings".format(sleep_time))
+    logger.info("Started with %ds interval between pings", sleep_time)
     while True:
         await asyncio.sleep(sleep_time)
         try:
@@ -15,7 +15,7 @@ async def ping_server():
                 timeout=aiohttp.ClientTimeout(total=10)
             ) as session:
                 async with session.get(Var.URL) as resp:
-                    logger.info("Pinged server with response: {}".format(resp.status))
+                    logger.info("Pinged server with response: %d", resp.status)
         except TimeoutError:
             logger.warning("Couldn't connect to the site URL..")
         except Exception:

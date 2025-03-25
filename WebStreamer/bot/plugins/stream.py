@@ -1,14 +1,13 @@
 # This file is a part of TG-FileStreamBot
 # Coding : Jyothis Jayanth [@EverythingSuckz]
 
-import logging
-from pyrogram import filters, errors
-from WebStreamer.vars import Var
 from urllib.parse import quote_plus
-from WebStreamer.bot import StreamBot, logger
-from WebStreamer.utils import get_hash, get_name
+from pyrogram import filters, errors
 from pyrogram.enums.parse_mode import ParseMode
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from WebStreamer.vars import Var
+from WebStreamer.bot import StreamBot, logger
+from WebStreamer.utils import get_hash, get_name, get_mimetype
 
 
 @StreamBot.on_message(
@@ -30,25 +29,23 @@ async def media_receive_handler(_, m: Message):
         return await m.reply("You are not <b>allowed to use</b> this <a href='https://github.com/EverythingSuckz/TG-FileStreamBot'>bot</a>.", quote=True)
     log_msg = await m.forward(chat_id=Var.BIN_CHANNEL)
     file_hash = get_hash(log_msg, Var.HASH_LENGTH)
+    mimetype = get_mimetype(log_msg)
     stream_link = f"{Var.URL}{log_msg.id}/{quote_plus(get_name(m))}?hash={file_hash}"
     short_link = f"{Var.URL}{file_hash}{log_msg.id}"
-    logger.info(f"Generated link: {stream_link} for {m.from_user.first_name}")
+    logger.info("Generated link: %s for %s", stream_link, m.from_user.first_name)
+    markup = [InlineKeyboardButton("Download", url=stream_link+"&d=true")]
+    if set(mimetype.split("/")) & {"video","audio","pdf"}:
+        markup.append(InlineKeyboardButton("Stream", url=stream_link))
     try:
         await m.reply_text(
-            text="<code>{}</code>\n(<a href='{}'>shortened</a>)".format(
-                stream_link, short_link
-            ),
+            text=f"<code>{stream_link}</code>\n(<a href='{short_link}'>shortened</a>)",
             quote=True,
             parse_mode=ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Open", url=stream_link)]]
-            ),
+            reply_markup=InlineKeyboardMarkup([markup]),
         )
     except errors.ButtonUrlInvalid:
         await m.reply_text(
-            text="<code>{}</code>\n\nshortened: {})".format(
-                stream_link, short_link
-            ),
+            text=f"<code>{stream_link}</code>\n(<a href='{short_link}'>shortened</a>)",
             quote=True,
             parse_mode=ParseMode.HTML,
         )
