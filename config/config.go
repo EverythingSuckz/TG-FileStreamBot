@@ -20,25 +20,9 @@ import (
 
 var ValueOf = &config{}
 
-type allowedUsers []int64
-type blockUsers []int64
+type usersID []int64
 
-func (au *allowedUsers) Decode(value string) error {
-	if value == "" {
-		return nil
-	}
-	ids := strings.Split(string(value), ",")
-	for _, id := range ids {
-		idInt, err := strconv.ParseInt(id, 10, 64)
-		if err != nil {
-			return err
-		}
-		*au = append(*au, idInt)
-	}
-	return nil
-}
-
-func (au *blockUsers) Decode(value string) error {
+func (au *usersID) Decode(value string) error {
 	if value == "" {
 		return nil
 	}
@@ -54,19 +38,19 @@ func (au *blockUsers) Decode(value string) error {
 }
 
 type config struct {
-	ApiID          int32        `envconfig:"API_ID" required:"true"`
-	ApiHash        string       `envconfig:"API_HASH" required:"true"`
-	BotToken       string       `envconfig:"BOT_TOKEN" required:"true"`
-	LogChannelID   int64        `envconfig:"LOG_CHANNEL" required:"true"`
-	Dev            bool         `envconfig:"DEV" default:"false"`
-	Port           int          `envconfig:"PORT" default:"8080"`
-	Host           string       `envconfig:"HOST" default:""`
-	HashLength     int          `envconfig:"HASH_LENGTH" default:"6"`
-	UseSessionFile bool         `envconfig:"USE_SESSION_FILE" default:"true"`
-	UserSession    string       `envconfig:"USER_SESSION"`
-	UsePublicIP    bool         `envconfig:"USE_PUBLIC_IP" default:"false"`
-	AllowedUsers   allowedUsers `envconfig:"ALLOWED_USERS"`
-	BlockUsers	   blockUsers   `envconfig:"BLOCK_USERS"`
+	ApiID          int32   `envconfig:"API_ID" required:"true"`
+	ApiHash        string  `envconfig:"API_HASH" required:"true"`
+	BotToken       string  `envconfig:"BOT_TOKEN" required:"true"`
+	LogChannelID   int64   `envconfig:"LOG_CHANNEL" required:"true"`
+	Dev            bool    `envconfig:"DEV" default:"false"`
+	Port           int     `envconfig:"PORT" default:"8080"`
+	Host           string  `envconfig:"HOST" default:""`
+	HashLength     int     `envconfig:"HASH_LENGTH" default:"6"`
+	UseSessionFile bool    `envconfig:"USE_SESSION_FILE" default:"true"`
+	UserSession    string  `envconfig:"USER_SESSION"`
+	UsePublicIP    bool    `envconfig:"USE_PUBLIC_IP" default:"false"`
+	UsersID        usersID `envconfig:"USERS_ID"`
+	BlockFlag      bool    `envconfig:"BLOCK_FLAG" default:"false"`
 	MultiTokens    []string
 }
 
