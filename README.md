@@ -25,6 +25,7 @@
     <li>
       <a href="#how-to-make-your-own">How to make your own</a>
       <ul>
+        <li><a href="#deploy-to-koyeb">Deploy to Koyeb</a></li>
         <li><a href="#deploy-to-heroku">Deploy to Heroku</a></li>
       </ul>
       <ul>
@@ -62,6 +63,16 @@
 
 
 ## How to make your own
+
+### Deploy to Koyeb
+
+> [!IMPORTANT]
+> You'll have to expand the "Environment variables and files" section and update the env variables before hitting the deploy button.
+
+> [!NOTE]
+> This deploys the **latest docker release and NOT the latest commit**. Since it uses prebuilt docker container, the deploy speed will be significantly faster.
+
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&name=file-stream-bot&image=ghcr.io/everythingsuckz/fsb:latest&env%5BAPI_HASH%5D=&env%5BAPI_ID%5D=&env%5BAPI_HASH%5D=&env%5BAPI_ID%5D=&env%5BBOT_TOKEN%5D=&env%5BHOST%5D=https%3A%2F%2F%7B%7B+KOYEB_PUBLIC_DOMAIN+%7D%7D&env%5BLOG_CHANNEL%5D=&env%5BPORT%5D=8038&ports=8038%3Bhttp%3B%2F&hc_protocol%5B8038%5D=tcp&hc_grace_period%5B8038%5D=5&hc_interval%5B8038%5D=30&hc_restart_limit%5B8038%5D=3&hc_timeout%5B8038%5D=5&hc_path%5B8038%5D=%2F&hc_method%5B8038%5D=get)
 
 ### Deploy to Heroku
 
