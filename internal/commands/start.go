@@ -22,8 +22,12 @@ func start(ctx *ext.Context, u *ext.Update) error {
 	if peerChatId.Type != int(storage.TypeUser) {
 		return dispatcher.EndGroups
 	}
-	if len(config.ValueOf.AllowedUsers) != 0 && !utils.Contains(config.ValueOf.AllowedUsers, chatId) {
+	if !config.ValueOf.BlockFlag && len(config.ValueOf.UsersID) != 0 && !utils.Contains(config.ValueOf.UsersID, chatId) {
 		ctx.Reply(u, "You are not allowed to use this bot.", nil)
+		return dispatcher.EndGroups
+	}
+	if config.ValueOf.BlockFlag && len(config.ValueOf.UsersID) != 0 && utils.Contains(config.ValueOf.UsersID, chatId) {
+		ctx.Reply(u, "You are blocked from using this bot.", nil)
 		return dispatcher.EndGroups
 	}
 	ctx.Reply(u, "Hi, send me any file to get a direct streamble link to that file.", nil)

@@ -60,8 +60,6 @@
   </ol>
 </details>
 
-
-
 ## How to make your own
 
 ### Deploy to Koyeb
@@ -88,34 +86,37 @@ Press the below button to fast deploy to Heroku
 <hr>
 
 ### Download from releases
-- Head over to [releases](https://github.com/EverythingSuckz/TG-FileStreamBot/releases) tab, from the *pre release* section, download the one for your platform and architecture.
-- Extract the zip file to a folder.
-- Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
-- Give the executable file permission to execute using the command `chmod +x fsb` (Not required for windows).
-- Run the bot using `./fsb run` command. ( `./fsb.exe run` for windows)
+
+-   Head over to [releases](https://github.com/EverythingSuckz/TG-FileStreamBot/releases) tab, from the _pre release_ section, download the one for your platform and architecture.
+-   Extract the zip file to a folder.
+-   Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
+-   Give the executable file permission to execute using the command `chmod +x fsb` (Not required for windows).
+-   Run the bot using `./fsb run` command. ( `./fsb.exe run` for windows)
 
 <hr>
 
 ### Run using docker-compose
 
-- Clone the repository
+-   Clone the repository
+
 ```sh
 git clone https://github.com/EverythingSuckz/TG-FileStreamBot
 cd TG-FileStreamBot
 ```
 
-- Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
+-   Create an a file named `fsb.env` and add all the variables there (see `fsb.sample.env` file for reference).
 
 ```sh
 nano fsb.env
 ```
 
-- Build and run the docker-compose file
+-   Build and run the docker-compose file
 
 ```sh
 docker-compose up -d
 ```
- OR
+
+OR
 
 ```sh
 docker compose up -d
@@ -128,6 +129,7 @@ docker compose up -d
 ```sh
 docker run --env-file fsb.env ghcr.io/everythingsuckz/fsb:latest
 ```
+
 Where `fsb.env` is the environment file containing all the variables.
 
 <hr>
@@ -152,7 +154,7 @@ nano fsb.env
 ```
 
 and to stop the program,
- do <kbd>CTRL</kbd>+<kbd>C</kbd>
+do <kbd>CTRL</kbd>+<kbd>C</kbd>
 
 #### Windows
 
@@ -170,7 +172,7 @@ notepad fsb.env
 ```
 
 and to stop the program,
- do <kbd>CTRL</kbd>+<kbd>C</kbd>
+do <kbd>CTRL</kbd>+<kbd>C</kbd>
 
 ## Setting up things
 
@@ -191,43 +193,46 @@ MULTI_TOKEN2=55838355:yourworkerbottokenhere
 ```
 
 ### Required Vars
+
 Before running the bot, you will need to set up the following mandatory variables:
 
-- `API_ID` : This is the API ID for your Telegram account, which can be obtained from my.telegram.org.
+-   `API_ID` : This is the API ID for your Telegram account, which can be obtained from my.telegram.org.
 
-- `API_HASH` : This is the API hash for your Telegram account, which can also be obtained from my.telegram.org.
+-   `API_HASH` : This is the API hash for your Telegram account, which can also be obtained from my.telegram.org.
 
-- `BOT_TOKEN` : This is the bot token for the Telegram Media Streamer Bot, which can be obtained from [@BotFather](https://telegram.dog/BotFather).
+-   `BOT_TOKEN` : This is the bot token for the Telegram Media Streamer Bot, which can be obtained from [@BotFather](https://telegram.dog/BotFather).
 
-- `LOG_CHANNEL` :  This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
+-   `LOG_CHANNEL` : This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
 
 ### Optional Vars
+
 In addition to the mandatory variables, you can also set the following optional variables:
 
-- `PORT` : This sets the port that your webapp will listen to. The default value is 8080.
+-   `PORT` : This sets the port that your webapp will listen to. The default value is 8080.
 
-- `HOST` :  A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
+-   `HOST` : A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
 
-- `HASH_LENGTH` : Custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. The default value is 6.
+-   `HASH_LENGTH` : Custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. The default value is 6.
 
-- `USE_SESSION_FILE` : Use session files for worker client(s). This speeds up the worker bot startups. (default: `false`)
+-   `USE_SESSION_FILE` : Use session files for worker client(s). This speeds up the worker bot startups. (default: `false`)
 
-- `USER_SESSION` : A pyrogram session string for a user bot. Used for auto adding the bots to `LOG_CHANNEL`. (default: `null`)
+-   `USER_SESSION` : A pyrogram session string for a user bot. Used for auto adding the bots to `LOG_CHANNEL`. (default: `null`)
 
-- `ALLOWED_USERS` : A list of user IDs separated by comma (`,`). If this is set, only the users in this list will be able to use the bot. (default: `null`)
+-   `BLOCK_FLAG` : Used to determine whether to use whitelist or blacklist mode. If set to `true`, users specified in `USERS_ID` will be blocked from using the bot. If set to `false`, only users specified in `USERS_ID` will be allowed to use the bot. (default: `false`)
+
+-   `USERS_ID` : A list of user IDs separated by comma (`,`). (default: `null`)
 
 <hr>
 
 ### Use Multiple Bots to speed up
 
-> [!NOTE]
-> **What it multi-client feature and what it does?** <br>
+> [!NOTE] > **What it multi-client feature and what it does?** <br>
 > This feature shares the Telegram API requests between worker bots to speed up download speed when many users are using the server and to avoid the flood limits that are set by Telegram. <br>
 
 > [!NOTE]
 > You can add up to 50 bots since 50 is the max amount of bot admins you can set in a Telegram Channel.
 
-To enable multi-client, generate new bot tokens and add it as your `fsb.env` with the following key names. 
+To enable multi-client, generate new bot tokens and add it as your `fsb.env` with the following key names.
 
 `MULTI_TOKEN1`: Add your first bot token here.
 
@@ -276,12 +281,11 @@ Feel free to contribute to this project if you have any further ideas
 
 You can contact either via my [Telegram Group](https://xn--r1a.click/AlteredVoid) or you can message me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)
 
-
 ## Credits
 
-- [@celestix](https://github.com/celestix) for [gotgproto](https://github.com/celestix/gotgproto)
-- [@divyam234](https://github.com/divyam234/teldrive) for his [Teldrive](https://github.com/divyam234/teldrive) Project
-- [@karu](https://github.com/krau) for adding image support
+-   [@celestix](https://github.com/celestix) for [gotgproto](https://github.com/celestix/gotgproto)
+-   [@divyam234](https://github.com/divyam234/teldrive) for his [Teldrive](https://github.com/divyam234/teldrive) Project
+-   [@karu](https://github.com/krau) for adding image support
 
 ## Copyright
 
