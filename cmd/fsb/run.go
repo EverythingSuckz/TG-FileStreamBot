@@ -6,6 +6,7 @@ import (
 	"EverythingSuckz/fsb/internal/cache"
 	"EverythingSuckz/fsb/internal/routes"
 	"EverythingSuckz/fsb/internal/types"
+	"EverythingSuckz/fsb/internal/uploader"
 	"EverythingSuckz/fsb/internal/utils"
 	"fmt"
 	"net/http"
@@ -38,6 +39,7 @@ func runApp(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Panic("Failed to start main bot", zap.Error(err))
 	}
+	uploader.Load(log, mainBot.Dispatcher)
 	cache.InitCache(log)
 	workers, err := bot.StartWorkers(log)
 	if err != nil {

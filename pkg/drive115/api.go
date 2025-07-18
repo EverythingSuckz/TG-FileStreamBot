@@ -1,7 +1,6 @@
 package drive115
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,7 +10,6 @@ import (
 const (
 	apiGetUploadInfo = "https://uplb.115.com/3.0/getuploadinfo.php"
 )
-
 
 type Client struct {
 	cookie     string
@@ -25,20 +23,45 @@ func NewClient(cookie string) *Client {
 	}
 }
 
-func (c *Client) GetUploadInfo() (string, error) {
-	// This is a placeholder. The actual implementation will be more complex.
-	// It needs to make a request to apiGetUploadInfo and parse the response.
-	return "upload_url", nil
+type UploadInfo struct {
+	UploadURL string `json:"upload_url"`
+}
+
+func (c *Client) GetUploadInfo() (*UploadInfo, error) {
+	req, err := http.NewRequest("GET", apiGetUploadInfo, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Cookie", c.cookie)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("get upload info failed with status: %s", resp.Status)
+	}
+
+	var info UploadInfo
+	if err := json.NewDecoder(resp.Body).Decode(&info); err != nil {
+		return nil, err
+	}
+
+	return &info, nil
+}
+
+type UploadResult struct {
+	FileID string `json:"file_id"`
 }
 
 func (c *Client) Upload(reader io.Reader, uploadURL string) (*UploadResult, error) {
-	// This is a placeholder. The actual implementation will be more complex.
-	// It needs to stream the data from the reader to the uploadURL.
 	req, err := http.NewRequest("POST", uploadURL, reader)
 	if err != nil {
 		return nil, err
 	}
-	// Add necessary headers, such as Content-Type.
+	req.Header.Set("Content-Type", "application/octet-stream")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

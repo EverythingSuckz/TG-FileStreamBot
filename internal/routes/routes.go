@@ -28,6 +28,6 @@ func Load(log *zap.Logger, r *gin.Engine) {
 	Type := reflect.TypeOf(&allRoutes{log})
 	Value := reflect.ValueOf(&allRoutes{log})
 	for i := 0; i < Type.NumMethod(); i++ {
-		Type.Method(i).Func.Call([]reflect.Value{Value, reflect.ValueOf(route)})
+		Type.Method(i).Func.Call([]reflect.Value{Value, reflect.ValueOf(&Route{Engine: r})})
 	}
 }

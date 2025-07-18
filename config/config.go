@@ -50,6 +50,7 @@ type config struct {
 	UserSession    string       `envconfig:"USER_SESSION"`
 	UsePublicIP    bool         `envconfig:"USE_PUBLIC_IP" default:"false"`
 	AllowedUsers   allowedUsers `envconfig:"ALLOWED_USERS"`
+	Drive115Cookie string       `envconfig:"DRIVE115_COOKIE"`
 	MultiTokens    []string
 }
 
