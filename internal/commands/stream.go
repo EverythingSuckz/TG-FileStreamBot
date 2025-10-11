@@ -47,7 +47,7 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		return dispatcher.EndGroups
 	}
 	if len(config.ValueOf.AllowedUsers) != 0 && !utils.Contains(config.ValueOf.AllowedUsers, chatId) {
-		ctx.Reply(u, "You are not allowed to use this bot.", nil)
+		ctx.Reply(u, ext.ReplyTextString("You are not allowed to use this bot."), nil)
 		return dispatcher.EndGroups
 	}
 	supported, err := supportedMediaFilter(u.EffectiveMessage)
@@ -55,20 +55,20 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		return err
 	}
 	if !supported {
-		ctx.Reply(u, "Sorry, this message type is unsupported.", nil)
+		ctx.Reply(u, ext.ReplyTextString("Sorry, this message type is unsupported."), nil)
 		return dispatcher.EndGroups
 	}
 	update, err := utils.ForwardMessages(ctx, chatId, config.ValueOf.LogChannelID, u.EffectiveMessage.ID)
 	if err != nil {
 		utils.Logger.Sugar().Error(err)
-		ctx.Reply(u, fmt.Sprintf("Error - %s", err.Error()), nil)
+		ctx.Reply(u, ext.ReplyTextString(fmt.Sprintf("Error - %s", err.Error())), nil)
 		return dispatcher.EndGroups
 	}
 	messageID := update.Updates[0].(*tg.UpdateMessageID).ID
 	doc := update.Updates[1].(*tg.UpdateNewChannelMessage).Message.(*tg.Message).Media
 	file, err := utils.FileFromMedia(doc)
 	if err != nil {
-		ctx.Reply(u, fmt.Sprintf("Error - %s", err.Error()), nil)
+		ctx.Reply(u, ext.ReplyTextString(fmt.Sprintf("Error - %s", err.Error())), nil)
 		return dispatcher.EndGroups
 	}
 	fullHash := utils.PackFile(
@@ -79,7 +79,7 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 	)
 	hash := utils.GetShortHash(fullHash)
 	link := fmt.Sprintf("%s/stream/%d?hash=%s", config.ValueOf.Host, messageID, hash)
-	text := []styling.StyledTextOption{styling.Code(link)}
+	text := styling.Code(link)
 	row := tg.KeyboardButtonRow{
 		Buttons: []tg.KeyboardButtonClass{
 			&tg.KeyboardButtonURL{
@@ -98,12 +98,12 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 		Rows: []tg.KeyboardButtonRow{row},
 	}
 	if strings.Contains(link, "http://localhost") {
-		_, err = ctx.Reply(u, text, &ext.ReplyOpts{
+		_, err = ctx.Reply(u, ext.ReplyTextStyledText(text), &ext.ReplyOpts{
 			NoWebpage:        false,
 			ReplyToMessageId: u.EffectiveMessage.ID,
 		})
 	} else {
-		_, err = ctx.Reply(u, text, &ext.ReplyOpts{
+		_, err = ctx.Reply(u, ext.ReplyTextStyledText(text), &ext.ReplyOpts{
 			Markup:           markup,
 			NoWebpage:        false,
 			ReplyToMessageId: u.EffectiveMessage.ID,
@@ -111,7 +111,7 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 	}
 	if err != nil {
 		utils.Logger.Sugar().Error(err)
-		ctx.Reply(u, fmt.Sprintf("Error - %s", err.Error()), nil)
+		ctx.Reply(u, ext.ReplyTextString(fmt.Sprintf("Error - %s", err.Error())), nil)
 	}
 	return dispatcher.EndGroups
 }
