@@ -2,9 +2,7 @@
 <p align="center">
   </a>
   <p align="center">
-    <a herf="https://github.com/EverythingSuckz/TG-FileStreamBot">
-        <img src="https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png" height="100" width="100" alt="File Stream Bot Logo">
-    </a>
+    <a herf="https://github.com/EverythingSuckz/TG-FileStreamBot" 
 </p>
   title: Flowtv Streamer
 emoji: 🐢
