@@ -6,10 +6,12 @@
         <img src="https://telegra.ph/file/a8bb3f6b334ad1200ddb4.png" height="100" width="100" alt="File Stream Bot Logo">
     </a>
 </p>
-  <p align="center">
-    A Telegram bot to <b>generate direct link</b> for your Telegram files.
-    <br />
-  </p>
+  title: Flowtv Streamer
+emoji: 🐢
+colorFrom: yellow
+colorTo: green
+sdk: docker
+app_port: 7860
 </p>
 
 <hr>
