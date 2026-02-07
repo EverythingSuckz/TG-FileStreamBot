@@ -9,7 +9,7 @@ on:
         default: '--clean'
   push:
     tags:
-      - "*"
+      - "v*"
 
 permissions:
   contents: write
