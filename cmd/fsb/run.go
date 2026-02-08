@@ -36,13 +36,12 @@ func runApp(cmd *cobra.Command, args []string) {
 
 	mainBot, err := bot.StartClient(log)
 	if err != nil {
-		log.Panic("Failed to start main bot", zap.Error(err))
+		log.Sugar().Fatalf("Failed to start main bot: %v", err)
 	}
 	cache.InitCache(log)
 	workers, err := bot.StartWorkers(log)
 	if err != nil {
-		log.Panic("Failed to start workers", zap.Error(err))
-		return
+		log.Sugar().Fatalf("Failed to start workers: %v", err)
 	}
 	workers.AddDefaultClient(mainBot, mainBot.Self)
 	bot.StartUserBot(log)
@@ -51,7 +50,7 @@ func runApp(cmd *cobra.Command, args []string) {
 	mainLogger.Sugar().Infof("Server is running at %s", config.ValueOf.Host)
 	err = router.Run(fmt.Sprintf(":%d", config.ValueOf.Port))
 	if err != nil {
-		mainLogger.Sugar().Fatalln(err)
+		mainLogger.Sugar().Fatalf("Server failed to start: %v", err)
 	}
 }
 
