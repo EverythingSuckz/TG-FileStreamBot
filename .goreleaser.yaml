@@ -23,6 +23,33 @@ builds:
       - arm64
     mod_timestamp: '{{ .CommitTimestamp }}'
 
+dockers_v2:
+  - images:
+      - "ghcr.io/everythingsuckz/fsb"
+    
+    tags:
+    - "{{ .Tag }}"
+    - "v{{ .Major }}.{{ .Minor }}"
+    - "latest"
+
+    dockerfile: Dockerfile
+
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    labels:
+      "org.opencontainers.image.name": "{{.ProjectName}}"
+      "org.opencontainers.image.created": "{{.Date}}"
+      "org.opencontainers.image.revision": "{{.FullCommit}}"
+      "org.opencontainers.image.version": "{{.Version}}"
+      "org.opencontainers.image.description": "A high-performance Telegram File Streamer Bot written in Go. Stream files directly from Telegram to your download manager or media player with extreme efficiency."
+      "org.opencontainers.image.source": "{{.GitURL}}"
+    
+    retry:
+      attempts: 5
+      delay: 10
+      max_delay: 10
+
 archives:
   - formats: ["tar.gz"]
     name_template: "{{ .ProjectName }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}"
