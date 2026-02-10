@@ -24,11 +24,11 @@ builds:
     mod_timestamp: '{{ .CommitTimestamp }}'
 
 archives:
-  - format: tar.gz
+  - formats: ["tar.gz"]
     name_template: "{{ .ProjectName }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}"
     format_overrides:
       - goos: windows
-        format: zip
+        formats: ["zip"]
 
 signs:
   - artifacts: checksum
