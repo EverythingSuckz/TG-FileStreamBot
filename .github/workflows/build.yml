@@ -51,6 +51,8 @@ jobs:
           tags: |
             type=ref,event=tag
             type=raw,value=latest,enable=${{ !contains(github.ref, '-') }}
+          labels: |
+            org.opencontainers.image.description=A high-performance Telegram File Streamer Bot written in Go. Stream files directly from Telegram to your download manager or media player with extreme efficiency.
 
       - name: Build docker image and push
         uses: docker/build-push-action@v5
