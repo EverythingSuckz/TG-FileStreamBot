@@ -240,7 +240,8 @@ func (p *StreamPipe) downloadBlockWithRetry(offset int64) ([]byte, error) {
 	var lastErr error
 
 	// TODO: make configurable later
-	backoff := 100 * time.Millisecond // initial backoff = 100ms
+	backoff := 100 * time.Millisecond  // initial backoff = 100ms
+	const maxBackoff = 15 * time.Second // max backoff = 15s
 
 	for attempt := 0; attempt < config.ValueOf.StreamMaxRetries; attempt++ {
 		// check context before each attempt
@@ -267,6 +268,10 @@ func (p *StreamPipe) downloadBlockWithRetry(offset int64) ([]byte, error) {
 		select {
 		case <-time.After(backoff):
 			backoff *= 2
+			// making sure backoff doesn't grow indefinitely in case of persistent failures
+			if backoff > maxBackoff {
+				backoff = maxBackoff
+			}
 		case <-p.ctx.Done():
 			return nil, p.ctx.Err()
 		}
