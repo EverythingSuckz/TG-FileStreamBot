@@ -170,6 +170,8 @@ func (p *StreamPipe) prefetch() {
 				blockOffset := offset + int64(idx)*p.blockSize
 
 				data, err := p.downloadBlockWithRetry(blockOffset)
+				dataLen := int64(len(data))
+
 				if err != nil {
 					errMu.Lock()
 					if fetchErr == nil {
@@ -181,11 +183,20 @@ func (p *StreamPipe) prefetch() {
 
 				// trim first/last block to exact range
 				if totalBlocks == 1 {
+					if dataLen < rightTrim {
+						rightTrim = dataLen
+					}
+					if leftTrim > dataLen {
+						leftTrim = dataLen
+					}
 					data = data[leftTrim:rightTrim]
 				} else if blockNum == 0 {
+					if leftTrim > dataLen {
+						leftTrim = dataLen
+					}
 					data = data[leftTrim:]
 				} else if blockNum == totalBlocks-1 {
-					if int64(len(data)) > rightTrim {
+					if dataLen > rightTrim {
 						data = data[:rightTrim]
 					}
 				}
