@@ -2,6 +2,7 @@ package routes
 
 import (
 	"EverythingSuckz/fsb/internal/bot"
+	"EverythingSuckz/fsb/internal/stream"
 	"EverythingSuckz/fsb/internal/utils"
 	"fmt"
 	"io"
@@ -123,8 +124,14 @@ func getStreamRoute(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("%s; filename=\"%s\"", disposition, file.FileName))
 
 	if r.Method != "HEAD" {
-		lr, _ := utils.NewTelegramReader(ctx, worker.Client, file.Location, start, end, contentLength)
-		if _, err := io.CopyN(w, lr, contentLength); err != nil {
+		pipe, err := stream.NewStreamPipe(ctx, worker.Client, file.Location, start, end, log)
+		if err != nil {
+			log.Error("Failed to create stream pipe", zap.Error(err))
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		defer pipe.Close()
+		if _, err := io.CopyN(w, pipe, contentLength); err != nil {
 			log.Error("Error while copying stream", zap.Error(err))
 		}
 	}
