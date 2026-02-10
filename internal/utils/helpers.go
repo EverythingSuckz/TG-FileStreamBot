@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strings"
 
 	"github.com/celestix/gotgproto"
 	"github.com/celestix/gotgproto/ext"
@@ -25,6 +26,22 @@ func Contains[T comparable](s []T, e T) bool {
 	}
 	return false
 }
+
+// IsClientDisconnectError checks if the error is due to client disconnecting
+// e.g. user seeking in video, stopping playback, or network issues on client side
+func IsClientDisconnectError(err error) bool {
+	if err == nil {
+		return false
+	}
+	errStr := err.Error()
+	return strings.Contains(errStr, "connection was aborted") ||
+		strings.Contains(errStr, "connection reset by peer") ||
+		strings.Contains(errStr, "broken pipe") ||
+		strings.Contains(errStr, "forcibly closed")
+}
+
+// telegram helper functions
+// TODO: move these to a separate package if they grow too large
 
 func GetTGMessage(ctx context.Context, client *gotgproto.Client, messageID int) (*tg.Message, error) {
 	inputMessageID := tg.InputMessageClass(&tg.InputMessageID{ID: messageID})

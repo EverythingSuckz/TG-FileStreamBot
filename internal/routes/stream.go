@@ -132,7 +132,9 @@ func getStreamRoute(ctx *gin.Context) {
 		}
 		defer pipe.Close()
 		if _, err := io.CopyN(w, pipe, contentLength); err != nil {
-			log.Error("Error while copying stream", zap.Error(err))
+			if !utils.IsClientDisconnectError(err) {
+				log.Error("Error while copying stream", zap.Error(err))
+			}
 		}
 	}
 }
