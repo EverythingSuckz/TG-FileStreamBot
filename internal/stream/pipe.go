@@ -208,7 +208,9 @@ func (p *StreamPipe) prefetch() {
 		// send blocks to queue in order
 		for _, block := range blocks {
 			if block == nil {
-				continue
+				// a fetch failure that wasn't captured, should not happen but just in case.
+				p.log.Error("unexpected nil block in batch, aborting prefetch")
+				return
 			}
 			select {
 			case p.blockQueue <- block:
