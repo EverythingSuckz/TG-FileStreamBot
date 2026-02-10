@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const versionString = "3.2.0"
+const versionString = "3.2.0-alpha1"
 
 var rootCmd = &cobra.Command{
 	Use:               "fsb [command]",
