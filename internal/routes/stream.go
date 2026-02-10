@@ -124,7 +124,12 @@ func getStreamRoute(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("%s; filename=\"%s\"", disposition, file.FileName))
 
 	if r.Method != "HEAD" {
-		pipe, _ := stream.NewStreamPipe(ctx, worker.Client, file.Location, start, end, log)
+		pipe, err := stream.NewStreamPipe(ctx, worker.Client, file.Location, start, end, log)
+		if err != nil {
+			log.Error("Failed to create stream pipe", zap.Error(err))
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
 		defer pipe.Close()
 		if _, err := io.CopyN(w, pipe, contentLength); err != nil {
 			log.Error("Error while copying stream", zap.Error(err))
