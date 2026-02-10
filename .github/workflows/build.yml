@@ -43,14 +43,21 @@ jobs:
           echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
           echo "IMAGE_NAME=ghcr.io/${GITHUB_ACTOR,,}/fsb" >> $GITHUB_ENV
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.actor }}/fsb
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest,enable=${{ !contains(github.ref, '-') }}
+
       - name: Build docker image and push
         uses: docker/build-push-action@v5
-        env:
-          IMAGE_NAME: ${{ steps.env-vars.outputs.IMAGE_NAME }}
-          TAG: ${{ steps.env-vars.outputs.TAG }}
         with:
           context: ./
           pull: true
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ env.IMAGE_NAME }}:${{ env.TAG }} , ${{ env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
