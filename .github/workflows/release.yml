@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       goReleaserArgs:
-        description: 'Args goreleaser'     
+        description: "Args goreleaser"
         required: false
-        default: '--clean'
+        default: "--clean"
   push:
     tags:
       - "v*"
@@ -34,7 +34,7 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest
