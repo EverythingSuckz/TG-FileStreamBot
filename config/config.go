@@ -146,6 +146,22 @@ func (c *config) loadConfigFromArgs(log *zap.Logger, cmd *cobra.Command) {
 		os.Setenv("MULTI_TOKEN_TXT_FILE", multiTokens)
 		// TODO: Add support for importing tokens from a separate file
 	}
+	streamConcurrency, _ := cmd.Flags().GetInt("stream-concurrency")
+	if streamConcurrency != 0 {
+		os.Setenv("STREAM_CONCURRENCY", strconv.Itoa(streamConcurrency))
+	}
+	streamBufferCount, _ := cmd.Flags().GetInt("stream-buffer-count")
+	if streamBufferCount != 0 {
+		os.Setenv("STREAM_BUFFER_COUNT", strconv.Itoa(streamBufferCount))
+	}
+	streamTimeoutSec, _ := cmd.Flags().GetInt("stream-timeout-sec")
+	if streamTimeoutSec != 0 {
+		os.Setenv("STREAM_TIMEOUT_SEC", strconv.Itoa(streamTimeoutSec))
+	}
+	streamMaxRetries, _ := cmd.Flags().GetInt("stream-max-retries")
+	if streamMaxRetries != 0 {
+		os.Setenv("STREAM_MAX_RETRIES", strconv.Itoa(streamMaxRetries))
+	}
 }
 
 func (c *config) setupEnvVars(log *zap.Logger, cmd *cobra.Command) {
