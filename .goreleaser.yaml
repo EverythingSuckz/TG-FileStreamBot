@@ -51,3 +51,9 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+release:
+  github:
+    owner: EverythingSuckz
+    name: TG-FileStreamBot
+  prerelease: auto
