@@ -30,7 +30,7 @@ dockers_v2:
     tags:
     - "{{ .Tag }}"
     - "v{{ .Major }}.{{ .Minor }}"
-    - "latest"
+    - "{{ if not .Prerelease }}latest{{ end }}"
 
     dockerfile: Dockerfile
 
