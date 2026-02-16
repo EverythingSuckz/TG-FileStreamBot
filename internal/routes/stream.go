@@ -130,7 +130,6 @@ func getStreamRoute(ctx *gin.Context) {
 		pipe, err := stream.NewStreamPipe(ctx, worker.Client, file.Location, start, end, log)
 		if err != nil {
 			log.Error("Failed to create stream pipe", zap.Error(err))
-			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
 		defer pipe.Close()
