@@ -47,8 +47,8 @@ dockers_v2:
     
     retry:
       attempts: 5
-      delay: 10
-      max_delay: 10
+      delay: 10s
+      max_delay: 10s
 
 archives:
   - formats: ["tar.gz"]
