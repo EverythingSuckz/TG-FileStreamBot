@@ -8,7 +8,8 @@ before:
     - go generate ./...
 
 builds:
-  - main: ./cmd/fsb
+  - id: fsb
+    main: ./cmd/fsb
     env:
       - CGO_ENABLED=0
     flags: -tags=musl
@@ -26,13 +27,15 @@ builds:
 dockers_v2:
   - images:
       - "ghcr.io/everythingsuckz/fsb"
+    ids:
+      - fsb
     
     tags:
     - "{{ .Tag }}"
     - "v{{ .Major }}.{{ .Minor }}"
     - "{{ if not .Prerelease }}latest{{ end }}"
 
-    dockerfile: Dockerfile
+    dockerfile: goreleaser.Dockerfile
 
     platforms:
       - linux/amd64

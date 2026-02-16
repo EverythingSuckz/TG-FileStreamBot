@@ -1,2 +1,5 @@
-FROM golang:1.25
-CMD ["/app/fsb"]
+FROM scratch
+ARG TARGETOS
+ARG TARGETARCH
+COPY ${TARGETOS}/${TARGETARCH}/fsb /app/fsb
+ENTRYPOINT ["/app/fsb", "run"]
