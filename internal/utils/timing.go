@@ -11,7 +11,7 @@ func TimeFuncWithResult[T any](log *zap.Logger, funcName string, fn func() (T, e
 	start := time.Now()
 	defer func() {
 		duration := time.Since(start).Milliseconds()
-		log.Info(funcName+" executed", zap.Int64("duration_ms", duration))
+		log.Debug(funcName+" executed", zap.Int64("duration_ms", duration))
 	}()
 	return fn()
 }
