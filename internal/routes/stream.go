@@ -3,6 +3,7 @@ package routes
 import (
 	"EverythingSuckz/fsb/internal/bot"
 	"EverythingSuckz/fsb/internal/stream"
+	"EverythingSuckz/fsb/internal/types"
 	"EverythingSuckz/fsb/internal/utils"
 	"fmt"
 	"io"
@@ -43,7 +44,9 @@ func getStreamRoute(ctx *gin.Context) {
 
 	worker := bot.GetNextWorker()
 
-	file, err := utils.FileFromMessage(ctx, worker.Client, messageID)
+	file, err := utils.TimeFuncWithResult(log, "FileFromMessage", func() (*types.File, error) {
+		return utils.FileFromMessage(ctx, worker.Client, messageID)
+	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

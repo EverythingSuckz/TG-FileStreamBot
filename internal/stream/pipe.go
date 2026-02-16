@@ -2,6 +2,7 @@ package stream
 
 import (
 	"EverythingSuckz/fsb/config"
+	"EverythingSuckz/fsb/internal/utils"
 	"context"
 	"fmt"
 	"io"
@@ -240,7 +241,7 @@ func (p *StreamPipe) downloadBlockWithRetry(offset int64) ([]byte, error) {
 	var lastErr error
 
 	// TODO: make configurable later
-	backoff := 100 * time.Millisecond  // initial backoff = 100ms
+	backoff := 100 * time.Millisecond   // initial backoff = 100ms
 	const maxBackoff = 15 * time.Second // max backoff = 15s
 
 	for attempt := 0; attempt < config.ValueOf.StreamMaxRetries; attempt++ {
@@ -250,7 +251,9 @@ func (p *StreamPipe) downloadBlockWithRetry(offset int64) ([]byte, error) {
 		}
 
 		ctx, cancel := context.WithTimeout(p.ctx, time.Duration(config.ValueOf.StreamTimeoutSec)*time.Second)
-		data, err := p.downloadBlock(ctx, offset)
+		data, err := utils.TimeFuncWithResult(p.log, "downloadBlock", func() ([]byte, error) {
+			return p.downloadBlock(ctx, offset)
+		})
 		cancel()
 
 		if err == nil {
@@ -282,7 +285,7 @@ func (p *StreamPipe) downloadBlockWithRetry(offset int64) ([]byte, error) {
 
 // downloadBlock fetches a single block from Telegram.
 func (p *StreamPipe) downloadBlock(ctx context.Context, offset int64) ([]byte, error) {
-
+	p.log.Sugar().Debugf("Downloading block at offset %d (block size: %d)", offset, p.blockSize)
 	res, err := p.client.API().UploadGetFile(ctx, &tg.UploadGetFileRequest{
 		Offset:   offset,
 		Limit:    int(p.blockSize),
