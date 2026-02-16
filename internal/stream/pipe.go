@@ -68,6 +68,11 @@ func NewStreamPipe(
 	start, end int64,
 	log *zap.Logger,
 ) (io.ReadCloser, error) {
+
+	if start > end {
+		return nil, fmt.Errorf("invalid range: start (%d) > end (%d)", start, end)
+	}
+
 	ctx, cancel := context.WithCancel(ctx)
 
 	totalBytes := end - start + 1
