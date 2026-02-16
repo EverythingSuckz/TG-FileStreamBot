@@ -27,11 +27,14 @@ var runCmd = &cobra.Command{
 var startTime time.Time = time.Now()
 
 func runApp(cmd *cobra.Command, args []string) {
+	// initialize logger early so config loading is logged to file
+	utils.InitLogger(false)
+	config.Load(utils.Logger, cmd)
+	// reinitialize with correct dev mode
 	utils.InitLogger(config.ValueOf.Dev)
 	log := utils.Logger
 	mainLogger := log.Named("Main")
 	mainLogger.Info("Starting server")
-	config.Load(log, cmd)
 	router := getRouter(log)
 
 	mainBot, err := bot.StartClient(log)
