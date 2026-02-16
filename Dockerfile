@@ -1,8 +1,9 @@
-FROM golang:1.25-alpine3.21 as builder
-RUN apk update && apk upgrade --available && sync
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine3.21 AS builder
+ARG TARGETOS
+ARG TARGETARCH
 WORKDIR /app
 COPY . .
-RUN CGO_ENABLED=0 go build -o /app/fsb -ldflags="-w -s" ./cmd/fsb
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o /app/fsb -ldflags="-w -s" ./cmd/fsb
 
 FROM scratch
 COPY --from=builder /app/fsb /app/fsb
