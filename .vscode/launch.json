@@ -10,6 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "./cmd/fsb/",
+            "envFile": "${cwd}/fsb.env",
             "args": [
                 "run"
             ]
