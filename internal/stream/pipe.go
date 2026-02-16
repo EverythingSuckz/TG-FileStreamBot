@@ -304,6 +304,10 @@ func (p *StreamPipe) downloadBlock(ctx context.Context, offset int64) ([]byte, e
 	switch result := res.(type) {
 	case *tg.UploadFile:
 		return result.Bytes, nil
+	case *tg.UploadFileCDNRedirect:
+		// handle CDN redirect if needed (not implemented here, but could be added)
+		// https://core.telegram.org/cdn
+		return nil, fmt.Errorf("CDN redirect not supported in this implementation (redirect to DC %d)", result.DCID)
 	default:
 		return nil, fmt.Errorf("unexpected response type: %T", res)
 	}
