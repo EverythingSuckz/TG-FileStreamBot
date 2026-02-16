@@ -1,4 +1,4 @@
-version: 1
+version: 2
 project_name: TG-FileStreamBot
 env:
   - GO111MODULE=on
@@ -23,12 +23,39 @@ builds:
       - arm64
     mod_timestamp: '{{ .CommitTimestamp }}'
 
+dockers_v2:
+  - images:
+      - "ghcr.io/everythingsuckz/fsb"
+    
+    tags:
+    - "{{ .Tag }}"
+    - "v{{ .Major }}.{{ .Minor }}"
+    - "{{ if not .Prerelease }}latest{{ end }}"
+
+    dockerfile: Dockerfile
+
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    labels:
+      "org.opencontainers.image.name": "{{.ProjectName}}"
+      "org.opencontainers.image.created": "{{.Date}}"
+      "org.opencontainers.image.revision": "{{.FullCommit}}"
+      "org.opencontainers.image.version": "{{.Version}}"
+      "org.opencontainers.image.description": "A high-performance Telegram File Streamer Bot written in Go. Stream files directly from Telegram to your download manager or media player with extreme efficiency."
+      "org.opencontainers.image.source": "{{.GitURL}}"
+    
+    retry:
+      attempts: 5
+      delay: 10
+      max_delay: 10
+
 archives:
-  - format: tar.gz
+  - formats: ["tar.gz"]
     name_template: "{{ .ProjectName }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}"
     format_overrides:
       - goos: windows
-        format: zip
+        formats: ["zip"]
 
 signs:
   - artifacts: checksum
@@ -51,3 +78,9 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+release:
+  github:
+    owner: EverythingSuckz
+    name: TG-FileStreamBot
+  prerelease: auto

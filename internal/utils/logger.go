@@ -13,7 +13,11 @@ var Logger *zap.Logger
 
 func InitLogger(debugMode bool) {
 	customTimeEncoder := func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-		enc.AppendString(t.Format("02/01/2006 03:04 PM"))
+		layout := "02/01/2006 03:04:05 PM"
+		if debugMode {
+			layout = "02/01/2006 03:04:05.000 PM"
+		}
+		enc.AppendString(t.Format(layout))
 	}
 	consoleConfig := zap.NewDevelopmentEncoderConfig()
 	consoleConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder

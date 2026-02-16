@@ -1,2 +1,2 @@
-FROM golang:1.21
+FROM golang:1.25
 CMD ["/app/fsb"]

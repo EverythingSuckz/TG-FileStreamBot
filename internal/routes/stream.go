@@ -2,6 +2,8 @@ package routes
 
 import (
 	"EverythingSuckz/fsb/internal/bot"
+	"EverythingSuckz/fsb/internal/stream"
+	"EverythingSuckz/fsb/internal/types"
 	"EverythingSuckz/fsb/internal/utils"
 	"fmt"
 	"io"
@@ -42,7 +44,9 @@ func getStreamRoute(ctx *gin.Context) {
 
 	worker := bot.GetNextWorker()
 
-	file, err := utils.FileFromMessage(ctx, worker.Client, messageID)
+	file, err := utils.TimeFuncWithResult(log, "FileFromMessage", func() (*types.File, error) {
+		return utils.FileFromMessage(ctx, worker.Client, messageID)
+	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -123,9 +127,16 @@ func getStreamRoute(ctx *gin.Context) {
 	ctx.Header("Content-Disposition", fmt.Sprintf("%s; filename=\"%s\"", disposition, file.FileName))
 
 	if r.Method != "HEAD" {
-		lr, _ := utils.NewTelegramReader(ctx, worker.Client, file.Location, start, end, contentLength)
-		if _, err := io.CopyN(w, lr, contentLength); err != nil {
-			log.Error("Error while copying stream", zap.Error(err))
+		pipe, err := stream.NewStreamPipe(ctx, worker.Client, file.Location, start, end, log)
+		if err != nil {
+			log.Error("Failed to create stream pipe", zap.Error(err))
+			return
+		}
+		defer pipe.Close()
+		if _, err := io.CopyN(w, pipe, contentLength); err != nil {
+			if !utils.IsClientDisconnectError(err) {
+				log.Error("Error while copying stream", zap.Error(err))
+			}
 		}
 	}
 }

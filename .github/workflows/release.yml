@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       goReleaserArgs:
-        description: 'Args goreleaser'     
+        description: "Args goreleaser"
         required: false
-        default: '--clean'
+        default: "--clean"
   push:
     tags:
-      - "*"
+      - "v*"
 
 permissions:
   contents: write
@@ -19,14 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - run: git fetch --force --tags
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.21
+          go-version: 1.25
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
@@ -34,11 +34,11 @@ jobs:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: latest
-          args: release ${{ github.event.inputs.goReleaserArgs }}"
+          args: release ${{ github.event.inputs.goReleaserArgs }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
