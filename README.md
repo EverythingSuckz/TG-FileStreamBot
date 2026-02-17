@@ -191,30 +191,126 @@ MULTI_TOKEN2=55838355:yourworkerbottokenhere
 ```
 
 ### Required Vars
-Before running the bot, you will need to set up the following mandatory variables:
+Before running the bot, set these mandatory variables:
 
-- `API_ID` : This is the API ID for your Telegram account, which can be obtained from my.telegram.org.
-
-- `API_HASH` : This is the API hash for your Telegram account, which can also be obtained from my.telegram.org.
-
-- `BOT_TOKEN` : This is the bot token for the Telegram Media Streamer Bot, which can be obtained from [@BotFather](https://telegram.dog/BotFather).
-
-- `LOG_CHANNEL` :  This is the channel ID for the log channel where the bot will forward media messages and store these files to make the generated direct links work. To obtain a channel ID, create a new telegram channel (public or private), post something in the channel, forward the message to [@missrose_bot](https://telegram.dog/MissRose_bot) and **reply the forwarded message** with the /id command. Copy the forwarded channel ID and paste it into the this field.
+- `API_ID` : Telegram API ID from https://my.telegram.org.
+- `API_HASH` : Telegram API hash from https://my.telegram.org.
+- `BOT_TOKEN` : Bot token from [@BotFather](https://telegram.dog/BotFather).
+- `LOG_CHANNEL` : Telegram channel ID where bot messages/files are stored for streaming links.
+  - How to get it: Create a channel, send a message, forward it to [@missrose_bot](https://telegram.dog/MissRose_bot), then reply with `/id`.
 
 ### Optional Vars
-In addition to the mandatory variables, you can also set the following optional variables:
+In addition to required variables, these optional ones are available:
 
-- `PORT` : This sets the port that your webapp will listen to. The default value is 8080.
+- `DEV` (default: `false`)
+  - Enables development logging behavior.
 
-- `HOST` :  A Fully Qualified Domain Name if present or use your server IP. (eg. `https://example.com` or `http://14.1.154.2:8080`)
+- `PORT` (default: `8080`)
+  - HTTP port used by the stream server.
 
-- `HASH_LENGTH` : Custom hash length for generated URLs. The hash length must be greater than 5 and less than or equal to 32. The default value is 6.
+- `HOST` (default: auto-generated)
+  - Base URL used in generated links (for example `https://example.com` or `http://192.168.1.10:8080`).
+  - If omitted, bot auto-builds it from detected IP + `PORT`.
 
-- `USE_SESSION_FILE` : Use session files for worker client(s). This speeds up the worker bot startups. (default: `false`)
+- `HASH_LENGTH` (default: `6`, min `5`, max `32`)
+  - Length of URL hash used in stream links.
 
-- `USER_SESSION` : A pyrogram session string for a user bot. Used for auto adding the bots to `LOG_CHANNEL`. (default: `null`)
+- `USE_SESSION_FILE` (default: `true`)
+  - Reuse saved worker sessions to speed startup and reduce login overhead.
 
-- `ALLOWED_USERS` : A list of user IDs separated by comma (`,`). If this is set, only the users in this list will be able to use the bot. (default: `null`)
+- `USER_SESSION` (default: empty)
+  - Optional user session string for userbot features (for example auto-adding bots to `LOG_CHANNEL`).
+
+- `USE_PUBLIC_IP` (default: `false`)
+  - If enabled, bot tries to discover public IP for host generation.
+
+- `ALLOWED_USERS` (default: empty)
+  - Comma-separated Telegram user IDs that are allowed to use the bot (access allowlist).
+
+
+#### Stream Performance Configuration
+
+These optional variables allow you to tune the streaming performance. Most users won't need to change these defaults.
+
+- `STREAM_CONCURRENCY` (default: `4`)
+  - How many block downloads a single stream request runs in parallel.
+  - Effective first-batch request fanout per stream request = `STREAM_CONCURRENCY`.
+  - Higher values can improve throughput and startup latency, but increase Telegram API pressure.
+
+- `STREAM_BUFFER_COUNT` (default: `8`)
+  - Capacity of the in-memory block queue between downloader and HTTP writer.
+  - It controls **how far ahead** prefetch can run before the reader catches up.
+  - It does **not** increase parallel download count by itself.
+  - Approximate extra memory per request: `STREAM_BUFFER_COUNT * blockSize` (blockSize is dynamic: 64KB/256KB/512KB/1MB).
+
+- `STREAM_TIMEOUT_SEC` (default: `30`)
+  - Per-block timeout for Telegram `UploadGetFile` request.
+
+- `STREAM_MAX_RETRIES` (default: `3`)
+  - Retry attempts per block before failing the stream.
+
+##### Simple explanation (for non-technical users)
+
+- `STREAM_CONCURRENCY` = **how many Telegram downloads happen at the same time** for one stream.
+  - Bigger value = video may start faster and download faster.
+  - But bigger value also means more chance of Telegram floodwait/rate-limit.
+
+- `STREAM_BUFFER_COUNT` = **how many downloaded chunks are kept ready in memory**.
+  - Bigger value = smoother playback on unstable networks.
+  - It does **not** create more Telegram requests by itself.
+
+- `STREAM_TIMEOUT_SEC` = **how long to wait before saying a chunk request is too slow**.
+
+- `STREAM_MAX_RETRIES` = **how many times to retry a failed chunk**.
+
+Quick rule:
+
+- Telegram request pressure is mainly controlled by `STREAM_CONCURRENCY`.
+- Approximate in-flight Telegram calls at peak = `active_streams × STREAM_CONCURRENCY`.
+
+Safe starting presets:
+
+- Small server / home host:
+  - `STREAM_CONCURRENCY=4`
+  - `STREAM_BUFFER_COUNT=8`
+  - `STREAM_TIMEOUT_SEC=30`
+  - `STREAM_MAX_RETRIES=3`
+
+- Medium VPS:
+  - `STREAM_CONCURRENCY=6`
+  - `STREAM_BUFFER_COUNT=12`
+  - `STREAM_TIMEOUT_SEC=45`
+  - `STREAM_MAX_RETRIES=3`
+
+- High bandwidth + multiple worker bots:
+  - `STREAM_CONCURRENCY=8`
+  - `STREAM_BUFFER_COUNT=16`
+  - `STREAM_TIMEOUT_SEC=60`
+  - `STREAM_MAX_RETRIES=5`
+
+> [!NOTE]
+> Increasing `STREAM_CONCURRENCY` increases concurrent Telegram requests from one client connection. If you push this too high, floodwait/rate-limit risk increases.
+> Start with `4`, test `6` or `8`, and only go higher if logs show stable behavior.
+
+**Example configuration for high-performance servers:**
+```sh
+STREAM_CONCURRENCY=8
+STREAM_BUFFER_COUNT=16
+STREAM_TIMEOUT_SEC=60
+STREAM_MAX_RETRIES=5
+```
+This configuration would allow up to 8 blocks to be downloaded in parallel, with a buffer of 16 blocks, and a longer timeout for slow connections.
+
+### `MULTI_TOKEN` variables
+
+You can add worker bots to distribute stream requests across different bot tokens:
+
+- `MULTI_TOKEN1`
+- `MULTI_TOKEN2`
+- `MULTI_TOKEN3`
+- ...
+
+Each active HTTP stream request uses one worker client in round-robin mode. Using multiple workers reduces floodwait risk versus sending all traffic through a single token.
 
 <hr>
 
