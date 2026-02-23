@@ -18,6 +18,58 @@ NC='\033[0m' # No Color
 REPO="EverythingSuckz/TG-FileStreamBot"
 GUM_VERSION="0.13.0"
 TMPFILES=()
+HAS_TTY="false"
+
+if [[ -r /dev/tty ]]; then
+    HAS_TTY="true"
+fi
+
+can_use_tui() {
+    [[ -n "${GUM:-}" && "$HAS_TTY" == "true" ]]
+}
+
+prompt_read() {
+    local __var_name="$1"
+    local __prompt="$2"
+    local __default="${3-}"
+    local __input=""
+
+    if [[ "$HAS_TTY" == "true" ]]; then
+        read -r -p "$__prompt" __input < /dev/tty || __input=""
+    else
+        read -r -p "$__prompt" __input || __input=""
+    fi
+
+    if [[ -z "$__input" && -n "$__default" ]]; then
+        __input="$__default"
+    fi
+
+    printf -v "$__var_name" '%s' "$__input"
+}
+
+gum_choose() {
+    if [[ "$HAS_TTY" == "true" ]]; then
+        "$GUM" choose "$@" < /dev/tty
+    else
+        "$GUM" choose "$@"
+    fi
+}
+
+gum_confirm() {
+    if [[ "$HAS_TTY" == "true" ]]; then
+        "$GUM" confirm "$@" < /dev/tty
+    else
+        "$GUM" confirm "$@"
+    fi
+}
+
+gum_input() {
+    if [[ "$HAS_TTY" == "true" ]]; then
+        "$GUM" input "$@" < /dev/tty
+    else
+        "$GUM" input "$@"
+    fi
+}
 
 # --------------- TEMP RUNTIME ---------------
 cleanup() {
@@ -207,14 +259,14 @@ main() {
         echo ""
         local ACTION
         if [[ "$current_ver" == "$latest_stable" ]]; then
-            if [[ -n "$GUM" && -t 0 ]]; then
-                ACTION=$("$GUM" choose "Keep installed version" "Reinstall $latest_stable" "Update to Pre-release" "Uninstall")
+            if can_use_tui; then
+                ACTION=$(gum_choose "Keep installed version" "Reinstall $latest_stable" "Update to Pre-release" "Uninstall")
             else
                 echo "1) Keep installed version"
                 echo "2) Reinstall $latest_stable"
                 echo "3) Update to Pre-release"
                 echo "4) Uninstall"
-                read -r -p "Select action [1]: " act
+                prompt_read act "Select action [1]: " "1"
                 case "${act:-1}" in
                     2) ACTION="Reinstall $latest_stable" ;;
                     3) ACTION="Update to Pre-release" ;;
@@ -224,14 +276,14 @@ main() {
             fi
         else
             ui_info "New version available: ${BOLD}$latest_stable${NC}"
-            if [[ -n "$GUM" && -t 0 ]]; then
-                ACTION=$("$GUM" choose "Update to latest stable ($latest_stable)" "Update to Pre-release" "Uninstall" "Cancel")
+            if can_use_tui; then
+                ACTION=$(gum_choose "Update to latest stable ($latest_stable)" "Update to Pre-release" "Uninstall" "Cancel")
             else
                 echo "1) Update to latest stable ($latest_stable)"
                 echo "2) Update to Pre-release"
                 echo "3) Uninstall"
                 echo "4) Cancel"
-                read -r -p "Select action [1]: " act
+                prompt_read act "Select action [1]: " "1"
                 case "${act:-1}" in
                     2) ACTION="Update to Pre-release" ;;
                     3) ACTION="Uninstall" ;;
@@ -264,13 +316,13 @@ main() {
                 fi
                 echo ""
                 
-                if [[ -n "$GUM" && -t 0 ]]; then
-                    if ! "$GUM" confirm "Proceed with uninstallation?" --default=false; then
+                if can_use_tui; then
+                    if ! gum_confirm "Proceed with uninstallation?" --default=false; then
                         ui_info "Uninstallation cancelled."
                         exit 0
                     fi
                 else
-                    read -r -p "Proceed with uninstallation? [y/N] " uninst_resp
+                    prompt_read uninst_resp "Proceed with uninstallation? [y/N] " "N"
                     case "$uninst_resp" in
                         [yY][eE][sS]|[yY]) ;;
                         *)
@@ -317,9 +369,9 @@ main() {
         ENV_DIR=""
 
     # Interactive flow if TUI is available
-    if [[ -n "$GUM" && -t 0 ]]; then
+    if can_use_tui; then
         echo -e "${BOLD}Do you want to install the latest pre-release version?${NC}"
-        if "$GUM" confirm "Include pre-releases? (Recommended: No)" --default=false; then
+        if gum_confirm "Include pre-releases? (Recommended: No)" --default=false; then
             WANT_PRERELEASE="yes"
         else
             WANT_PRERELEASE="no"
@@ -327,7 +379,7 @@ main() {
 
         echo ""
         echo -e "${BOLD}Where should we install the binary?${NC}"
-        INSTALL_DIR=$("$GUM" choose \
+        INSTALL_DIR=$(gum_choose \
             "Current Directory/FSB (Recommended)" \
             "Current Directory ($PWD)" \
             "$HOME/.local/bin" \
@@ -335,7 +387,7 @@ main() {
             "Custom Path" | sed 's/ (.*//')
 
         if [[ "$INSTALL_DIR" == "Custom Path" ]]; then
-            INSTALL_DIR=$("$GUM" input --placeholder "/path/to/install/dir")
+            INSTALL_DIR=$(gum_input --placeholder "/path/to/install/dir")
         elif [[ "$INSTALL_DIR" == "Current Directory/FSB" ]]; then
             INSTALL_DIR="$PWD/FSB"
         elif [[ "$INSTALL_DIR" == "Current Directory" ]]; then
@@ -344,7 +396,7 @@ main() {
 
         echo ""
         echo -e "${BOLD}Do you want to download a sample 'fsb.env' configuration file?${NC}"
-        if "$GUM" confirm "Download sample env?" --default=true; then
+        if gum_confirm "Download sample env?" --default=true; then
             WANT_ENV="yes"
         fi
 
@@ -354,13 +406,13 @@ main() {
             else
                 echo ""
                 echo -e "${BOLD}Where should we save the 'fsb.env' file?${NC}"
-                ENV_DIR=$("$GUM" choose \
+                ENV_DIR=$(gum_choose \
                     "Current Directory ($PWD) (Recommended)" \
                     "Installation Folder ($INSTALL_DIR)" \
                     "Custom Path" | sed 's/ (.*//')
 
                 if [[ "$ENV_DIR" == "Custom Path" ]]; then
-                    ENV_DIR=$("$GUM" input --placeholder "/path/to/save/env")
+                    ENV_DIR=$(gum_input --placeholder "/path/to/save/env")
                 elif [[ "$ENV_DIR" == "Current Directory" ]]; then
                     ENV_DIR="$PWD"
                 elif [[ "$ENV_DIR" == "Installation Folder" ]]; then
@@ -370,7 +422,7 @@ main() {
         fi
     else
         # Fallback text mode prompts
-        read -r -p "Install pre-release version? [y/N] " response
+        prompt_read response "Install pre-release version? [y/N] " "N"
         case "$response" in
             [yY][eE][sS]|[yY]) WANT_PRERELEASE="yes" ;;
             *) WANT_PRERELEASE="no" ;;
@@ -382,7 +434,7 @@ main() {
         echo "2) Current Directory ($PWD)"
         echo "3) $HOME/.local/bin"
         echo "4) /usr/local/bin (Requires sudo)"
-        read -r -p "Selection [1]: " dir_resp
+        prompt_read dir_resp "Selection [1]: " "1"
         case "${dir_resp:-1}" in
             2) INSTALL_DIR="$PWD" ;;
             3) INSTALL_DIR="$HOME/.local/bin" ;;
@@ -391,7 +443,7 @@ main() {
         esac
 
         echo ""
-        read -r -p "Download sample 'fsb.env' configuration file? [Y/n] " env_response
+        prompt_read env_response "Download sample 'fsb.env' configuration file? [Y/n] " "Y"
         case "$env_response" in
             [nN][oO]|[nN]) WANT_ENV="no" ;;
             *) WANT_ENV="yes" ;;
@@ -405,7 +457,7 @@ main() {
                 echo "Select where to save 'fsb.env':"
                 echo "1) Current Directory ($PWD) (Recommended)"
                 echo "2) Installation Folder ($INSTALL_DIR)"
-                read -r -p "Selection [1]: " env_dir_resp
+                prompt_read env_dir_resp "Selection [1]: " "1"
                 case "${env_dir_resp:-1}" in
                     2) ENV_DIR="$INSTALL_DIR" ;;
                     *) ENV_DIR="$PWD" ;;
@@ -447,13 +499,13 @@ main() {
     echo ""
 
     # Confirmation
-    if [[ -n "$GUM" && -t 0 ]]; then
-        if ! "$GUM" confirm "Proceed with installation?" --default=true; then
+    if can_use_tui; then
+        if ! gum_confirm "Proceed with installation?" --default=true; then
             ui_info "Installation cancelled."
             exit 0
         fi
     else
-        read -r -p "Proceed with installation? [Y/n] " proceed_resp
+        prompt_read proceed_resp "Proceed with installation? [Y/n] " "Y"
         case "$proceed_resp" in
             [nN][oO]|[nN])
                 ui_info "Installation cancelled."
