@@ -36,11 +36,11 @@ func getGenerateRoute(ctx *gin.Context) {
 		return
 	}
 
-	token := ctx.Query("token")
-	if token == "" {
-		token = ctx.GetHeader("X-Bot-Token")
+	secret := ctx.Query("secret")
+	if secret == "" {
+		secret = ctx.GetHeader("X-HMAC-Secret")
 	}
-	if token == "" || token != config.ValueOf.BotToken {
+	if secret == "" || secret != config.ValueOf.HMACSecret {
 		writeJSON(ctx, http.StatusUnauthorized, gin.H{"ok": false, "error": "unauthorized"})
 		return
 	}
@@ -58,6 +58,10 @@ func getGenerateRoute(ctx *gin.Context) {
 			d, err := time.ParseDuration(expParam)
 			if err != nil {
 				writeJSON(ctx, http.StatusBadRequest, gin.H{"ok": false, "error": fmt.Sprintf("invalid exp duration: %s", expParam)})
+				return
+			}
+			if d <= 0 && expParam != "0" {
+				writeJSON(ctx, http.StatusBadRequest, gin.H{"ok": false, "error": "invalid exp duration"})
 				return
 			}
 			expiryDuration = d

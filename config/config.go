@@ -46,6 +46,7 @@ type config struct {
 	Port           int          `envconfig:"PORT" default:"8080"`
 	Host           string       `envconfig:"HOST" default:""`
 	HashLength     int          `envconfig:"HASH_LENGTH" default:"6"`
+	HMACSecret     string       `envconfig:"HMAC_SECRET" default:""`
 	UseSessionFile bool         `envconfig:"USE_SESSION_FILE" default:"true"`
 	UserSession    string       `envconfig:"USER_SESSION"`
 	UsePublicIP    bool         `envconfig:"USE_PUBLIC_IP" default:"false"`
@@ -81,6 +82,7 @@ func SetFlagsFromConfig(cmd *cobra.Command) {
 	cmd.Flags().Int32("api-id", ValueOf.ApiID, "Telegram API ID")
 	cmd.Flags().String("api-hash", ValueOf.ApiHash, "Telegram API Hash")
 	cmd.Flags().String("bot-token", ValueOf.BotToken, "Telegram Bot Token")
+	cmd.Flags().String("hmac-secret", ValueOf.HMACSecret, "HMAC secret for signing stream URLs (defaults to bot token if unset)")
 	cmd.Flags().Int64("log-channel", ValueOf.LogChannelID, "Telegram Log Channel ID")
 	cmd.Flags().Bool("dev", ValueOf.Dev, "Enable development mode")
 	cmd.Flags().IntP("port", "p", ValueOf.Port, "Server port")
@@ -108,6 +110,10 @@ func (c *config) loadConfigFromArgs(log *zap.Logger, cmd *cobra.Command) {
 	botToken, _ := cmd.Flags().GetString("bot-token")
 	if botToken != "" {
 		os.Setenv("BOT_TOKEN", botToken)
+	}
+	hmacSecret, _ := cmd.Flags().GetString("hmac-secret")
+	if hmacSecret != "" {
+		os.Setenv("HMAC_SECRET", hmacSecret)
 	}
 	logChannelID, _ := cmd.Flags().GetString("log-channel")
 	if logChannelID != "" {
@@ -170,6 +176,9 @@ func (c *config) setupEnvVars(log *zap.Logger, cmd *cobra.Command) {
 	err := envconfig.Process("", c)
 	if err != nil {
 		log.Fatal("Error while parsing env variables", zap.Error(err))
+	}
+	if c.HMACSecret == "" {
+		c.HMACSecret = c.BotToken
 	}
 	var ipBlocked bool
 	ip, err := getIP(c.UsePublicIP)
