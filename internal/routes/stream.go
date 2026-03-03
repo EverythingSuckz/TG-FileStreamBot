@@ -37,9 +37,24 @@ func getStreamRoute(ctx *gin.Context) {
 	}
 
 	authHash := ctx.Query("hash")
-	if authHash == "" {
-		http.Error(w, "missing hash param", http.StatusBadRequest)
+	expParam := ctx.Query("exp")
+
+	if expParam == "" && authHash == "" {
+		http.Error(w, "missing auth: provide hash or exp+sig", http.StatusBadRequest)
 		return
+	}
+
+	// If exp is present, verify signature early before loading file
+	if expParam != "" {
+		sig := ctx.Query("sig")
+		if sig == "" {
+			http.Error(w, "missing sig param", http.StatusBadRequest)
+			return
+		}
+		if reason, ok := utils.VerifyURL(sig, messageID, expParam); !ok {
+			http.Error(w, reason, http.StatusForbidden)
+			return
+		}
 	}
 
 	worker := bot.GetNextWorker()
@@ -52,15 +67,18 @@ func getStreamRoute(ctx *gin.Context) {
 		return
 	}
 
-	expectedHash := utils.PackFile(
-		file.FileName,
-		file.FileSize,
-		file.MimeType,
-		file.ID,
-	)
-	if !utils.CheckHash(authHash, expectedHash) {
-		http.Error(w, "invalid hash", http.StatusBadRequest)
-		return
+	// If no exp, validate via hash
+	if expParam == "" {
+		expectedHash := utils.PackFile(
+			file.FileName,
+			file.FileSize,
+			file.MimeType,
+			file.ID,
+		)
+		if !utils.CheckHash(authHash, expectedHash) {
+			http.Error(w, "invalid hash", http.StatusBadRequest)
+			return
+		}
 	}
 
 	// for photo messages
