@@ -32,6 +32,7 @@ func StartClient(log *zap.Logger) (*gotgproto.Client, error) {
 					sqlite.Open("fsb.session"),
 				),
 				DisableCopyright: true,
+				Middlewares:      GetFloodMiddleware(log),
 			},
 		)
 		resultChan <- struct {

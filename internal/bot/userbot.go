@@ -31,6 +31,7 @@ func StartUserBot(l *zap.Logger) {
 		&gotgproto.ClientOpts{
 			Session:          sessionMaker.PyrogramSession(config.ValueOf.UserSession),
 			DisableCopyright: true,
+			Middlewares:      GetFloodMiddleware(log),
 		},
 	)
 	if err != nil {

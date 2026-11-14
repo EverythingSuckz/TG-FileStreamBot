@@ -57,6 +57,13 @@ type config struct {
 	StreamBufferCount int `envconfig:"STREAM_BUFFER_COUNT" default:"8"`
 	StreamTimeoutSec  int `envconfig:"STREAM_TIMEOUT_SEC" default:"30"`
 	StreamMaxRetries  int `envconfig:"STREAM_MAX_RETRIES" default:"3"`
+
+	// telegram flood control
+	FloodWaitMaxRetries int `envconfig:"FLOOD_WAIT_MAX_RETRIES" default:"10"`
+	FloodWaitMaxWaitSec int `envconfig:"FLOOD_WAIT_MAX_WAIT_SEC" default:"300"`
+	RateLimitIntervalMs int `envconfig:"RATE_LIMIT_INTERVAL_MS" default:"100"`
+	RateLimitBurst      int `envconfig:"RATE_LIMIT_BURST" default:"5"`
+	SendDelayMs         int `envconfig:"SEND_DELAY_MS" default:"250"`
 }
 
 var botTokenRegex = regexp.MustCompile(`MULTI\_TOKEN\d+=(.*)`)
@@ -94,6 +101,11 @@ func SetFlagsFromConfig(cmd *cobra.Command) {
 	cmd.Flags().Int("stream-buffer-count", ValueOf.StreamBufferCount, "Number of blocks to prefetch")
 	cmd.Flags().Int("stream-timeout-sec", ValueOf.StreamTimeoutSec, "Maximum time to wait for a single block (in seconds)")
 	cmd.Flags().Int("stream-max-retries", ValueOf.StreamMaxRetries, "Number of retry attempts for failed fetches")
+	cmd.Flags().Int("flood-wait-max-retries", ValueOf.FloodWaitMaxRetries, "Maximum retries on Telegram FLOOD_WAIT errors (0 means retry forever)")
+	cmd.Flags().Int("flood-wait-max-wait-sec", ValueOf.FloodWaitMaxWaitSec, "Maximum single FLOOD_WAIT duration to sleep for, in seconds")
+	cmd.Flags().Int("rate-limit-interval-ms", ValueOf.RateLimitIntervalMs, "Minimum interval between Telegram RPCs, in milliseconds")
+	cmd.Flags().Int("rate-limit-burst", ValueOf.RateLimitBurst, "Burst size of the Telegram RPC rate limiter")
+	cmd.Flags().Int("send-delay-ms", ValueOf.SendDelayMs, "Minimum delay between link replies for the same chat, in milliseconds")
 }
 
 func (c *config) loadConfigFromArgs(log *zap.Logger, cmd *cobra.Command) {
@@ -161,6 +173,21 @@ func (c *config) loadConfigFromArgs(log *zap.Logger, cmd *cobra.Command) {
 	streamMaxRetries, _ := cmd.Flags().GetInt("stream-max-retries")
 	if streamMaxRetries != 0 {
 		os.Setenv("STREAM_MAX_RETRIES", strconv.Itoa(streamMaxRetries))
+	}
+	for _, name := range []string{
+		"flood-wait-max-retries",
+		"flood-wait-max-wait-sec",
+		"rate-limit-interval-ms",
+		"rate-limit-burst",
+		"send-delay-ms",
+	} {
+		// Explicitly set flags win over the env file, including the value 0,
+		// which is a valid setting for the flood control knobs.
+		if !cmd.Flags().Changed(name) {
+			continue
+		}
+		value, _ := cmd.Flags().GetInt(name)
+		os.Setenv(strings.ToUpper(strings.ReplaceAll(name, "-", "_")), strconv.Itoa(value))
 	}
 }
 
@@ -230,6 +257,26 @@ func Load(log *zap.Logger, cmd *cobra.Command) {
 	if ValueOf.StreamMaxRetries <= 0 {
 		log.Sugar().Info("STREAM_MAX_RETRIES must be greater than 0, defaulting to 3")
 		ValueOf.StreamMaxRetries = 3
+	}
+	if ValueOf.FloodWaitMaxRetries < 0 {
+		log.Sugar().Info("FLOOD_WAIT_MAX_RETRIES can't be negative, retrying forever")
+		ValueOf.FloodWaitMaxRetries = 0
+	}
+	if ValueOf.FloodWaitMaxWaitSec <= 0 {
+		log.Sugar().Info("FLOOD_WAIT_MAX_WAIT_SEC must be greater than 0, defaulting to 300 seconds")
+		ValueOf.FloodWaitMaxWaitSec = 300
+	}
+	if ValueOf.RateLimitIntervalMs <= 0 {
+		log.Sugar().Info("RATE_LIMIT_INTERVAL_MS must be greater than 0, defaulting to 100")
+		ValueOf.RateLimitIntervalMs = 100
+	}
+	if ValueOf.RateLimitBurst <= 0 {
+		log.Sugar().Info("RATE_LIMIT_BURST must be greater than 0, defaulting to 5")
+		ValueOf.RateLimitBurst = 5
+	}
+	if ValueOf.SendDelayMs < 0 {
+		log.Sugar().Info("SEND_DELAY_MS can't be negative, defaulting to 250")
+		ValueOf.SendDelayMs = 250
 	}
 }
 

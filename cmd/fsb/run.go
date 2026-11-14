@@ -32,6 +32,7 @@ func runApp(cmd *cobra.Command, args []string) {
 	config.Load(utils.Logger, cmd)
 	// reinitialize with correct dev mode
 	utils.InitLogger(config.ValueOf.Dev)
+	utils.InitSendPacer(time.Duration(config.ValueOf.SendDelayMs) * time.Millisecond)
 	log := utils.Logger
 	mainLogger := log.Named("Main")
 	mainLogger.Info("Starting server")
