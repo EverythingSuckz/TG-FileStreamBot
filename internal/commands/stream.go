@@ -60,10 +60,14 @@ func sendLink(ctx *ext.Context, u *ext.Update) error {
 	}
 	// A media group arrives as one update per message, so keep a minimum
 	// distance between two answers in the same chat to avoid FLOOD_WAIT.
+	// One Wait per message: the forward is paced, and Done moves the anchor to
+	// the moment the reply is out, so the delay lands between two replies
+	// instead of between their starts.
 	if err := utils.SendPacer.Wait(ctx.Context, chatId); err != nil {
 		utils.Logger.Sugar().Debug(err)
 		return dispatcher.EndGroups
 	}
+	defer utils.SendPacer.Done(chatId)
 	update, err := utils.ForwardMessages(ctx, chatId, config.ValueOf.LogChannelID, u.EffectiveMessage.ID)
 	if err != nil {
 		utils.Logger.Sugar().Error(err)

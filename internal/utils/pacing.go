@@ -30,7 +30,8 @@ func NewChatPacer(interval time.Duration) *ChatPacer {
 	}
 }
 
-// Wait blocks until the next operation for chatID is allowed to run.
+// Wait blocks until the next operation for chatID is allowed to run and
+// reserves its slot.
 func (p *ChatPacer) Wait(ctx context.Context, chatID int64) error {
 	if p == nil || p.interval <= 0 {
 		return nil
@@ -63,6 +64,25 @@ func (p *ChatPacer) Wait(ctx context.Context, chatID int64) error {
 		return nil
 	case <-ctx.Done():
 		return ctx.Err()
+	}
+}
+
+// Done records that the operation started by Wait for chatID has finished.
+//
+// Wait reserves the slot when the operation starts, so a slow forward or a
+// flood wait retry would eat the whole interval and the next message would
+// start immediately after it. Done moves the anchor to the moment the reply
+// was sent, which makes interval the real gap between two finished replies.
+// Callers use one Wait and one Done per message, never two Waits.
+func (p *ChatPacer) Done(chatID int64) {
+	if p == nil || p.interval <= 0 {
+		return
+	}
+	at := time.Now().Add(p.interval)
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if at.After(p.next[chatID]) {
+		p.next[chatID] = at
 	}
 }
 
